@@ -122,7 +122,24 @@ NavMeshSettings:
     preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
-  m_NavMeshData: {fileID: 0}
+  m_NavMeshData: {fileID: 23800000, guid: fe74466b0e7a9964490699732e241821, type: 2}
+--- !u!1 &509588812 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9111211714052390158, guid: 6961d772f24abb74ab18ef8ae23454d9, type: 3}
+  m_PrefabInstance: {fileID: 9105125028700582470}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &509588815
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 509588812}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5318d71da0f491148b6cc310909ebdc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -215,7 +232,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1001 &888600944
 PrefabInstance:
@@ -293,6 +310,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 145065502073552246, guid: 0fb7a9e780e79df43a915e3e7a066422, type: 3}
+      propertyPath: m_AngularSpeed
+      value: 500
+      objectReference: {fileID: 0}
     - target: {fileID: 1044171196367192311, guid: 0fb7a9e780e79df43a915e3e7a066422, type: 3}
       propertyPath: m_RootOrder
       value: 5
@@ -341,7 +362,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Knight
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 1044171196367559831, guid: 0fb7a9e780e79df43a915e3e7a066422, type: 3}
+      propertyPath: m_TagString
+      value: Army
+      objectReference: {fileID: 0}
+    - target: {fileID: 1044171196367559867, guid: 0fb7a9e780e79df43a915e3e7a066422, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 7330088757380433901, guid: 0fb7a9e780e79df43a915e3e7a066422, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 0fb7a9e780e79df43a915e3e7a066422, type: 3}
 --- !u!1001 &1508284941
 PrefabInstance:
@@ -481,7 +511,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3602303816194755558, guid: 6961d772f24abb74ab18ef8ae23454d9, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3602303816194755558, guid: 6961d772f24abb74ab18ef8ae23454d9, type: 3}
       propertyPath: m_LocalPosition.x
@@ -527,5 +557,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameManager
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2028246031296021451, guid: 6961d772f24abb74ab18ef8ae23454d9, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 6961d772f24abb74ab18ef8ae23454d9, type: 3}

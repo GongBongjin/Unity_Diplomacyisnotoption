@@ -18,6 +18,7 @@ public class DataManager : MonoBehaviour
     private Dictionary<int, CharacterData> characterDatas = new Dictionary<int, CharacterData>();
 
     public Dictionary<int, CharacterData> GetCharacterDatas() { return characterDatas; }
+
     private void Awake()
     {
         instance = this;
