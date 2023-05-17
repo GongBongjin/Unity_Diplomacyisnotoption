@@ -1,0 +1,58 @@
+{
+  "BuildingData": [
+    {
+      "Index": 0,
+      "Name": "TownHall",
+      "Size": 4,
+      "HP": 100
+    },
+    {
+      "Index": 1,
+      "Name": "House",
+      "Size": 2,
+      "HP": 100
+    },
+    {
+      "Index": 2,
+      "Name": "Barrack",
+      "Size": 3,
+      "HP": 100
+    },
+    {
+      "Index": 3,
+      "Name": "DogKnight",
+      "Size": 3,
+      "HP": 100
+    },
+    {
+      "Index": 4,
+      "Name": "Tavern",
+      "Size": 3,
+      "HP": 100
+    },
+    {
+      "Index": 5,
+      "Name": "Engineering",
+      "Size": 4,
+      "HP": 100
+    },
+    {
+      "Index": 6,
+      "Name": "Univercity",
+      "Size": 4,
+      "HP": 100
+    },
+    {
+      "Index": 7,
+      "Name": "IronFactory",
+      "Size": 4,
+      "HP": 100
+    },
+    {
+      "Index": 8,
+      "Name": "Granary",
+      "Size": 4,
+      "HP": 100
+    }
+  ]
+}
