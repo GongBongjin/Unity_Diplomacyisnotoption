@@ -25,6 +25,7 @@ public class Character : MonoBehaviour
 
     protected float hp;
     protected float maxHp;
+    protected Vector3 desPos;
 
     private Dictionary<int, CharacterData> characterDatas = new Dictionary<int, CharacterData>();
 
@@ -69,11 +70,14 @@ public class Character : MonoBehaviour
 
                 if (Physics.Raycast(ray, out hit))
                 {
-                    Vector3 desPos = new Vector3(hit.point.x, 0, hit.point.z);
+                    desPos = new Vector3(hit.point.x, 0, hit.point.z);
+                    animator.SetFloat("MoveSpeed", 3.0f);
                     nvAgent.destination = desPos;
-                    //selectedObject.transform.position = desPos;
                 }
             }
         }
+        float distance = Vector3.Distance(gameObject.transform.position, nvAgent.destination);
+        if (distance < 1.0f)
+            animator.SetFloat("MoveSpeed", 0.0f);
     }
 }
