@@ -8,7 +8,8 @@ public struct CharacterData
     public CharacterType characterType;
     public float maxHp;
     public float dmg;
-    public float moveSpeed;
+    public string prefab;
+    public string sprite;
 }
 
 public class DataManager : MonoBehaviour
@@ -51,7 +52,8 @@ public class DataManager : MonoBehaviour
             characterData.characterType = (CharacterType)int.Parse(data[1]);
             characterData.maxHp = float.Parse(data[2]);
             characterData.dmg = float.Parse(data[3]);
-            characterData.moveSpeed = float.Parse(data[4]);
+            characterData.prefab = data[4];
+            characterData.sprite = data[5];
 
             characterDatas.Add(characterData.key, characterData);
         }
