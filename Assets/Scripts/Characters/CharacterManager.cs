@@ -11,11 +11,10 @@ public class CharacterManager : MonoBehaviour
     {
         //Army
         KNIGHT = 1001,
-        GRUNT,
         DOGNIGHT,
         SPEARMAN,
         WIZARD,
-        //GRUNT,
+        GRUNT,
         //Enemy
         TURTLE,
         SLIME,
@@ -28,7 +27,7 @@ public class CharacterManager : MonoBehaviour
         USURPER
     }
 
-    private GameObject ch;
+    private GameObject army;
 
     private Dictionary<int, CharacterData> characterDatas = new Dictionary<int, CharacterData>();
     private Dictionary<CharacterKey, GameObject> characterPrefabs = new Dictionary<CharacterKey, GameObject>();
@@ -44,7 +43,7 @@ public class CharacterManager : MonoBehaviour
     {
         characterDatas = DataManager.instance.GetCharacterDatas();
 
-        ch = new GameObject("testCharacter");
+        army = new GameObject("ArmyCharacter");
 
         foreach (KeyValuePair<int, CharacterData> data in characterDatas)
         {
@@ -53,8 +52,11 @@ public class CharacterManager : MonoBehaviour
             characterPrefabs.Add((CharacterKey)data.Value.key, characterPrefab);
         }
 
-        CreateCharacter(CharacterKey.KNIGHT,2);
-        CreateCharacter(CharacterKey.GRUNT,2);
+        CreateArmies(CharacterKey.KNIGHT,1);
+        CreateArmies(CharacterKey.DOGNIGHT, 1);
+        CreateArmies(CharacterKey.SPEARMAN, 1);
+        CreateArmies(CharacterKey.WIZARD, 1);
+        CreateArmies(CharacterKey.GRUNT,1);
 
     }
 
@@ -64,18 +66,18 @@ public class CharacterManager : MonoBehaviour
         
     }
 
-    private void CreateCharacter(CharacterKey key, int poolCount)
+    private void CreateArmies(CharacterKey key, int poolCount)
     {
         List<GameObject> temp = new List<GameObject>();
 
         for (int i = 0; i < poolCount; i++)
         {
-            GameObject obj = Instantiate(characterPrefabs[key], ch.transform);
+            GameObject obj = Instantiate(characterPrefabs[key], army.transform);
 
             Character character = obj.GetComponent<Character>();
 
             character.SetData(characterDatas[(int)key]);
-            obj.transform.position = new Vector3(Random.Range(-10f, 10f), 0, Random.Range(-10f, 10f));
+            obj.transform.position = new Vector3(Random.Range(-20f, 10f), 0, Random.Range(-10f, 20f));
             obj.SetActive(true);
 
             temp.Add(obj);
@@ -84,4 +86,3 @@ public class CharacterManager : MonoBehaviour
     }
    
 }
-

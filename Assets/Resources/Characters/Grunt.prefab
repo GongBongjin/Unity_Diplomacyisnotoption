@@ -440,9 +440,10 @@ GameObject:
   m_Component:
   - component: {fileID: 5858184424674211301}
   - component: {fileID: 5858184424683231759}
-  - component: {fileID: 1887626643344367296}
+  - component: {fileID: -2055911726873476324}
   - component: {fileID: 1355085706195125075}
   - component: {fileID: 3945393662327290114}
+  - component: {fileID: -3021734053781445073}
   m_Layer: 0
   m_Name: Grunt
   m_TagString: Army
@@ -458,7 +459,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5858184424673847749}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.42, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -488,7 +489,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1887626643344367296
+--- !u!114 &-2055911726873476324
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -497,14 +498,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 5858184424673847749}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cea10c34e6e7d4144b9867bcc72cd0be, type: 3}
+  m_Script: {fileID: 11500000, guid: 53e7d68258e57a4408424af8a06913c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 0}
-  nvAgent: {fileID: 0}
-  hp: 0
-  maxHp: 0
-  isAttacking: 0
 --- !u!136 &1355085706195125075
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -513,12 +509,12 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5858184424673847749}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 2
-  m_Height: 3
+  m_Radius: 1.1
+  m_Height: 2
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!195 &3945393662327290114
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -528,7 +524,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 5858184424673847749}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 1.1
   m_Speed: 5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -541,6 +537,19 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!135 &-3021734053781445073
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5858184424673847749}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 1, z: 1}
 --- !u!1 &5858184424673847751
 GameObject:
   m_ObjectHideFlags: 0

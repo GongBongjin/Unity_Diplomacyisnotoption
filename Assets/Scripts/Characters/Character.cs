@@ -12,54 +12,42 @@ public enum CharacterType
 
 public enum CharacterState
 {
-    IDLE, MOVE, ATTACK, HITTED, DEAD
+    IDLE, MOVE, ATTACK, DEAD
 }
 
 public class Character : MonoBehaviour
 { 
-    [HideInInspector] public Animator animator;
-    [HideInInspector] public NavMeshAgent nvAgent;
+    [HideInInspector] protected Animator animator;
+    [HideInInspector] protected NavMeshAgent nvAgent;
+    [HideInInspector] protected CapsuleCollider bodyCollider;
+    //[HideInInspector] protected CapsuleCollider atkCollider;
 
     public CharacterData data;
 
-    public float hp;
-    public float maxHp;
-    public bool isAttacking = false;
+    protected float hp;
+    protected float maxHp;
+    protected bool isAttacking = false;
+    protected CharacterType characterType;
 
     protected void Awake()
     {
         animator = GetComponent<Animator>();
         nvAgent = GetComponent<NavMeshAgent>();
+        bodyCollider = GetComponent<CapsuleCollider>();
     }
 
-    protected void Start()
+    protected virtual void Start()
     {
+        maxHp = data.maxHp;
+        hp = maxHp;
+        characterType = data.characterType;
     }
 
-    protected void Update()
+    protected virtual void Update()
     {
-        StopMove();
+        ApporachDestination();
 
         AnimationTest();
-    }
-
-    private void AnimationTest()
-    {
-        if(Input.GetKeyDown(KeyCode.Z))
-        {
-            isAttacking = true;
-            animator.SetTrigger("Attack");
-        }
-
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            animator.SetTrigger("Hitted");
-        }
-
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            animator.SetTrigger("Dead");
-        }
     }
 
     public void SetData(CharacterData characterData)
@@ -67,24 +55,44 @@ public class Character : MonoBehaviour
         data = characterData;
     }
 
-    public void Move(Vector3 destPos)
+    private void AnimationTest()
     {
-        if (isAttacking)
-            return;
+        if(Input.GetKeyDown(KeyCode.Z))
+        {
+            //isAttacking = true;
+            animator.SetTrigger("Attack");
+        }
 
-        animator.SetFloat("MoveSpeed", 3.0f);
-        nvAgent.SetDestination(destPos);
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            animator.SetTrigger("Dead");
+        }
     }
 
-    private void StopMove()
+    private void ApporachDestination()
     {
         float distance = Vector3.Distance(gameObject.transform.position, nvAgent.destination);
         if (distance < 1.0f)
             animator.SetFloat("MoveSpeed", 0.0f);
     }
 
+    //Collision Function
+
+
+    //Animation Event Function
     private void EndAttack()
     {
         isAttacking = false;
+
+        //atkCollider.enabled = false
     }
+
+    private void EndDead()
+    {
+        gameObject.SetActive(false);
+    }
+
+    //Children class Function
+    public virtual void Move(Vector3 destPos) { }
+    public virtual void Attack() { }
 }

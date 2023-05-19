@@ -5,18 +5,13 @@ using UnityEngine.AI;
 
 public class SelectionBox : MonoBehaviour
 {
-    private Character character;
+    private Army army;
     public List<GameObject> selectedObjects = new List<GameObject>();
 
     //Drag
     private Vector3 dragStartPos;
     private bool isDragging = false;
 
-    void Start()
-    {
-    }
-
-    // Update is called once per frame
     void Update()
     {
         Select();
@@ -40,7 +35,7 @@ public class SelectionBox : MonoBehaviour
                 if (Physics.Raycast(ray, out hit))
                 {
                     if (hit.collider.gameObject.tag == "Army")
-                        SelectUnit(hit.collider.gameObject);
+                        SelecteObject(hit.collider.gameObject);
                 }
             }
 
@@ -72,12 +67,12 @@ public class SelectionBox : MonoBehaviour
         {
             if (obj.transform.tag == "Army" && selectionRect.Contains(Camera.main.WorldToScreenPoint(obj.transform.position)))
             {
-                SelectUnit(obj);
+                SelecteObject(obj);
             }
         }
     }
 
-    private void SelectUnit(GameObject obj)
+    private void SelecteObject(GameObject obj)
     {
         if (!selectedObjects.Contains(obj))
         {
@@ -108,8 +103,10 @@ public class SelectionBox : MonoBehaviour
     {
         foreach (GameObject obj in selectedObjects)
         {
-            character = obj.GetComponent<Character>();
-            character.Move(destPos);
+            //character = obj.GetComponent<Character>();
+            //character.Move(destPos);
+            army = obj.GetComponent<Army>();
+            army.Move(destPos);
         }
     }
 }
