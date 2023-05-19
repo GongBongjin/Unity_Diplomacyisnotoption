@@ -16,64 +16,83 @@ public enum CharacterState
 }
 
 public class Character : MonoBehaviour
-{
-    protected Rigidbody rigidBody;
-    protected Animator animator;
-    protected NavMeshAgent nvAgent;
+{ 
+    [HideInInspector] protected Animator animator;
+    [HideInInspector] protected NavMeshAgent nvAgent;
+    [HideInInspector] protected CapsuleCollider bodyCollider;
+    //[HideInInspector] protected CapsuleCollider atkCollider;
 
-    protected GameObject selectedObject;
+    public CharacterData data;
 
     protected float hp;
     protected float maxHp;
-
-    private Dictionary<int, CharacterData> characterDatas = new Dictionary<int, CharacterData>();
+    protected bool isAttacking = false;
+    protected CharacterType characterType;
 
     protected void Awake()
     {
-        rigidBody = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
         nvAgent = GetComponent<NavMeshAgent>();
+        bodyCollider = GetComponent<CapsuleCollider>();
     }
 
-    protected void Start()
+    protected virtual void Start()
     {
-        characterDatas = DataManager.instance.GetCharacterDatas();
+        maxHp = data.maxHp;
+        hp = maxHp;
+        characterType = data.characterType;
     }
 
-    protected void Update()
+    protected virtual void Update()
     {
-        Move();
+        ApporachDestination();
+
+        AnimationTest();
     }
 
-    protected void Move()
+    public void SetData(CharacterData characterData)
     {
-        if (Input.GetMouseButtonDown(0)) // 좌클릭
+        data = characterData;
+    }
+
+    private void AnimationTest()
+    {
+        if(Input.GetKeyDown(KeyCode.Z))
         {
-            Vector3 mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.farClipPlane);
-            Ray ray = Camera.main.ScreenPointToRay(mousePos);
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit))
-            {
-                if(hit.collider.gameObject.tag == "Army" || hit.collider.gameObject.tag == "Citizen")
-                    selectedObject = hit.collider.gameObject;
-            }
+            //isAttacking = true;
+            animator.SetTrigger("Attack");
         }
-        else if (Input.GetMouseButtonDown(1)) // 우클릭
-        {
-            if (selectedObject != null)
-            {
-                Vector3 mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.farClipPlane);
-                Ray ray = Camera.main.ScreenPointToRay(mousePos);
-                RaycastHit hit;
 
-                if (Physics.Raycast(ray, out hit))
-                {
-                    Vector3 desPos = new Vector3(hit.point.x, 0, hit.point.z);
-                    nvAgent.destination = desPos;
-                    //selectedObject.transform.position = desPos;
-                }
-            }
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            animator.SetTrigger("Dead");
         }
     }
+
+    private void ApporachDestination()
+    {
+        float distance = Vector3.Distance(gameObject.transform.position, nvAgent.destination);
+        if (distance < 1.0f)
+            animator.SetFloat("MoveSpeed", 0.0f);
+    }
+
+    //Collision Function
+
+
+    //Animation Event Function
+    private void EndAttack()
+    {
+        isAttacking = false;
+
+        //atkCollider.enabled = false
+    }
+
+    private void EndDead()
+    {
+        gameObject.SetActive(false);
+    }
+
+    //Children class Function
+    public virtual void Move(Vector3 destPos) { }
+    public virtual void Attack() { }
 }

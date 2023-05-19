@@ -10,7 +10,7 @@ public class MainCamera : MonoBehaviour
     public float zoomSpeed = 1000.0f;
 
     [HideInInspector] private float rotateAngle = 180.0f;
-    [HideInInspector] private Quaternion initialRotation = Quaternion.Euler(30f, 180.0f, 0f);
+    [HideInInspector] private Quaternion initialRotation = Quaternion.Euler(45.0f, 180.0f, 0f);
     [HideInInspector] private Vector3 initialPosition = new Vector3(0, 10, 20);
 
     [HideInInspector] private float zoomMin = 1.0f;
@@ -33,13 +33,13 @@ public class MainCamera : MonoBehaviour
         //Rot
         if (Input.GetKey(KeyCode.Q))
         {
-            rotateAngle -= rotateSpeed * Time.deltaTime;
-            transform.rotation = Quaternion.Euler(30.0f, rotateAngle, 0.0f);
+            rotateAngle += rotateSpeed * Time.deltaTime;
+            transform.rotation = Quaternion.Euler(45.0f, rotateAngle, 0.0f);
         }
         else if (Input.GetKey(KeyCode.E))
         {
-            rotateAngle += rotateSpeed * Time.deltaTime;
-            transform.rotation = Quaternion.Euler(30.0f, rotateAngle, 0.0f);
+            rotateAngle -= rotateSpeed * Time.deltaTime;
+            transform.rotation = Quaternion.Euler(45.0f, rotateAngle, 0.0f);
         }
 
         float h = Input.GetAxis("Horizontal");
