@@ -9,12 +9,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8132264055211792696}
+  - component: {fileID: 8162359628922108912}
   - component: {fileID: 8132264055213119768}
   - component: {fileID: 8132264055214087128}
   - component: {fileID: 8132264055218121656}
+  - component: {fileID: -8481269339734764554}
   m_Layer: 0
   m_Name: RockStone1
-  m_TagString: Untagged
+  m_TagString: Product
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -34,6 +36,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8162359628922108912
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8132264055211820312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63ca00756eebf6b4cbf1a06c62c5ff15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  product: 2
 --- !u!33 &8132264055213119768
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -98,3 +113,19 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 110d2d66b09076d4e88fb91dc58961ab, type: 3}
+--- !u!208 &-8481269339734764554
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8132264055211820312}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 1.4410001, y: 1.1630001, z: 1.8030001}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0.076000005, y: 1.1190001, z: 0.34100002}
+  m_TimeToStationary: 0.5

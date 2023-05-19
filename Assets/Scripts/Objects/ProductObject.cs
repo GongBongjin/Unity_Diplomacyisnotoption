@@ -4,16 +4,8 @@ using UnityEngine;
 
 public class ProductObject : MonoBehaviour
 {
-    enum Product
-    {
-        Food,
-        Wood,
-        Stone,
-        Copper
-    }
-
     [SerializeField]
-    Product product;
+    ResourcesManager.Product product;
 
     // ÃÑ·®, ³²Àº¾ç
     int maxAmount = 100;
@@ -32,5 +24,23 @@ public class ProductObject : MonoBehaviour
     private void Update()
     {
         
+    }
+
+    public ResourcesManager.Product GetProductName()
+    {
+        return product;
+    }
+
+    public int SpendResources(int amount)
+    {
+        int value = amount;
+        curAmount -= amount;
+
+        if (curAmount <= 0)
+        {
+            value += curAmount;
+        }
+
+        return value;
     }
 }
