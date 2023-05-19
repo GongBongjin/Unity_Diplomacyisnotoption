@@ -8,6 +8,8 @@ TagManager:
   - Citizen
   - Enemy
   - Building
+  - Terrain
+  - Product
   layers:
   - Default
   - TransparentFX
