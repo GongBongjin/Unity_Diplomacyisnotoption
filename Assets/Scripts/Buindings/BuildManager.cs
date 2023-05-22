@@ -38,6 +38,7 @@ public class BuildManager : MonoBehaviour
     GameObject target = null;
 
 
+
     private void Awake()
     {
         buildingParent = new GameObject("Buildings");
