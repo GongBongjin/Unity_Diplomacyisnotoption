@@ -42,7 +42,7 @@ public class Army : Character
         {
             hp -= 10.0f;
 
-            Debug.Log(characterType);
+            Debug.Log(hp);
             if (hp <= 0)
             {
                 isDying = true;

@@ -50,7 +50,7 @@ public class CharacterManager : MonoBehaviour
         {
             GameObject characterPrefab = Resources.Load<GameObject>(data.Value.prefab);
 
-            characterPrefabs.Add((CharacterKey)data.Value.key, characterPrefab);
+            characterPrefabs.Add((CharacterKey)data.Value.key, characterPrefab);//여기서 DataManager에 넣은 key값, prefab 넣고있고
         }
 
         CreateCharacter(CharacterKey.KNIGHT,1);
@@ -62,7 +62,7 @@ public class CharacterManager : MonoBehaviour
         //SpawnCharacter(CharacterKey.KNIGHT);
     }
 
-    private void CreateCharacter(CharacterKey key, int poolCount)
+    private void CreateCharacter(CharacterKey key, int poolCount)//여기서 생성할때 GameObject에다가 키값을 다넣어줬는데
     {
         List<GameObject> temp = new List<GameObject>();
 
@@ -72,9 +72,9 @@ public class CharacterManager : MonoBehaviour
 
             Character character = obj.GetComponent<Character>();
 
-            character.SetData(characterDatas[(int)key]);
+            character.SetData(characterDatas[(int)key]);//여기서 각캐릭터마다 키값을 부여했어요.
             obj.transform.position = new Vector3(Random.Range(-20f, 10f), 0, Random.Range(-10f, 20f));
-            obj.SetActive(true);
+            obj.SetActive(true);//현재 여기 obj에는 캐릭터키 데이터가 없나...?
 
             temp.Add(obj);
         }

@@ -26,6 +26,7 @@ public class Character : MonoBehaviour
     [HideInInspector] protected SphereCollider atkCollider;
 
     public CharacterData data;
+    public CharacterKey key;
 
     [SerializeField] protected float hp;
     [SerializeField] protected float maxHp;
@@ -56,9 +57,10 @@ public class Character : MonoBehaviour
     public void SetData(CharacterData characterData)
     {
         data = characterData;
+        key = (CharacterKey)data.key;
+        characterType = data.characterType;
         maxHp = data.maxHp;
         hp = maxHp;
-        characterType = data.characterType;
     }
 
     private void ApporachDestination()
@@ -68,9 +70,12 @@ public class Character : MonoBehaviour
             animator.SetFloat("MoveSpeed", 0.0f);
     }
 
+    public CharacterData GetCharacterData() { return  data; }
+
+
     //Animation Event Function
 
-    private void StatAttack()
+    private void StartAttack()
     {
         atkCollider.enabled = true;
     }
@@ -81,10 +86,14 @@ public class Character : MonoBehaviour
         //atkCollider.enabled = false;
     }
 
-    private void EndDead()
+    private void StartDead()
     {
         bodyCollider.enabled = false;
         atkCollider.enabled = false;
+    }
+
+    private void EndDead()
+    {
         gameObject.SetActive(false);
     }
 

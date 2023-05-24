@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
@@ -9,7 +10,7 @@ public class SelectionBox : MonoBehaviour
     Image selectionBox;
 
     private Army army;
-    public List<GameObject> selectedObjects = new List<GameObject>();
+    public List<GameObject> selectedObjects = new List<GameObject>(); //현재 list 구조라서 GameObject가 아닌 Character 구조에다가 데이터를 넣어서 키정보가없음.
 
     //Drag
     private Vector3 dragStartPos;
@@ -44,7 +45,7 @@ public class SelectionBox : MonoBehaviour
                 if (Physics.Raycast(ray, out hit))
                 {
                     if (hit.collider.gameObject.tag == "Army")
-                        SelecteObject(hit.collider.gameObject);
+                        SelectObject(hit.collider.gameObject);
                 }
             }
 
@@ -60,6 +61,8 @@ public class SelectionBox : MonoBehaviour
                 UpdateDragBox(Input.mousePosition);
 
         }
+
+        DataReturn();
     }
 
     private void ClearSelection()
@@ -77,16 +80,16 @@ public class SelectionBox : MonoBehaviour
         selectionBox.transform.position = selectionRect.center;
         selectionBox.rectTransform.sizeDelta = selectionRect.size;
 
-        foreach (GameObject obj in FindObjectsOfType<GameObject>())
+        foreach (GameObject obj in FindObjectsOfType<GameObject>())//이 구문 수정 생각해볼것.
         {
             if (obj.transform.tag == "Army" && selectionRect.Contains(Camera.main.WorldToScreenPoint(obj.transform.position)))
             {
-                SelecteObject(obj);
+                SelectObject(obj);
             }
         }
     }
 
-    private void SelecteObject(GameObject obj)
+    private void SelectObject(GameObject obj)
     {
         if (!selectedObjects.Contains(obj))
         {
@@ -112,6 +115,35 @@ public class SelectionBox : MonoBehaviour
             }
         }
     }
+
+    private void DataReturn()
+    {
+        //foreach(GameObject obj in selectedObjects) 
+        //{
+        //    //태그로 빌딩과 유닛을 구별?
+        //    //if (obj.gameObject.transform.tag == "Army")
+        //    {
+        //        Army army = obj.GetComponent<Army>();
+        //        CharacterData data;
+        //        data = army.GetCharacterData();
+        //
+        //        //UIManager.instance.GetData() = ?
+        //
+        //
+        //    }
+        //
+        //    //
+        //    //if(obj.gameObject.transform.tag == "Building")
+        //    {
+        //        Building building = obj.GetComponent<Building>();
+        //        //BuildingData data;
+        //        //data = building.GetBuildingData();
+        //        
+        //        //UIManager.instance.GetData() =?
+        //    }
+        //}
+    }
+
 
     private void MoveSelectedObjects(Vector3 destPos)
     {
