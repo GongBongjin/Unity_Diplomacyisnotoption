@@ -48,21 +48,27 @@ public class CharacterManager : MonoBehaviour
 
         foreach (KeyValuePair<int, CharacterData> data in characterDatas)
         {
-            GameObject characterPrefab = Resources.Load<GameObject>(data.Value.prefab);
+            GameObject characterPrefab = data.Value.prefab;
 
             characterPrefabs.Add((CharacterKey)data.Value.key, characterPrefab);//여기서 DataManager에 넣은 key값, prefab 넣고있고
         }
 
-        CreateCharacter(CharacterKey.KNIGHT,1);
-        CreateCharacter(CharacterKey.DOGNIGHT, 1);
-        CreateCharacter(CharacterKey.SPEARMAN, 1);
-        CreateCharacter(CharacterKey.WIZARD, 1);
-        CreateCharacter(CharacterKey.GRUNT,1);
+        CreateCharacter(CharacterKey.KNIGHT,2);
+        CreateCharacter(CharacterKey.DOGNIGHT, 2);
+        CreateCharacter(CharacterKey.SPEARMAN, 2);
+        CreateCharacter(CharacterKey.WIZARD, 2);
+        CreateCharacter(CharacterKey.GRUNT, 2);
 
-        //SpawnCharacter(CharacterKey.KNIGHT);
+        //CreateCharacter(CharacterKey.TURTLE, 1);
+        //CreateCharacter(CharacterKey.SLIME, 10);
+        //CreateCharacter(CharacterKey.MUSHROOM, 10);
+        //CreateCharacter(CharacterKey.CACTUS, 10);
+        //CreateCharacter(CharacterKey.BEHOLDER, 10);
+        //CreateCharacter(CharacterKey.GOLEM, 3);
+        //CreateCharacter(CharacterKey.USURPER, 1);
     }
 
-    private void CreateCharacter(CharacterKey key, int poolCount)//여기서 생성할때 GameObject에다가 키값을 다넣어줬는데
+    private void CreateCharacter(CharacterKey key, int poolCount)
     {
         List<GameObject> temp = new List<GameObject>();
 
@@ -93,18 +99,37 @@ public class CharacterManager : MonoBehaviour
         }
     }
 
+    public Dictionary<CharacterKey, List<GameObject>> GetCharacters() { return characterPools; }
+    
     public Dictionary<CharacterKey, List<GameObject>> GetEnemyData()
     {
         Dictionary<CharacterKey, List<GameObject>> temp = new Dictionary<CharacterKey, List<GameObject>>();
 
         foreach (CharacterKey key in characterPools.Keys)
         {            
-            if (key==CharacterKey.DOGNIGHT)
+            if (key>=CharacterKey.TURTLE)
             {
                 temp.Add(key, characterPools[key]);
             }
         }
         return temp;
+    }
+
+    public Vector3 GetArmyPos(GameObject enmy)
+    {
+        Vector3 pos = enmy.gameObject.transform.position;
+
+        foreach (CharacterKey key in characterPools.Keys)
+        {
+            foreach (GameObject obj in characterPools[key])
+            {
+                if (Vector3.Distance(obj.gameObject.transform.position, enmy.gameObject.transform.position) < 10.0f)
+                { 
+                    return obj.gameObject.transform.position - new Vector3(1,0,1); 
+                }
+            }
+        }
+        return pos;
     }
 }
 

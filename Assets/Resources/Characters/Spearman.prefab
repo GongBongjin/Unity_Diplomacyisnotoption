@@ -120,8 +120,8 @@ GameObject:
   - component: {fileID: -6658132157602237591}
   - component: {fileID: 5649715591910738519}
   - component: {fileID: 5649715591910738518}
-  - component: {fileID: 8063955119377662050}
   - component: {fileID: -8556151322403902911}
+  - component: {fileID: 7182817685273766230}
   m_Layer: 0
   m_Name: Spearman
   m_TagString: Army
@@ -179,9 +179,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53e7d68258e57a4408424af8a06913c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  key: 0
   hp: 0
   maxHp: 0
   isAttacking: 0
+  isDying: 0
 --- !u!136 &5649715591910738519
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -218,19 +220,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!135 &8063955119377662050
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 710156265048593186}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 1, z: 1}
 --- !u!54 &-8556151322403902911
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -247,6 +236,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!135 &7182817685273766230
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 710156265048593186}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0.8, z: 1}
 --- !u!1 &710156265048593188
 GameObject:
   m_ObjectHideFlags: 0

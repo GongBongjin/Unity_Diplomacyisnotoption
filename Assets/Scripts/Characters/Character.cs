@@ -25,13 +25,13 @@ public class Character : MonoBehaviour
     [HideInInspector] protected CapsuleCollider bodyCollider;
     [HideInInspector] protected SphereCollider atkCollider;
 
-    public CharacterData data;
-    public CharacterKey key;
-
     [SerializeField] protected float hp;
     [SerializeField] protected float maxHp;
     [SerializeField] protected bool isAttacking = false;
     [SerializeField] protected bool isDying = false;
+
+    protected CharacterData data;
+    public CharacterKey key;
     protected CharacterType characterType;
 
     protected void Awake()
@@ -41,6 +41,7 @@ public class Character : MonoBehaviour
         rigidBody = GetComponent<Rigidbody>();
         bodyCollider = GetComponent<CapsuleCollider>();
         atkCollider = GetComponent<SphereCollider>();
+        atkCollider.enabled = false;
     }
 
     protected virtual void Start()
@@ -66,12 +67,11 @@ public class Character : MonoBehaviour
     private void ApporachDestination()
     {
         float distance = Vector3.Distance(gameObject.transform.position, nvAgent.destination);
-        if (distance < 1.0f)
+        if (distance < 1.0f || isAttacking)
             animator.SetFloat("MoveSpeed", 0.0f);
     }
 
     public CharacterData GetCharacterData() { return  data; }
-
 
     //Animation Event Function
 
@@ -83,7 +83,7 @@ public class Character : MonoBehaviour
     {
         isAttacking = false;
 
-        //atkCollider.enabled = false;
+        atkCollider.enabled = false;
     }
 
     private void StartDead()

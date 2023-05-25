@@ -1,7 +1,8 @@
-using System;
+//using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 using static CharacterManager;
 
 public class EnemyManager : MonoBehaviour
@@ -12,7 +13,7 @@ public class EnemyManager : MonoBehaviour
 
     private Enemy enmy;
 
-    private Dictionary<CharacterKey, List<GameObject>> characterPools = new Dictionary<CharacterKey, List<GameObject>>();
+    private Dictionary<CharacterKey, List<GameObject>> enmiesPools = new Dictionary<CharacterKey, List<GameObject>>();
 
     private void Awake()
     {
@@ -21,23 +22,24 @@ public class EnemyManager : MonoBehaviour
 
     private void Start()
     {
-        characterPools = CharacterManager.instance.GetEnemyData();
-        SetDestination();
+        enmiesPools = CharacterManager.instance.GetEnemyData();   
     }
 
     // Update is called once per frame
     void Update()
     {
+        SetDestination();
+
         Attack();
     }
 
     private void SetDestination()
     {
-        foreach(CharacterKey key in characterPools.Keys)
+        foreach (CharacterKey key in enmiesPools.Keys)
         { 
-            foreach (GameObject obj in characterPools[key])
+            foreach (GameObject obj in enmiesPools[key])
             {
-                destPos = new Vector3(10, 0, 10);
+                destPos = CharacterManager.instance.GetArmyPos(obj);
                 enmy = obj.GetComponent<Enemy>();
                 enmy.Move(destPos);
             }
@@ -46,13 +48,13 @@ public class EnemyManager : MonoBehaviour
 
     private void Attack()
     {
-        foreach (CharacterKey key in characterPools.Keys)
+        foreach (CharacterKey key in enmiesPools.Keys)
         {
-            foreach (GameObject obj in characterPools[key])
+            foreach (GameObject obj in enmiesPools[key])
             {
                 enmy = obj.GetComponent<Enemy>();
-
-                if(Vector3.Distance(obj.transform.position, destPos) <2.0f)
+    
+                if (Vector3.Distance(enmy.gameObject.transform.position, destPos) < 1.0f)
                     enmy.Attack();
             }
         }

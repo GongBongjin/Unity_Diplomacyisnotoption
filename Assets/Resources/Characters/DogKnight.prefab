@@ -2308,14 +2308,14 @@ GameObject:
   m_Component:
   - component: {fileID: 6655640783749565404}
   - component: {fileID: 6655640783739692082}
-  - component: {fileID: -1319576375902775617}
   - component: {fileID: 5489486178558636658}
   - component: {fileID: 5489486178558636659}
   - component: {fileID: -6496502172301415385}
   - component: {fileID: 5852627894823499307}
+  - component: {fileID: 6093431035679782943}
   m_Layer: 0
   m_Name: DogKnight
-  m_TagString: Enemy
+  m_TagString: Army
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2358,21 +2358,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &-1319576375902775617
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6655640783749208060}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c673750544926e46a282bc71dcc5fdf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hp: 0
-  maxHp: 0
-  isAttacking: 0
 --- !u!136 &5489486178558636658
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -2438,6 +2423,23 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &6093431035679782943
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6655640783749208060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53e7d68258e57a4408424af8a06913c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: 0
+  hp: 0
+  maxHp: 0
+  isAttacking: 0
+  isDying: 0
 --- !u!1 &6655640783749208062
 GameObject:
   m_ObjectHideFlags: 0

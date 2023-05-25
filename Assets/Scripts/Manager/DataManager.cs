@@ -8,8 +8,8 @@ public struct CharacterData
     public CharacterType characterType;
     public float maxHp;
     public float dmg;
-    public string prefab;
-    public string sprite;
+    public GameObject prefab;
+    public Sprite sprite;
 }
 
 public class DataManager : MonoBehaviour
@@ -53,8 +53,8 @@ public class DataManager : MonoBehaviour
             characterData.characterType = (CharacterType)int.Parse(data[1]);
             characterData.maxHp = float.Parse(data[2]);
             characterData.dmg = float.Parse(data[3]);
-            characterData.prefab = data[4];
-            characterData.sprite = data[5];
+            characterData.prefab = Resources.Load<GameObject>(data[4]);
+            characterData.sprite = Resources.Load<Sprite>(data[5]);
 
             characterDatas.Add(characterData.key, characterData);
         }
