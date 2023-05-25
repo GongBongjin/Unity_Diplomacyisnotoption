@@ -8,15 +8,34 @@ using System.ComponentModel;
 using Unity.Collections;
 using System.Runtime.InteropServices.WindowsRuntime;
 
+public struct BuildingData
+{
+    public int key;
+    public string name;
+    public int matrixSize;
+    public int maxHP;
+    public int qty_Wood;
+    public int qty_Stone;
+    public int qty_Copper;
+    public GameObject prefab;
+    public Sprite icon;
+    public string discription;
+}
+
 public class BuildManager : MonoBehaviour
 {
-    struct BuildingInfomation
+    private static BuildManager instance;
+    public static BuildManager Instance
     {
-        public GameObject building;
-        public int matrixSize;
-        public float maxHP;
+        get
+        {
+            return instance;
+        }
     }
 
+    Dictionary<int, BuildingData> buildingDatas = new Dictionary<int, BuildingData>();
+
+    
     private bool isBuild = false;
     [Header("Buildings")]
     [SerializeField]
@@ -40,6 +59,7 @@ public class BuildManager : MonoBehaviour
 
     private void Awake()
     {
+        instance = this;
         buildingParent = new GameObject("Buildings");
         SetBuildingDatas();
         
@@ -82,6 +102,19 @@ public class BuildManager : MonoBehaviour
         }
     }
 
+    public BuildingData GetBuildData(int key)
+    {
+        return buildingDatas[key];
+    }
+
+    public void AddBuilding(int key)
+    {
+        GameObject obj = buildingDatas[key].prefab;
+        isBuild = true;
+        target = Instantiate(obj);
+    }
+
+
     public void AddBuilding(string buildingName)
     {
 
@@ -89,27 +122,22 @@ public class BuildManager : MonoBehaviour
 
     void SetBuildingDatas()
     {
-        buildings = new Dictionary<string, GameObject>();
+        List<Dictionary<string, object>> reader = CSVReader.Read("TextData/BuildingData");
 
-        _JsonFileManager = new JsonFileManager();
-        string datas = _JsonFileManager.ReadJsonFile(dataFilePath);
-        JObject jsonData = JObject.Parse(datas);
-        //Debug.Log(jsonData);
-
-        //JToken jData = jsonData["BuildingData"];
-        JToken jToken = jsonData["BuildingData"];
-        foreach (JToken members in jToken)
+        for(int i = 0; i < reader.Count; i++)
         {
-            buildings.Add(members["Name"].ToString(), buildingPrefabs[int.Parse(members["Index"].ToString())]);
-
+            BuildingData buildingData;
+            buildingData.key = int.Parse(reader[i]["Keys"].ToString());
+            buildingData.name = reader[i]["Name"].ToString();
+            buildingData.matrixSize = int.Parse(reader[i]["Size"].ToString());
+            buildingData.maxHP = int.Parse(reader[i]["HP"].ToString());
+            buildingData.qty_Wood = int.Parse(reader[i]["Wood"].ToString());
+            buildingData.qty_Stone = int.Parse(reader[i]["Stone"].ToString());
+            buildingData.qty_Copper = int.Parse(reader[i]["Copper"].ToString());
+            buildingData.prefab = Resources.Load<GameObject>(reader[i]["Prefab"].ToString());
+            buildingData.icon = Resources.Load<Sprite>(reader[i]["Icon"].ToString());
+            buildingData.discription = reader[i]["Discription"].ToString();
+            buildingDatas.Add(buildingData.key, buildingData);
         }
-
-        // 있어도 되나?
-        buildingPrefabs.Clear();
-        buildingPrefabs = null;
-
-        _JsonFileManager = null;
-        //Destroy(_JsonFileManager);
-        //Resources.Load("BuildingData.json")
     }
 }

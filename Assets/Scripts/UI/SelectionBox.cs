@@ -2,15 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class SelectionBox : MonoBehaviour
 {
+    Image selectionBox;
+
     private Army army;
     public List<GameObject> selectedObjects = new List<GameObject>();
 
     //Drag
     private Vector3 dragStartPos;
     private bool isDragging = false;
+
+    private void Start()
+    {
+        selectionBox = GetComponent<Image>();
+        selectionBox.enabled = false;
+    }
 
     void Update()
     {
@@ -40,6 +49,7 @@ public class SelectionBox : MonoBehaviour
             }
 
             isDragging = false;
+            selectionBox.enabled = false;
         }
         if (Input.GetMouseButton(0))
         {
@@ -62,6 +72,10 @@ public class SelectionBox : MonoBehaviour
         Vector3 lowerLeft = Vector3.Min(dragStartPos, currentMousePos);
         Vector3 upperRight = Vector3.Max(dragStartPos, currentMousePos);
         Rect selectionRect = new Rect(lowerLeft.x, lowerLeft.y, upperRight.x - lowerLeft.x, upperRight.y - lowerLeft.y);
+
+        selectionBox.enabled = true;
+        selectionBox.transform.position = selectionRect.center;
+        selectionBox.rectTransform.sizeDelta = selectionRect.size;
 
         foreach (GameObject obj in FindObjectsOfType<GameObject>())
         {
