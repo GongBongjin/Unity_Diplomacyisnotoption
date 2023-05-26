@@ -24,11 +24,14 @@ public class Character : MonoBehaviour
     [HideInInspector] protected Rigidbody rigidBody;
     [HideInInspector] protected CapsuleCollider bodyCollider;
     [HideInInspector] protected SphereCollider atkCollider;
+    [HideInInspector] protected GameObject selectCircle;
+
 
     [SerializeField] protected float hp;
     [SerializeField] protected float maxHp;
     [SerializeField] protected bool isAttacking = false;
     [SerializeField] protected bool isDying = false;
+    [SerializeField] protected bool isSelected = false;
 
     protected CharacterData data;
     public CharacterKey key;
@@ -42,6 +45,9 @@ public class Character : MonoBehaviour
         bodyCollider = GetComponent<CapsuleCollider>();
         atkCollider = GetComponent<SphereCollider>();
         atkCollider.enabled = false;
+        selectCircle = transform.Find("Circle").gameObject;
+        //selectCircle.transform.localScale = nvAgent.Get
+        selectCircle.SetActive(false);
     }
 
     protected virtual void Start()
@@ -52,6 +58,8 @@ public class Character : MonoBehaviour
 
     protected virtual void Update()
     {
+        ShowSelectionCircle();
+
         ApporachDestination();
     }
 
@@ -64,6 +72,14 @@ public class Character : MonoBehaviour
         hp = maxHp;
     }
 
+    private void ShowSelectionCircle()
+    {
+        if(isSelected)
+            selectCircle.SetActive(true);
+        else
+            selectCircle.SetActive(false);
+    }
+
     private void ApporachDestination()
     {
         float distance = Vector3.Distance(gameObject.transform.position, nvAgent.destination);
@@ -72,6 +88,8 @@ public class Character : MonoBehaviour
     }
 
     public CharacterData GetCharacterData() { return  data; }
+
+    public void SetSelectOption(bool isSelected) { this.isSelected = isSelected; }
 
     //Animation Event Function
 

@@ -1294,11 +1294,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c673750544926e46a282bc71dcc5fdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  key: 0
   hp: 0
   maxHp: 0
   isAttacking: 0
   isDying: 0
+  isSelected: 0
+  key: 0
 --- !u!195 &1038581099281149499
 NavMeshAgent:
   m_ObjectHideFlags: 0

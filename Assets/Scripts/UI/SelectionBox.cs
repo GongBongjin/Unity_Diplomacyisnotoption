@@ -53,6 +53,7 @@ public class SelectionBox : MonoBehaviour
 
             isDragging = false;
             selectionBox.enabled = false;
+            DataReturn();
         }
         if (Input.GetMouseButton(0))
         {
@@ -63,12 +64,18 @@ public class SelectionBox : MonoBehaviour
                 UpdateDragBox(Input.mousePosition);
 
         }
-
-        DataReturn();
     }
 
     private void ClearSelection()
     {
+        foreach (CharacterKey key in selectedObjects.Keys)
+        {
+            foreach (GameObject obj in selectedObjects[key])
+            {
+                army = obj.GetComponent<Army>();
+                army.SetSelectOption(false);
+            }
+        }
         selectedObjects.Clear();
     }
 
@@ -95,9 +102,9 @@ public class SelectionBox : MonoBehaviour
     {
         List<GameObject> temp = new List<GameObject>();
 
-        army = gameObject.AddComponent<Army>();
-
-        if(selectedObjects.ContainsKey(army.key))
+        army = gameObject.GetComponent<Army>();
+        
+        if (selectedObjects.ContainsKey(army.key))
         {
             int i = selectedObjects[army.key].Count;
             selectedObjects[army.key].Insert(i, gameObject);
@@ -137,12 +144,13 @@ public class SelectionBox : MonoBehaviour
             {
                 if (obj.gameObject.transform.tag == "Army")
                 {
-                    Army army = obj.GetComponent<Army>();
+                    army = obj.GetComponent<Army>();
                     CharacterData data;
-
+                    army.SetSelectOption(true);
+                    
                     data = army.GetCharacterData();
 
-                    //UIManager.instance.GetData() = data;
+                    //UIManager.instance.SetData(data);
                 }
 
                 //
@@ -161,39 +169,33 @@ public class SelectionBox : MonoBehaviour
 
     private void MoveSelectedObjects(Vector3 destPos)
     {
+        int verticalCount = -3;
+        int horizontalCount = 0;
+
         foreach (CharacterKey key in selectedObjects.Keys)
         {
             foreach (GameObject obj in selectedObjects[key])
             {
+                //verticalCount++;
                 army = obj.GetComponent<Army>();
+
+                //if (verticalCount > 2)
+                //{
+                //    verticalCount = -2;
+                //    horizontalCount++;
+                //}
+                //
+                //destPos = SetDestPos(verticalCount, horizontalCount, destPos);
+
                 army.Move(destPos);
             }
         }
     }
+
+    private Vector3 SetDestPos(int verticalCount, int horizontalCount, Vector3 mousePos)
+    {
+        Vector3 pos = new Vector3(mousePos.x + verticalCount, 0, mousePos.z + horizontalCount);
+
+        return pos;
+    }
 }
-
-/*UIManager
- * List<CharacterData> list;
- * 
- * public CharacterData GetData(CharacterData data)
- * {
- *
- *      list.Add(data);
-        ShowUI();
-        
-        Sprite sprite = Resources<Sprite>(data.value.sprite);
-        
-        
- * }
- * 
- * 
- * public BuildingData GetData()
- */
-
-//Update문안에 들어갈내용
-
-/*private void ShowUI()
- * {
- * }
- 
- */
