@@ -1,7 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
+// Attach MainCanvas ResourcePanel
+
+public enum Product
+{
+    POPULATION, // 인구
+    FOOD,       // 식량
+    WOOD,       // 목재
+    STONE,      // 석재
+    COPPER      // 구리
+}
 public class ResourcesManager : MonoBehaviour
 {
     private static ResourcesManager instance = null;
@@ -15,17 +26,10 @@ public class ResourcesManager : MonoBehaviour
         }
     }
 
-    public enum Product
-    {
-        FOOD,       // 식량
-        WOOD,       // 목재
-        STONE,      // 석재
-        COPPER      // 구리
-    }
-
     private void Awake()
     {
         instance = this;
+
     }
 
     private int maxPopulation;
@@ -48,10 +52,19 @@ public class ResourcesManager : MonoBehaviour
         
     }
 
+
+    public void UpdateMaxPopulation(int value)
+    {
+        maxPopulation += value;
+    }
+
     public void IncreasesResources(Product product, int qty)
     {
         switch(product)
         {
+            case Product.POPULATION:
+                population += qty;
+                break;
             case Product.FOOD:
                 food += qty;
                 break;

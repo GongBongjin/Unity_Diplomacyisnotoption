@@ -5,7 +5,7 @@ using UnityEngine;
 public class ProductObject : MonoBehaviour
 {
     [SerializeField]
-    ResourcesManager.Product product;
+    Product product;
 
     // ÃÑ·®, ³²Àº¾ç
     int maxAmount = 100;
@@ -26,7 +26,7 @@ public class ProductObject : MonoBehaviour
         
     }
 
-    public ResourcesManager.Product GetProductName()
+    public Product GetProductName()
     {
         return product;
     }
