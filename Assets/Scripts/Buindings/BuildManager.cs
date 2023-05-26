@@ -57,6 +57,7 @@ public class BuildManager : MonoBehaviour
     GameObject target = null;
 
 
+
     private void Awake()
     {
         instance = this;

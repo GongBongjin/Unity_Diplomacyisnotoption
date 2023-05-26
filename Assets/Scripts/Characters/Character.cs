@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.IO.LowLevel.Unsafe;
+using UnityEditor.Build;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -19,72 +21,93 @@ public class Character : MonoBehaviour
 { 
     [HideInInspector] protected Animator animator;
     [HideInInspector] protected NavMeshAgent nvAgent;
+    [HideInInspector] protected Rigidbody rigidBody;
     [HideInInspector] protected CapsuleCollider bodyCollider;
-    //[HideInInspector] protected CapsuleCollider atkCollider;
+    [HideInInspector] protected SphereCollider atkCollider;
+    [HideInInspector] protected GameObject selectCircle;
 
-    public CharacterData data;
 
-    protected float hp;
-    protected float maxHp;
-    protected bool isAttacking = false;
+    [SerializeField] protected float hp;
+    [SerializeField] protected float maxHp;
+    [SerializeField] protected bool isAttacking = false;
+    [SerializeField] protected bool isDying = false;
+    [SerializeField] protected bool isSelected = false;
+
+    protected CharacterData data;
+    public CharacterKey key;
     protected CharacterType characterType;
 
     protected void Awake()
     {
         animator = GetComponent<Animator>();
         nvAgent = GetComponent<NavMeshAgent>();
+        rigidBody = GetComponent<Rigidbody>();
         bodyCollider = GetComponent<CapsuleCollider>();
+        atkCollider = GetComponent<SphereCollider>();
+        atkCollider.enabled = false;
+        selectCircle = transform.Find("Circle").gameObject;
+        //selectCircle.transform.localScale = nvAgent.Get
+        selectCircle.SetActive(false);
     }
 
     protected virtual void Start()
     {
-        maxHp = data.maxHp;
-        hp = maxHp;
-        characterType = data.characterType;
+        bodyCollider.enabled = true;
+        atkCollider.enabled = false;
     }
 
     protected virtual void Update()
     {
-        ApporachDestination();
+        ShowSelectionCircle();
 
-        AnimationTest();
+        ApporachDestination();
     }
 
     public void SetData(CharacterData characterData)
     {
         data = characterData;
+        key = (CharacterKey)data.key;
+        characterType = data.characterType;
+        maxHp = data.maxHp;
+        hp = maxHp;
     }
 
-    private void AnimationTest()
+    private void ShowSelectionCircle()
     {
-        if(Input.GetKeyDown(KeyCode.Z))
-        {
-            //isAttacking = true;
-            animator.SetTrigger("Attack");
-        }
-
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            animator.SetTrigger("Dead");
-        }
+        if(isSelected)
+            selectCircle.SetActive(true);
+        else
+            selectCircle.SetActive(false);
     }
 
     private void ApporachDestination()
     {
         float distance = Vector3.Distance(gameObject.transform.position, nvAgent.destination);
-        if (distance < 1.0f)
+        if (distance < 1.0f || isAttacking)
             animator.SetFloat("MoveSpeed", 0.0f);
     }
 
-    //Collision Function
+    public CharacterData GetCharacterData() { return  data; }
 
+    public void SetSelectOption(bool isSelected) { this.isSelected = isSelected; }
 
     //Animation Event Function
+
+    private void StartAttack()
+    {
+        atkCollider.enabled = true;
+    }
     private void EndAttack()
     {
         isAttacking = false;
 
-        //atkCollider.enabled = false
+        atkCollider.enabled = false;
+    }
+
+    private void StartDead()
+    {
+        bodyCollider.enabled = false;
+        atkCollider.enabled = false;
     }
 
     private void EndDead()
@@ -95,4 +118,7 @@ public class Character : MonoBehaviour
     //Children class Function
     public virtual void Move(Vector3 destPos) { }
     public virtual void Attack() { }
+
+    //Collision Function
+    public virtual void OnTriggerEnter(Collider other) { }
 }
