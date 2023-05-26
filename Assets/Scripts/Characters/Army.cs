@@ -6,7 +6,7 @@ public class Army : Character
 {   
     protected override void Start()
     {
-        
+        base.Start();
     }
 
     protected override void Update()

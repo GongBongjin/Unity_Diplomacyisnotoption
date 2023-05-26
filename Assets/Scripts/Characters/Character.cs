@@ -46,7 +46,6 @@ public class Character : MonoBehaviour
         atkCollider = GetComponent<SphereCollider>();
         atkCollider.enabled = false;
         selectCircle = transform.Find("Circle").gameObject;
-        //selectCircle.transform.localScale = nvAgent.Get
         selectCircle.SetActive(false);
     }
 
@@ -121,4 +120,19 @@ public class Character : MonoBehaviour
 
     //Collision Function
     public virtual void OnTriggerEnter(Collider other) { }
+
+
+
+
+
+    /*
+     army & enmey 공통부분
+
+    이동시에 적군을 만나면 공격하는 함수
+    아군 - 히트당하면
+    적군 - range 안에 들어오면
+
+    target 위치받아서 이동 -> 공격함수 실행
+     
+     */
 }

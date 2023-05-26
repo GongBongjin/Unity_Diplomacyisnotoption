@@ -25,7 +25,6 @@ public class EnemyManager : MonoBehaviour
         enmiesPools = CharacterManager.instance.GetEnemyData();   
     }
 
-    // Update is called once per frame
     void Update()
     {
         SetDestination();

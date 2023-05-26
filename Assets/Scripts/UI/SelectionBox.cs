@@ -14,7 +14,6 @@ public class SelectionBox : MonoBehaviour
 
     Image selectionBox;
 
-    private Army army;
     public Dictionary<CharacterKey, List<GameObject>> selectedObjects = new Dictionary<CharacterKey, List<GameObject>>(); //현재 list 구조라서 GameObject가 아닌 Character 구조에다가 데이터를 넣어서 키정보가없음.
 
     //Drag
@@ -49,7 +48,6 @@ public class SelectionBox : MonoBehaviour
         }
         else if (Input.GetMouseButtonUp(0))
         {
-
             if (!EventSystem.current.IsPointerOverGameObject())
             {
                 if (!isDragging)
@@ -61,6 +59,9 @@ public class SelectionBox : MonoBehaviour
                     {
                         if (hit.collider.gameObject.tag == "Army")
                             SelectObject(hit.collider.gameObject);
+
+                        if(hit.collider.gameObject.tag == "Enemy")
+                                SelectObject(hit.collider.gameObject);
                     }
                 }
 
@@ -88,8 +89,8 @@ public class SelectionBox : MonoBehaviour
         {
             foreach (GameObject obj in selectedObjects[key])
             {
-                army = obj.GetComponent<Army>();
-                army.SetSelectOption(false);
+                Character character = obj.GetComponent<Character>();
+                character.SetSelectOption(false);
             }
         }
         selectedObjects.Clear();
@@ -119,17 +120,17 @@ public class SelectionBox : MonoBehaviour
     {
         List<GameObject> temp = new List<GameObject>();
 
-        army = gameObject.GetComponent<Army>();
+        Character character = gameObject.GetComponent<Character>();
         
-        if (selectedObjects.ContainsKey(army.key))
+        if (selectedObjects.ContainsKey(character.key))
         {
-            int i = selectedObjects[army.key].Count;
-            selectedObjects[army.key].Insert(i, gameObject);
+            int i = selectedObjects[character.key].Count;
+            selectedObjects[character.key].Insert(i, gameObject);
         }
         else 
         {
             temp.Add(gameObject);
-            selectedObjects.Add(army.key, temp);
+            selectedObjects.Add(character.key, temp);
         }
     }
 
@@ -166,10 +167,10 @@ public class SelectionBox : MonoBehaviour
 
             foreach (GameObject obj in selectedObjects[key])
             {
-                if (obj.gameObject.transform.tag == "Army")
+                //if (obj.gameObject.transform.tag == "Army")
                 {
-                    army = obj.GetComponent<Army>();
-                    army.SetSelectOption(true);
+                    Character character = obj.GetComponent<Character>();
+                    character.SetSelectOption(true);
                 }
             }
         }
@@ -196,7 +197,7 @@ public class SelectionBox : MonoBehaviour
             foreach (GameObject obj in selectedObjects[key])
             {
                 //verticalCount+=6;
-                army = obj.GetComponent<Army>();
+                Army army = obj.GetComponent<Army>();
 
                 //if (verticalCount > 15)
                 //{

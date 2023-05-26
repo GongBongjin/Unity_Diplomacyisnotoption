@@ -39,7 +39,6 @@ public class CharacterManager : MonoBehaviour
         instance = this;
     }
 
-    // Start is called before the first frame update
     private void Start()
     {
         characterDatas = DataManager.instance.GetCharacterDatas();
@@ -53,11 +52,11 @@ public class CharacterManager : MonoBehaviour
             characterPrefabs.Add((CharacterKey)data.Value.key, characterPrefab);//여기서 DataManager에 넣은 key값, prefab 넣고있고
         }
 
-        CreateCharacter(CharacterKey.KNIGHT,2);
-        CreateCharacter(CharacterKey.DOGNIGHT, 2);
-        CreateCharacter(CharacterKey.SPEARMAN, 2);
-        CreateCharacter(CharacterKey.WIZARD, 2);
-        CreateCharacter(CharacterKey.GRUNT, 2);
+        //CreateCharacter(CharacterKey.KNIGHT,2);
+        //CreateCharacter(CharacterKey.DOGNIGHT, 2);
+        //CreateCharacter(CharacterKey.SPEARMAN, 2);
+        //CreateCharacter(CharacterKey.WIZARD, 2);
+        //CreateCharacter(CharacterKey.GRUNT, 2);
 
         //CreateCharacter(CharacterKey.TURTLE, 1);
         //CreateCharacter(CharacterKey.SLIME, 10);
@@ -65,7 +64,7 @@ public class CharacterManager : MonoBehaviour
         //CreateCharacter(CharacterKey.CACTUS, 10);
         //CreateCharacter(CharacterKey.BEHOLDER, 10);
         //CreateCharacter(CharacterKey.GOLEM, 3);
-        //CreateCharacter(CharacterKey.USURPER, 1);
+        CreateCharacter(CharacterKey.USURPER, 1);
     }
 
     private void CreateCharacter(CharacterKey key, int poolCount)
@@ -78,9 +77,9 @@ public class CharacterManager : MonoBehaviour
 
             Character character = obj.GetComponent<Character>();
 
-            character.SetData(characterDatas[(int)key]);//여기서 각캐릭터마다 키값을 부여했어요.
+            character.SetData(characterDatas[(int)key]);
             obj.transform.position = new Vector3(Random.Range(-20f, 10f), 0, Random.Range(-10f, 20f));
-            obj.SetActive(true);//현재 여기 obj에는 캐릭터키 데이터가 없나...?
+            obj.SetActive(true);
 
             temp.Add(obj);
         }
