@@ -95,19 +95,19 @@ public class Citizen : MonoBehaviour
     void ProductionOrder(GameObject obj)
     {
         workPlace = obj;
-        ResourcesManager.Product product = obj.GetComponent<ProductObject>().GetProductName();
+        Product product = obj.GetComponent<ProductObject>().GetProductName();
         switch(product)
         {
-            case ResourcesManager.Product.FOOD:
+            case Product.FOOD:
                 SetCitizenWorkState(CitizenState.Hoeing);
                 break;
-            case ResourcesManager.Product.WOOD:
+            case Product.WOOD:
                 SetCitizenWorkState(CitizenState.Felling);
                 break;
-            case ResourcesManager.Product.STONE:
+            case Product.STONE:
                 SetCitizenWorkState(CitizenState.Mining);
                 break;
-            case ResourcesManager.Product.COPPER:
+            case Product.COPPER:
                 SetCitizenWorkState(CitizenState.Mining);
                 break;
         }

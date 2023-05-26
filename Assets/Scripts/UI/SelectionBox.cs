@@ -5,10 +5,13 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class SelectionBox : MonoBehaviour
 {
+    public static SelectionBox instance;
+
     Image selectionBox;
 
     private Army army;
@@ -18,6 +21,10 @@ public class SelectionBox : MonoBehaviour
     private Vector3 dragStartPos;
     private bool isDragging = false;
 
+    private void Awake()
+    {
+        instance = this;
+    }
     private void Start()
     {
         selectionBox = GetComponent<Image>();
@@ -34,35 +41,44 @@ public class SelectionBox : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            dragStartPos = Input.mousePosition;
-            ClearSelection();
+            if (!EventSystem.current.IsPointerOverGameObject())
+            {
+                dragStartPos = Input.mousePosition;
+                ClearSelection();
+            }
         }
         else if (Input.GetMouseButtonUp(0))
         {
-            if (!isDragging)
+
+            if (!EventSystem.current.IsPointerOverGameObject())
             {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hit;
-
-                if (Physics.Raycast(ray, out hit))
+                if (!isDragging)
                 {
-                    if (hit.collider.gameObject.tag == "Army")
-                        SelectObject(hit.collider.gameObject);
-                }
-            }
+                    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                    RaycastHit hit;
 
-            isDragging = false;
-            selectionBox.enabled = false;
-            DataReturn();
+                    if (Physics.Raycast(ray, out hit))
+                    {
+                        if (hit.collider.gameObject.tag == "Army")
+                            SelectObject(hit.collider.gameObject);
+                    }
+                }
+
+                isDragging = false;
+                selectionBox.enabled = false;
+                DataReturn();
+            }
         }
         if (Input.GetMouseButton(0))
         {
-            if (!isDragging && Vector3.Distance(Input.mousePosition, dragStartPos) > 5.0f)
-                isDragging = true;
+            if (!EventSystem.current.IsPointerOverGameObject())
+            {
+                if (!isDragging && Vector3.Distance(Input.mousePosition, dragStartPos) > 5.0f)
+                    isDragging = true;
 
-            if (isDragging)
-                UpdateDragBox(Input.mousePosition);
-
+                if (isDragging)
+                    UpdateDragBox(Input.mousePosition);
+            }
         }
     }
 
@@ -89,6 +105,7 @@ public class SelectionBox : MonoBehaviour
         selectionBox.transform.position = selectionRect.center;
         selectionBox.rectTransform.sizeDelta = selectionRect.size;
 
+        selectedObjects.Clear();
         foreach (GameObject obj in FindObjectsOfType<GameObject>())
         {
             if (obj.transform.tag == "Army" && selectionRect.Contains(Camera.main.WorldToScreenPoint(obj.transform.position)))
@@ -116,7 +133,6 @@ public class SelectionBox : MonoBehaviour
         }
     }
 
-
     private void Move()
     {
         if (Input.GetMouseButtonDown(1))
@@ -138,51 +154,54 @@ public class SelectionBox : MonoBehaviour
 
     private void DataReturn()
     {
+        int[] keys = new int[selectedObjects.Count];
+        int[] counts = new int[selectedObjects.Count];
+        int idx = 0;
+
         foreach (CharacterKey key in selectedObjects.Keys)
         {
+            keys[idx] = (int)key;
+            counts[idx] = selectedObjects[key].Count;
+            idx++;
+
             foreach (GameObject obj in selectedObjects[key])
             {
                 if (obj.gameObject.transform.tag == "Army")
                 {
                     army = obj.GetComponent<Army>();
-                    CharacterData data;
                     army.SetSelectOption(true);
-                    
-                    data = army.GetCharacterData();
-
-                    //UIManager.instance.SetData(data);
                 }
-
-                //
-                //if(obj.gameObject.transform.tag == "Building")
-                //{
-                //    Building building = obj.GetComponent<Building>();
-                //    BuildingData data;
-                //    data = building.GetBuildingData();
-                //
-                //    UIManager.instance.GetData() = data;
-                //}
             }
         }
+        UIManager.Instance.ShowInformation(keys, counts);
+    }
+
+
+    public void SelectCharacterKey(int keyValue)
+    {
+        List<GameObject> objs = selectedObjects[(CharacterKey)keyValue];
+        ClearSelection();
+        selectedObjects.Add((CharacterKey)keyValue, objs);
+        DataReturn();
     }
 
 
     private void MoveSelectedObjects(Vector3 destPos)
     {
-        int verticalCount = -3;
+        int verticalCount = -15;
         int horizontalCount = 0;
 
         foreach (CharacterKey key in selectedObjects.Keys)
         {
             foreach (GameObject obj in selectedObjects[key])
             {
-                //verticalCount++;
+                //verticalCount+=6;
                 army = obj.GetComponent<Army>();
 
-                //if (verticalCount > 2)
+                //if (verticalCount > 15)
                 //{
-                //    verticalCount = -2;
-                //    horizontalCount++;
+                //    verticalCount = -15;
+                //    horizontalCount+=6;
                 //}
                 //
                 //destPos = SetDestPos(verticalCount, horizontalCount, destPos);
@@ -191,6 +210,7 @@ public class SelectionBox : MonoBehaviour
             }
         }
     }
+
 
     private Vector3 SetDestPos(int verticalCount, int horizontalCount, Vector3 mousePos)
     {
