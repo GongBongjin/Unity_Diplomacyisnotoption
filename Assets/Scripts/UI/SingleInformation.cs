@@ -36,7 +36,8 @@ public class SingleInformation : MonoBehaviour
 
     void Start()
     {
-        
+        production.SetActive(false);
+        ability.SetActive(false);
     }
 
     // Update is called once per frame
@@ -80,7 +81,14 @@ public class SingleInformation : MonoBehaviour
         int type = key / 1000;
         if (type == 1)
         {
-            //Character
+            CharacterData characterData = DataManager.instance.GetCharacterDatas(key);
+
+            img_Profile.sprite = characterData.sprite;
+            text_Name.text = characterData.prefab.name;
+            text_GroupCount.text = count.ToString();
+            text_Discription.text = characterData.prefab.name;
+
+            SetAbilities();
         }
         else if (type == 2)
         {
@@ -99,6 +107,8 @@ public class SingleInformation : MonoBehaviour
 
     private void SetAbilities()
     {
+        production.SetActive(false);
+        ability.SetActive(true);
         // Character
         // getCharacterAbility(key)
     }
@@ -106,6 +116,9 @@ public class SingleInformation : MonoBehaviour
     // 유닛이나 업그레이드 시 소요시간 업데이트
     public void UpdateProductionDuration(float curValue, float maxValue)
     {
+        production.SetActive(true);
+        ability.SetActive(false);
+
         if (curValue > maxValue)
             return;
 

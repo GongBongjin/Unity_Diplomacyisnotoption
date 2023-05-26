@@ -57,15 +57,16 @@ public class MultiInformation : MonoBehaviour
         {
             targetKeys[i] = keys[i];
             units[i].SetActive(true);
-            // 캐릭들 정보
-            //img_Icons[i].sprite = objects[i]. GetSprite()
-            //text_UnitCounts[i].text = counts[i].ToString();
+
+            CharacterData characterData = DataManager.instance.GetCharacterDatas(keys[i]);
+
+            img_Icons[i].sprite = characterData.sprite;
+            text_UnitCounts[i].text = count[i].ToString();
         }
     }
 
     public void OnClickObjectIcon(int idx)
     {
-        Debug.Log("index : " + idx + ", targetKey : " + targetKeys[idx]);
-        // CharacterManager에게 넘겨주기 targetKeys[idx];
+        SelectionBox.instance.SelectCharacterKey(targetKeys[idx]);
     }
 }

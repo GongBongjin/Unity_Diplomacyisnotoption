@@ -60,7 +60,8 @@ public class UIManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        singleInfo.gameObject.SetActive(false);
+        multiInfo.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
@@ -118,15 +119,33 @@ public class UIManager : MonoBehaviour
 
 
     // Information
-    public void ShowInformation(int key, int count)
-    {
-        singleInfo.ShowInformation(key, count);
-    }
+    //public void ShowInformation(int key, int count)
+    //{
+    //    singleInfo.ShowInformation(key, count);
+    //}
     
 
     public void ShowInformation(int[] keys, int[] count)
     {
-        multiInfo.ShowInformation(keys, count);
+        singleInfo.gameObject.SetActive(false);
+        multiInfo.gameObject.SetActive(false);
+
+        if (keys.Length == 0)
+        {
+            //clear
+        }
+        else if (keys.Length == 1)
+        {
+            singleInfo.gameObject.SetActive(true);
+            singleInfo.ShowInformation(keys[0], count[0]);
+            commandSlot.SetCommandSlot(keys[0]);
+        }
+        else
+        {
+            multiInfo.gameObject.SetActive(true);
+            multiInfo.ShowInformation(keys, count);
+            commandSlot.SetCommandSlot(keys[0]);
+        }
     }
 
 }
