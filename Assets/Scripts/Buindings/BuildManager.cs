@@ -7,6 +7,7 @@ using System;
 using System.ComponentModel;
 using Unity.Collections;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Unity.Burst.CompilerServices;
 
 public struct BuildingData
 {
@@ -56,7 +57,8 @@ public class BuildManager : MonoBehaviour
 
     GameObject target = null;
 
-
+    [SerializeField]
+    Citizen tempCitizen;
 
     private void Awake()
     {
@@ -75,30 +77,34 @@ public class BuildManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.B))
-        {
-            isBuild = !isBuild;
-            target = Instantiate(buildings["TownHall"]);
-        }
+        
 
         if(isBuild && target != null)
         {
             Vector3 mPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.farClipPlane);
             Ray ray = Camera.main.ScreenPointToRay(mPos);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, Camera.main.farClipPlane))
+            RaycastHit[] hits;
+            hits = Physics.RaycastAll(ray);
+            for (int i = 0; i < hits.Length; i++)
             {
-                
-                gridManager.SetShowGrid(true);
-                //gridManager.ShowGridSlot(hit.point);
-                target.transform.position = gridManager.GetBuildPosition(hit.point, target.GetComponent<Building>().matrixSize);
-                //gridManager.SetSlotIsEmpty(hit.point, false);
+                if (hits[i].transform.tag.Equals("Terrain"))
+                {
+                    gridManager.SetShowGrid(true);
+                    target.transform.position = gridManager.GetBuildPosition(hits[i].point, target.GetComponent<Building>().matrixSize);
+                    //gridManager.SetSlotIsEmpty(hit.point, false);
+                    break;
+                }
             }
-            if(Input.GetMouseButtonDown(0))
+            
+            if (Input.GetMouseButtonDown(0))
             {
+                gridManager.SetShowGrid(false);
+
+                // 시민에게 적용시켜야함
+                // 셀렉션 오브젝트에 넘겨서 시민에게 전달될 수 있도록
+                tempCitizen.BuildingOrder(target);
                 target = null;
                 isBuild = false;
-                gridManager.SetShowGrid(false);
             }
         }
     }

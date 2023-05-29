@@ -94,6 +94,7 @@ GameObject:
   - component: {fileID: 7707105233457083160}
   - component: {fileID: -7633032700907883361}
   - component: {fileID: 8290878652884113710}
+  - component: {fileID: -6723501809681940857}
   m_Layer: 0
   m_Name: Univercity
   m_TagString: Untagged
@@ -129,6 +130,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38aa7224ce819844b1e353610937013, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxBuildTime: 30
   matrixSize: 0
   maxHP: 0
 --- !u!208 &8290878652884113710
@@ -147,3 +149,16 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 15, z: 0}
   m_TimeToStationary: 0.5
+--- !u!65 &-6723501809681940857
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7043334927646140834}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 30, y: 30, z: 30}
+  m_Center: {x: 0, y: 15, z: 0}

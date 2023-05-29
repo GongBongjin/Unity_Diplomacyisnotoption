@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Rendering;
 
 public class Citizen : MonoBehaviour
 {
@@ -26,10 +28,18 @@ public class Citizen : MonoBehaviour
     Transform rightHand;
     GameObject[] tools = new GameObject[4]; // 도끼, 망치, 괭이, 곡괭이
 
-    GameObject workPlace = null;     // 작업장
-    GameObject storeHouse = null;    // 저장소
+    GameObject workTarget = null;     // 작업장
+    GameObject storageHouse = null;    // 저장소
+
+    Building targetBuilding = null;         // 건설, 수리
+    ProductObject targetProduct = null;     // 농사, 벌목, 채광
 
     int product;
+
+    float workSpeed = 0.1f;     // 작업 속도
+
+
+
 
     private void Awake()
     {
@@ -60,15 +70,38 @@ public class Citizen : MonoBehaviour
 
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
-                Vector3 desPos = new Vector3(hit.point.x, 0, hit.point.z);
+                Vector3 destPos = new Vector3(hit.point.x, 0, hit.point.z);
 
                 Debug.Log(hit.transform.name);
-                MoveDestination(desPos);
+                MoveDestination(destPos);
                 //nvAgent.destination = desPos;
                 //selectedObject.transform.position = desPos;
             }
         }
         // workState 검사해서 행동 루틴 반복
+
+        WorkRoutine();
+    }
+    
+    void WorkRoutine()
+    {
+        if (!workTarget) return;
+
+        switch (workState)
+        {
+            case CitizenState.Felling:
+                break;
+            case CitizenState.Building:
+                targetBuilding.BuildUpBuilding(workSpeed);
+                break;
+            case CitizenState.Fix:
+                targetBuilding.RepairBuilding(workSpeed);
+                break;
+            case CitizenState.Hoeing:
+                break;
+            case CitizenState.Mining:
+                break;
+        }
     }
 
     void SetCitizenAnimationState(CitizenState state)
@@ -84,17 +117,40 @@ public class Citizen : MonoBehaviour
         workState = state;
     }
 
+    // 작업 내용 체크
+    void CheckWorkState()
+    {
+        switch (workState)
+        {
+            case CitizenState.Felling:
+                break;
+            case CitizenState.Building:
+                SetCitizenAnimationState(CitizenState.Building);
+                animator.SetBool("Build", true);
+                break;
+            case CitizenState.Fix:
+                SetCitizenAnimationState(CitizenState.Fix);
+                animator.SetBool("Fix", true);
+                break;
+            case CitizenState.Hoeing:
+                break;
+            case CitizenState.Mining:
+                break;
+        }
+    }
+
     void MoveDestination(Vector3 destination)
     {
         nvAgent.destination = destination;
-
+        SetCitizenAnimationState(CitizenState.Move);
+        animator.SetBool("Move", true);
         SetCitizenWorkState(CitizenState.None);
     }
 
     // 생산 명령
     void ProductionOrder(GameObject obj)
     {
-        workPlace = obj;
+        workTarget = obj;
         Product product = obj.GetComponent<ProductObject>().GetProductName();
         switch(product)
         {
@@ -119,13 +175,27 @@ public class Citizen : MonoBehaviour
     }
 
     // 건설 및 수리
-    void BuildingOrder(GameObject building)
+    public void BuildingOrder(GameObject obj)
     {
-        // 빌딩 오브젝트로 이동
-        // 건물 짓기 애니메이션 ㄱㄱ
+        workTarget = obj;
+        targetBuilding = obj.GetComponent<Building>();
+        // 완공상태 검사
+        if (targetBuilding.GetIsCompletion())
+        {
+            // 수리
+            SetCitizenWorkState(CitizenState.Fix);
+        }
+        else
+        {
+            // 건설
+            SetCitizenWorkState(CitizenState.Building);
+        }
 
-        //SetCitizenWorkState(CitizenState.Fix);
-        //SetCitizenWorkState(CitizenState.Building);
+        Vector3 dir = (transform.position - obj.transform.position).normalized;
+        // maxrixSize * gridSize * 0.5f 
+        // 이부분 수정
+        Vector3 offsetPos = obj.transform.position + dir * (3 * 5 * 0.5f);
+        MoveDestination(offsetPos);
     }
 
     // 생산시 가까운 저장소 찾기
@@ -144,5 +214,15 @@ public class Citizen : MonoBehaviour
         // 작업 하던 곳 주변에서 가장 가까운 곳
         // 오브젝트 돌면서 작업할 위치 찾기
         // workPlace = 
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.Equals(workTarget))
+        {
+            CheckWorkState();
+            nvAgent.ResetPath();
+            animator.SetBool("Move", false);
+        }
     }
 }

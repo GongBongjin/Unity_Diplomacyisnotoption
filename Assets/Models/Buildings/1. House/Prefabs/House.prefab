@@ -129,6 +129,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38aa7224ce819844b1e353610937013, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxBuildTime: 30
   matrixSize: 0
   maxHP: 0
 --- !u!208 &4405272819685574691

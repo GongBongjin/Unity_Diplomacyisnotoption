@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 446330389520359557}
   - component: {fileID: -5926552506417159962}
   - component: {fileID: 8354343710946231081}
+  - component: {fileID: -5076757225077432926}
   m_Layer: 0
   m_Name: Storage
   m_TagString: Untagged
@@ -46,6 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38aa7224ce819844b1e353610937013, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxBuildTime: 30
   matrixSize: 0
   maxHP: 0
 --- !u!208 &8354343710946231081
@@ -64,6 +66,19 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 5, z: 0}
   m_TimeToStationary: 0.5
+--- !u!65 &-5076757225077432926
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 971229077591751231}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 15, y: 10, z: 15}
+  m_Center: {x: 0, y: 5, z: 0}
 --- !u!1 &9220181743588527180
 GameObject:
   m_ObjectHideFlags: 0

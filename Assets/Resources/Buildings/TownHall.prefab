@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1438609824218868465}
   - component: {fileID: 6648596349001369519}
   - component: {fileID: 4699609458824438091}
+  - component: {fileID: -3735136989024255899}
   m_Layer: 0
   m_Name: TownHall
   m_TagString: Untagged
@@ -46,6 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38aa7224ce819844b1e353610937013, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxBuildTime: 30
   matrixSize: 7
   maxHP: 0
 --- !u!208 &4699609458824438091
@@ -64,6 +66,19 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 15, z: 0}
   m_TimeToStationary: 0.5
+--- !u!65 &-3735136989024255899
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1782625763019960395}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 35, y: 35, z: 35}
+  m_Center: {x: 0, y: 15, z: 0}
 --- !u!1 &3680548720685911727
 GameObject:
   m_ObjectHideFlags: 0
