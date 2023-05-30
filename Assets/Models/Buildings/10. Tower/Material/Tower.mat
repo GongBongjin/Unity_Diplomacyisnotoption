@@ -97,7 +97,7 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _GridStepValue: 0.2
+    - _GridStepValue: 0.5
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1

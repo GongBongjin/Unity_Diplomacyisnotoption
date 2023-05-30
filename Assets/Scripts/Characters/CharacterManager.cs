@@ -131,6 +131,26 @@ public class CharacterManager : MonoBehaviour
         }
         return pos;
     }
+
+    // 추가
+    public void GetObjectsContainedInRect(Rect rect)
+    {
+        foreach (CharacterKey key in characterPools.Keys)
+        {
+            foreach (GameObject obj in characterPools[key])
+            {
+                // 활성화 되어있지 않은 오브젝트들은 검사 하지 않음
+                if (!obj.activeSelf) 
+                    continue;
+
+                // 아군객체만 돌면서 셀렉션 박스에 추가
+                if(rect.Contains(Camera.main.WorldToScreenPoint(obj.transform.position)))
+                {
+                    SelectionBox.instance.AddSelectObject((int)key, obj);
+                }
+            }
+        }
+    }
 }
 
 

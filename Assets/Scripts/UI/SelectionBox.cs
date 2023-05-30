@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.Burst.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
@@ -15,7 +16,9 @@ public class SelectionBox : MonoBehaviour
     Image selectionBox;
 
     private Army army;
-    public Dictionary<CharacterKey, List<GameObject>> selectedObjects = new Dictionary<CharacterKey, List<GameObject>>(); //현재 list 구조라서 GameObject가 아닌 Character 구조에다가 데이터를 넣어서 키정보가없음.
+    // CharacterKey-> int 로 변환
+    //public Dictionary<CharacterKey, List<GameObject>> selectedObjects = new Dictionary<CharacterKey, List<GameObject>>(); //현재 list 구조라서 GameObject가 아닌 Character 구조에다가 데이터를 넣어서 키정보가없음.
+    public Dictionary<int, List<GameObject>> selectedObjects = new Dictionary<int, List<GameObject>>();
 
     //Drag
     private Vector3 dragStartPos;
@@ -52,16 +55,54 @@ public class SelectionBox : MonoBehaviour
 
             if (!EventSystem.current.IsPointerOverGameObject())
             {
+
                 if (!isDragging)
                 {
                     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                    RaycastHit hit;
-
-                    if (Physics.Raycast(ray, out hit))
+                    // RayCast All로 변환
+                    // selectedObjects 대신 singleSelectObject 로 따로 설정
+                    RaycastHit[] hits = Physics.RaycastAll(ray);
+                    bool isSelected = false;
+                    GameObject obj;
+                    int key;
+                    for (int i = 0; i < hits.Length; i++)
                     {
-                        if (hit.collider.gameObject.tag == "Army")
-                            SelectObject(hit.collider.gameObject);
+                        string tag = hits[i].transform.tag;
+                        obj = hits[i].transform.gameObject;
+                        switch (tag)
+                        {
+                            case "Army":
+                                isSelected = true;
+                                key = (int)obj.GetComponent<Army>().key;
+                                AddSelectObject(key, obj);
+                                break;
+                            case "Citizen":
+                                isSelected = true;
+                                Citizen citizen = obj.GetComponent<Citizen>();
+                                citizen.SetSelectObject(true);
+                                AddSelectObject(1000, obj);
+                                break;
+                            case "Building":
+                                isSelected = true;
+                                Building building = obj.GetComponent<Building>();
+                                building.SetSelectObject(true);
+                                key = building.GetKey();
+                                AddSelectObject(key, obj);
+                                break;
+                            case "Product":
+                                isSelected = true;
+                                break;
+                        }
+                        if (isSelected) break;
                     }
+                    //RaycastHit hit;
+                    //
+                    //if (Physics.Raycast(ray, out hit))
+                    //{
+                    //    if (hit.collider.gameObject.tag == "Army")
+                    //        SelectObject(hit.collider.gameObject);
+                    //}
+
                 }
 
                 isDragging = false;
@@ -75,7 +116,7 @@ public class SelectionBox : MonoBehaviour
             {
                 if (!isDragging && Vector3.Distance(Input.mousePosition, dragStartPos) > 5.0f)
                     isDragging = true;
-
+                
                 if (isDragging)
                     UpdateDragBox(Input.mousePosition);
             }
@@ -84,12 +125,32 @@ public class SelectionBox : MonoBehaviour
 
     private void ClearSelection()
     {
-        foreach (CharacterKey key in selectedObjects.Keys)
+        foreach (int key in selectedObjects.Keys)
         {
             foreach (GameObject obj in selectedObjects[key])
             {
-                army = obj.GetComponent<Army>();
-                army.SetSelectOption(false);
+                string tag = obj.transform.tag;
+                //if (obj.gameObject.transform.tag == "Army")
+                //{
+                //    army = obj.GetComponent<Army>();
+                //    army.SetSelectOption(false);
+                //}
+                switch (tag)
+                {
+                    case "Army":
+                        army = obj.GetComponent<Army>();
+                        army.SetSelectOption(false);
+                        break;
+                    case "Citizen":
+                        obj.GetComponent<Citizen>().SetSelectObject(false);
+                        break;
+                    case "Building":
+                        obj.GetComponent<Building>().SetSelectObject(false);
+                        break;
+                    case "Product":
+                        //obj.GetComponent<ProductObject>().SetSelectObject(false);
+                        break;
+                }
             }
         }
         selectedObjects.Clear();
@@ -106,12 +167,29 @@ public class SelectionBox : MonoBehaviour
         selectionBox.rectTransform.sizeDelta = selectionRect.size;
 
         selectedObjects.Clear();
-        foreach (GameObject obj in FindObjectsOfType<GameObject>())
+        //foreach (GameObject obj in FindObjectsOfType<GameObject>())
+        //{
+        //    if (obj.transform.tag == "Army" && selectionRect.Contains(Camera.main.WorldToScreenPoint(obj.transform.position)))
+        //    {
+        //        SelectObject(obj);
+        //    }
+        //}
+        // 캐릭터 매니저에서 넣어주는걸로...?
+        CharacterManager.instance.GetObjectsContainedInRect(selectionRect);
+
+    }
+
+    // 아래 함수 변형
+    public void AddSelectObject(int key, GameObject gameObject)
+    {
+        if (selectedObjects.ContainsKey(key))
         {
-            if (obj.transform.tag == "Army" && selectionRect.Contains(Camera.main.WorldToScreenPoint(obj.transform.position)))
-            {
-                SelectObject(obj);
-            }
+            selectedObjects[key].Add(gameObject);
+        }
+        else
+        {
+            selectedObjects.Add(key, new List<GameObject>());
+            selectedObjects[key].Add(gameObject);
         }
     }
 
@@ -121,15 +199,15 @@ public class SelectionBox : MonoBehaviour
 
         army = gameObject.GetComponent<Army>();
         
-        if (selectedObjects.ContainsKey(army.key))
+        if (selectedObjects.ContainsKey((int)army.key))
         {
-            int i = selectedObjects[army.key].Count;
-            selectedObjects[army.key].Insert(i, gameObject);
+            int i = selectedObjects[(int)army.key].Count;
+            selectedObjects[(int)army.key].Insert(i, gameObject);
         }
         else 
         {
             temp.Add(gameObject);
-            selectedObjects.Add(army.key, temp);
+            selectedObjects.Add((int)army.key, temp);
         }
     }
 
@@ -158,7 +236,7 @@ public class SelectionBox : MonoBehaviour
         int[] counts = new int[selectedObjects.Count];
         int idx = 0;
 
-        foreach (CharacterKey key in selectedObjects.Keys)
+        foreach (int key in selectedObjects.Keys)
         {
             keys[idx] = (int)key;
             counts[idx] = selectedObjects[key].Count;
@@ -179,9 +257,9 @@ public class SelectionBox : MonoBehaviour
 
     public void SelectCharacterKey(int keyValue)
     {
-        List<GameObject> objs = selectedObjects[(CharacterKey)keyValue];
+        List<GameObject> objs = selectedObjects[keyValue];
         ClearSelection();
-        selectedObjects.Add((CharacterKey)keyValue, objs);
+        selectedObjects.Add(keyValue, objs);
         DataReturn();
     }
 
@@ -191,7 +269,7 @@ public class SelectionBox : MonoBehaviour
         int verticalCount = -15;
         int horizontalCount = 0;
 
-        foreach (CharacterKey key in selectedObjects.Keys)
+        foreach (int key in selectedObjects.Keys)
         {
             foreach (GameObject obj in selectedObjects[key])
             {

@@ -7,6 +7,7 @@ using UnityEngine.Rendering;
 
 public class Citizen : MonoBehaviour
 {
+    const int gridSize = 5;
     enum CitizenState
     {
         None,
@@ -24,9 +25,13 @@ public class Citizen : MonoBehaviour
     Animator animator;
     NavMeshAgent nvAgent;
     
-    [SerializeField, Tooltip("RightHand-JointItemR")]
+    [SerializeField, Tooltip("RightHand-JointItemR")] 
     Transform rightHand;
     GameObject[] tools = new GameObject[4]; // 도끼, 망치, 괭이, 곡괭이
+
+    GameObject selectCircle;
+
+    HpBar hpBar;
 
     GameObject workTarget = null;     // 작업장
     GameObject storageHouse = null;    // 저장소
@@ -36,7 +41,9 @@ public class Citizen : MonoBehaviour
 
     int product;
 
-    float workSpeed = 0.1f;     // 작업 속도
+    bool isMove = false;
+    float workSpeed = 1.0f;     // 작업 속도
+    bool isBuild = false;
 
 
 
@@ -45,6 +52,7 @@ public class Citizen : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         nvAgent = GetComponent<NavMeshAgent>();
+        hpBar = transform.Find("HpBar").GetComponent<HpBar>();
 
         if (rightHand == null)
             Debug.Log("<color=red>RightHand is Null</color>");
@@ -53,6 +61,9 @@ public class Citizen : MonoBehaviour
         tools[1] = rightHand.Find("Hammer").gameObject;
         tools[2] = rightHand.Find("Hoe").gameObject;
         tools[3] = rightHand.Find("PickAxe").gameObject;
+
+        selectCircle = transform.Find("Circle").gameObject;
+        SetSelectObject(false);
     }
 
     void Start()
@@ -78,11 +89,26 @@ public class Citizen : MonoBehaviour
                 //selectedObject.transform.position = desPos;
             }
         }
+
+        if (isMove)
+        {
+            if (nvAgent.remainingDistance <= 0.0f)
+            {
+                isMove = false;
+                animator.SetBool("Move", isMove);
+            }
+        }
         // workState 검사해서 행동 루틴 반복
 
         WorkRoutine();
     }
-    
+
+    public void SetSelectObject(bool isSelected) 
+    { 
+        selectCircle.SetActive(isSelected);
+        hpBar.SetActiveProgressBar(isSelected);
+    }
+
     void WorkRoutine()
     {
         if (!workTarget) return;
@@ -92,7 +118,18 @@ public class Citizen : MonoBehaviour
             case CitizenState.Felling:
                 break;
             case CitizenState.Building:
-                targetBuilding.BuildUpBuilding(workSpeed);
+                if(isBuild)
+                {
+                    // 건설 중일 때 빌딩에게 건설중임을 알린다.
+                    // 빌딩에서 점차 완공을한다.
+                    targetBuilding.BuildUpBuilding(workSpeed);
+                }
+                if(targetBuilding.GetIsCompletion())
+                {
+                    isBuild = false;
+                    animator.SetBool("Build", isBuild);
+                    SetCitizenWorkState(CitizenState.Idle);
+                }
                 break;
             case CitizenState.Fix:
                 targetBuilding.RepairBuilding(workSpeed);
@@ -117,18 +154,21 @@ public class Citizen : MonoBehaviour
         workState = state;
     }
 
-    // 작업 내용 체크
+    // 작업장 도착 후 내용 체크
     void CheckWorkState()
     {
+        Debug.Log("WorkState Check : " + workState);
         switch (workState)
         {
             case CitizenState.Felling:
                 break;
             case CitizenState.Building:
                 SetCitizenAnimationState(CitizenState.Building);
-                animator.SetBool("Build", true);
+                isBuild = true;
+                animator.SetBool("Build", isBuild);
                 break;
             case CitizenState.Fix:
+                Debug.Log("Citizen Work Fix");
                 SetCitizenAnimationState(CitizenState.Fix);
                 animator.SetBool("Fix", true);
                 break;
@@ -143,8 +183,8 @@ public class Citizen : MonoBehaviour
     {
         nvAgent.destination = destination;
         SetCitizenAnimationState(CitizenState.Move);
-        animator.SetBool("Move", true);
-        SetCitizenWorkState(CitizenState.None);
+        isMove = true;
+        animator.SetBool("Move", isMove);
     }
 
     // 생산 명령
@@ -183,18 +223,20 @@ public class Citizen : MonoBehaviour
         if (targetBuilding.GetIsCompletion())
         {
             // 수리
+            Debug.Log("Citizen Fix Order");
             SetCitizenWorkState(CitizenState.Fix);
         }
         else
         {
             // 건설
+            Debug.Log("Citizen Building Order");
             SetCitizenWorkState(CitizenState.Building);
         }
 
         Vector3 dir = (transform.position - obj.transform.position).normalized;
         // maxrixSize * gridSize * 0.5f 
         // 이부분 수정
-        Vector3 offsetPos = obj.transform.position + dir * (3 * 5 * 0.5f);
+        Vector3 offsetPos = obj.transform.position + dir * (targetBuilding.GetMatrixSize() * gridSize * 0.4f);
         MoveDestination(offsetPos);
     }
 
@@ -220,9 +262,11 @@ public class Citizen : MonoBehaviour
     {
         if (other.gameObject.Equals(workTarget))
         {
+            Debug.Log("Citizen Work Target : " + workTarget.name);
+            isMove = false;
+            animator.SetBool("Move", isMove);
             CheckWorkState();
             nvAgent.ResetPath();
-            animator.SetBool("Move", false);
         }
     }
 }
