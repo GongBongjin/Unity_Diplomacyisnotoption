@@ -16,9 +16,11 @@ public class SelectionBox : MonoBehaviour
 
     public Dictionary<CharacterKey, List<GameObject>> selectedObjects = new Dictionary<CharacterKey, List<GameObject>>(); //현재 list 구조라서 GameObject가 아닌 Character 구조에다가 데이터를 넣어서 키정보가없음.
 
+    private bool isArmy = false;
     //Drag
     private Vector3 dragStartPos;
     private bool isDragging = false;
+    
 
     private void Awake()
     {
@@ -58,10 +60,18 @@ public class SelectionBox : MonoBehaviour
                     if (Physics.Raycast(ray, out hit))
                     {
                         if (hit.collider.gameObject.tag == "Army")
+                        {
+                            isArmy = true;
                             SelectObject(hit.collider.gameObject);
+                        }
+
 
                         if(hit.collider.gameObject.tag == "Enemy")
-                                SelectObject(hit.collider.gameObject);
+                        {
+                            isArmy = false;
+                            SelectObject(hit.collider.gameObject);
+                        }
+                                
                     }
                 }
 
@@ -114,6 +124,7 @@ public class SelectionBox : MonoBehaviour
                 SelectObject(obj);
             }
         }
+        isArmy = true;
     }
 
     private void SelectObject(GameObject gameObject)
@@ -138,7 +149,8 @@ public class SelectionBox : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(1))
         {
-            if (selectedObjects != null)
+            if (!isArmy) return;
+            if (selectedObjects.Count != null)
             {
                 Vector3 mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.farClipPlane);
                 Ray ray = Camera.main.ScreenPointToRay(mousePos);

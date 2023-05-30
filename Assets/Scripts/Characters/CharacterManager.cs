@@ -52,11 +52,11 @@ public class CharacterManager : MonoBehaviour
             characterPrefabs.Add((CharacterKey)data.Value.key, characterPrefab);//여기서 DataManager에 넣은 key값, prefab 넣고있고
         }
 
-        //CreateCharacter(CharacterKey.KNIGHT,2);
-        //CreateCharacter(CharacterKey.DOGNIGHT, 2);
-        //CreateCharacter(CharacterKey.SPEARMAN, 2);
-        //CreateCharacter(CharacterKey.WIZARD, 2);
-        //CreateCharacter(CharacterKey.GRUNT, 2);
+        CreateCharacter(CharacterKey.KNIGHT,2);
+        CreateCharacter(CharacterKey.DOGNIGHT, 2);
+        CreateCharacter(CharacterKey.SPEARMAN, 2);
+        CreateCharacter(CharacterKey.WIZARD, 2);
+        CreateCharacter(CharacterKey.GRUNT, 2);
 
         //CreateCharacter(CharacterKey.TURTLE, 1);
         //CreateCharacter(CharacterKey.SLIME, 10);
