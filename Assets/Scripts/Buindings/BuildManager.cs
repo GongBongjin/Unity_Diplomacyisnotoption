@@ -7,6 +7,7 @@ using System;
 using System.ComponentModel;
 using Unity.Collections;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Unity.Burst.CompilerServices;
 
 public struct BuildingData
 {
@@ -14,12 +15,13 @@ public struct BuildingData
     public string name;
     public int matrixSize;
     public int maxHP;
+    public int buildTime;
     public int qty_Wood;
     public int qty_Stone;
     public int qty_Copper;
     public GameObject prefab;
     public Sprite icon;
-    public string discription;
+    public string description;
 }
 
 public class BuildManager : MonoBehaviour
@@ -36,69 +38,63 @@ public class BuildManager : MonoBehaviour
     Dictionary<int, BuildingData> buildingDatas = new Dictionary<int, BuildingData>();
 
     
-    private bool isBuild = false;
+    bool isBuild = false;
     [Header("Buildings")]
-    [SerializeField]
     GridManager gridManager;
-    private GameObject buildingParent;
-
-    [SerializeField]
-    GameObject tempBuilding;
-
-
-    [Header("Building Dictionary")]
-    [SerializeField, Tooltip("BuildingDataFile in Resources Folder")]
-    string dataFilePath = "/Resources/BuildingData.json";
-    JsonFileManager _JsonFileManager;
-    [SerializeField, Tooltip("It should match 1-to-1 with the jsonFileName and index.")]
-    List<GameObject> buildingPrefabs;
-    Dictionary<string, GameObject> buildings;
+    GameObject buildingParent;
 
     GameObject target = null;
 
-
+    [SerializeField]
+    Citizen tempCitizen;
 
     private void Awake()
     {
         instance = this;
+        DataManager.instance.LoadBuildingData();
+        gridManager = GetComponent<GridManager>();
         buildingParent = new GameObject("Buildings");
-        SetBuildingDatas();
-        
-        //tempBuilding = Instantiate(tempBuilding, buildingParent.transform);
     }
 
     // Start is called before the first frame update
     void Start()
     {
+        AddBuilding(2000);
+        target.transform.position = Vector3.zero;
+        target = null;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.B))
-        {
-            isBuild = !isBuild;
-            target = Instantiate(buildings["TownHall"]);
-        }
+        
 
         if(isBuild && target != null)
         {
             Vector3 mPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.farClipPlane);
             Ray ray = Camera.main.ScreenPointToRay(mPos);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, Camera.main.farClipPlane))
+            RaycastHit[] hits;
+            hits = Physics.RaycastAll(ray);
+            for (int i = 0; i < hits.Length; i++)
             {
-                
-                gridManager.SetShowGrid(true);
-                //gridManager.ShowGridSlot(hit.point);
-                target.transform.position = gridManager.GetBuildPosition(hit.point, target.GetComponent<Building>().matrixSize);
-                //gridManager.SetSlotIsEmpty(hit.point, false);
+                if (hits[i].transform.tag.Equals("Terrain"))
+                {
+                    gridManager.SetShowGrid(true);
+                    target.transform.position = gridManager.GetBuildPosition(hits[i].point, target.GetComponent<Building>().GetMatrixSize());
+                    //gridManager.SetSlotIsEmpty(hit.point, false);
+                    break;
+                }
             }
-            if(Input.GetMouseButtonDown(0))
+            
+            if (Input.GetMouseButtonDown(0))
             {
+                gridManager.SetShowGrid(false);
+
+                // 시민에게 적용시켜야함
+                // 셀렉션 오브젝트에 넘겨서 시민에게 전달될 수 있도록
+                tempCitizen.BuildingOrder(target);
                 target = null;
                 isBuild = false;
-                gridManager.SetShowGrid(false);
             }
         }
     }
@@ -112,33 +108,16 @@ public class BuildManager : MonoBehaviour
     {
         GameObject obj = buildingDatas[key].prefab;
         isBuild = true;
-        target = Instantiate(obj);
+        target = Instantiate(obj, buildingParent.transform);
+        target.GetComponent<Building>().SetBuildingProperty(
+            buildingDatas[key].key,
+            buildingDatas[key].matrixSize,
+            buildingDatas[key].maxHP,
+            buildingDatas[key].buildTime);
     }
 
-
-    public void AddBuilding(string buildingName)
+    public void AddBuildingData(BuildingData data)
     {
-
-    }
-
-    void SetBuildingDatas()
-    {
-        List<Dictionary<string, object>> reader = CSVReader.Read("TextData/BuildingData");
-
-        for(int i = 0; i < reader.Count; i++)
-        {
-            BuildingData buildingData;
-            buildingData.key = int.Parse(reader[i]["Keys"].ToString());
-            buildingData.name = reader[i]["Name"].ToString();
-            buildingData.matrixSize = int.Parse(reader[i]["Size"].ToString());
-            buildingData.maxHP = int.Parse(reader[i]["HP"].ToString());
-            buildingData.qty_Wood = int.Parse(reader[i]["Wood"].ToString());
-            buildingData.qty_Stone = int.Parse(reader[i]["Stone"].ToString());
-            buildingData.qty_Copper = int.Parse(reader[i]["Copper"].ToString());
-            buildingData.prefab = Resources.Load<GameObject>(reader[i]["Prefab"].ToString());
-            buildingData.icon = Resources.Load<Sprite>(reader[i]["Icon"].ToString());
-            buildingData.discription = reader[i]["Discription"].ToString();
-            buildingDatas.Add(buildingData.key, buildingData);
-        }
+        buildingDatas.Add(data.key, data);
     }
 }

@@ -97,7 +97,7 @@ public class SingleInformation : MonoBehaviour
             img_Profile.sprite = buildingData.icon;
             text_Name.text = buildingData.name;
             text_GroupCount.text = count.ToString();
-            text_Discription.text = buildingData.discription;
+            text_Discription.text = buildingData.description;
             //for (int i = 0; i < abilities.Length; i++)
             //{
             //    abilities[i].SetActive(false);

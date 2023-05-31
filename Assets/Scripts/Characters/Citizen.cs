@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Rendering;
 
 public class Citizen : MonoBehaviour
 {
+    const int gridSize = 5;
     enum CitizenState
     {
         None,
@@ -22,19 +25,34 @@ public class Citizen : MonoBehaviour
     Animator animator;
     NavMeshAgent nvAgent;
     
-    [SerializeField, Tooltip("RightHand-JointItemR")]
+    [SerializeField, Tooltip("RightHand-JointItemR")] 
     Transform rightHand;
     GameObject[] tools = new GameObject[4]; // 도끼, 망치, 괭이, 곡괭이
 
-    GameObject workPlace = null;     // 작업장
-    GameObject storeHouse = null;    // 저장소
+    GameObject selectCircle;
+
+    HpBar hpBar;
+
+    GameObject workTarget = null;     // 작업장
+    GameObject storageHouse = null;    // 저장소
+
+    Building targetBuilding = null;         // 건설, 수리
+    ProductObject targetProduct = null;     // 농사, 벌목, 채광
 
     int product;
+
+    bool isMove = false;
+    float workSpeed = 1.0f;     // 작업 속도
+    bool isBuild = false;
+
+
+
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
         nvAgent = GetComponent<NavMeshAgent>();
+        hpBar = transform.Find("HpBar").GetComponent<HpBar>();
 
         if (rightHand == null)
             Debug.Log("<color=red>RightHand is Null</color>");
@@ -43,6 +61,9 @@ public class Citizen : MonoBehaviour
         tools[1] = rightHand.Find("Hammer").gameObject;
         tools[2] = rightHand.Find("Hoe").gameObject;
         tools[3] = rightHand.Find("PickAxe").gameObject;
+
+        selectCircle = transform.Find("Circle").gameObject;
+        SetSelectObject(false);
     }
 
     void Start()
@@ -60,15 +81,64 @@ public class Citizen : MonoBehaviour
 
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
-                Vector3 desPos = new Vector3(hit.point.x, 0, hit.point.z);
+                Vector3 destPos = new Vector3(hit.point.x, 0, hit.point.z);
 
                 Debug.Log(hit.transform.name);
-                MoveDestination(desPos);
+                MoveDestination(destPos);
                 //nvAgent.destination = desPos;
                 //selectedObject.transform.position = desPos;
             }
         }
+
+        if (isMove)
+        {
+            if (nvAgent.remainingDistance <= 0.0f)
+            {
+                isMove = false;
+                animator.SetBool("Move", isMove);
+            }
+        }
         // workState 검사해서 행동 루틴 반복
+
+        WorkRoutine();
+    }
+
+    public void SetSelectObject(bool isSelected) 
+    { 
+        selectCircle.SetActive(isSelected);
+        hpBar.SetActiveProgressBar(isSelected);
+    }
+
+    void WorkRoutine()
+    {
+        if (!workTarget) return;
+
+        switch (workState)
+        {
+            case CitizenState.Felling:
+                break;
+            case CitizenState.Building:
+                if(isBuild)
+                {
+                    // 건설 중일 때 빌딩에게 건설중임을 알린다.
+                    // 빌딩에서 점차 완공을한다.
+                    targetBuilding.BuildUpBuilding(workSpeed);
+                }
+                if(targetBuilding.GetIsCompletion())
+                {
+                    isBuild = false;
+                    animator.SetBool("Build", isBuild);
+                    SetCitizenWorkState(CitizenState.Idle);
+                }
+                break;
+            case CitizenState.Fix:
+                targetBuilding.RepairBuilding(workSpeed);
+                break;
+            case CitizenState.Hoeing:
+                break;
+            case CitizenState.Mining:
+                break;
+        }
     }
 
     void SetCitizenAnimationState(CitizenState state)
@@ -84,17 +154,43 @@ public class Citizen : MonoBehaviour
         workState = state;
     }
 
+    // 작업장 도착 후 내용 체크
+    void CheckWorkState()
+    {
+        Debug.Log("WorkState Check : " + workState);
+        switch (workState)
+        {
+            case CitizenState.Felling:
+                break;
+            case CitizenState.Building:
+                SetCitizenAnimationState(CitizenState.Building);
+                isBuild = true;
+                animator.SetBool("Build", isBuild);
+                break;
+            case CitizenState.Fix:
+                Debug.Log("Citizen Work Fix");
+                SetCitizenAnimationState(CitizenState.Fix);
+                animator.SetBool("Fix", true);
+                break;
+            case CitizenState.Hoeing:
+                break;
+            case CitizenState.Mining:
+                break;
+        }
+    }
+
     void MoveDestination(Vector3 destination)
     {
         nvAgent.destination = destination;
-
-        SetCitizenWorkState(CitizenState.None);
+        SetCitizenAnimationState(CitizenState.Move);
+        isMove = true;
+        animator.SetBool("Move", isMove);
     }
 
     // 생산 명령
     void ProductionOrder(GameObject obj)
     {
-        workPlace = obj;
+        workTarget = obj;
         Product product = obj.GetComponent<ProductObject>().GetProductName();
         switch(product)
         {
@@ -119,13 +215,29 @@ public class Citizen : MonoBehaviour
     }
 
     // 건설 및 수리
-    void BuildingOrder(GameObject building)
+    public void BuildingOrder(GameObject obj)
     {
-        // 빌딩 오브젝트로 이동
-        // 건물 짓기 애니메이션 ㄱㄱ
+        workTarget = obj;
+        targetBuilding = obj.GetComponent<Building>();
+        // 완공상태 검사
+        if (targetBuilding.GetIsCompletion())
+        {
+            // 수리
+            Debug.Log("Citizen Fix Order");
+            SetCitizenWorkState(CitizenState.Fix);
+        }
+        else
+        {
+            // 건설
+            Debug.Log("Citizen Building Order");
+            SetCitizenWorkState(CitizenState.Building);
+        }
 
-        //SetCitizenWorkState(CitizenState.Fix);
-        //SetCitizenWorkState(CitizenState.Building);
+        Vector3 dir = (transform.position - obj.transform.position).normalized;
+        // maxrixSize * gridSize * 0.5f 
+        // 이부분 수정
+        Vector3 offsetPos = obj.transform.position + dir * (targetBuilding.GetMatrixSize() * gridSize * 0.4f);
+        MoveDestination(offsetPos);
     }
 
     // 생산시 가까운 저장소 찾기
@@ -144,5 +256,17 @@ public class Citizen : MonoBehaviour
         // 작업 하던 곳 주변에서 가장 가까운 곳
         // 오브젝트 돌면서 작업할 위치 찾기
         // workPlace = 
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.Equals(workTarget))
+        {
+            Debug.Log("Citizen Work Target : " + workTarget.name);
+            isMove = false;
+            animator.SetBool("Move", isMove);
+            CheckWorkState();
+            nvAgent.ResetPath();
+        }
     }
 }

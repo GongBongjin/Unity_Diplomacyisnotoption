@@ -8,7 +8,7 @@ public struct CommandData
     public string name;
     public int refKey;
     public Sprite icon;
-    public string discription;
+    public string description;
 }
 public class Command
 {
@@ -33,7 +33,7 @@ public class Command
             command.name = reader[i]["Name"].ToString();
             command.refKey = int.Parse(reader[i]["RefKey"].ToString());
             command.icon = Resources.Load<Sprite>(reader[i]["Icon"].ToString());
-            command.discription = reader[i]["Discription"].ToString();
+            command.description = reader[i]["Description"].ToString();
             commands.Add(command.name, command);
         }
     }

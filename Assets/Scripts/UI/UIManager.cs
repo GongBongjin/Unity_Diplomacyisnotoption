@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.GraphicsBuffer;
 
 public class UIManager : MonoBehaviour
 {
@@ -67,6 +68,13 @@ public class UIManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            int[] tempKey = new int[1] { 1000 };
+            int[] tempCount = new int[1] { 1 };
+            ShowInformation(tempKey, tempCount);
+            //target = Instantiate(buildings["TownHall"]);
+        }
         // ChangeTimeTest
         //if(Input.GetKeyDown(KeyCode.U)) 
         //{
@@ -137,7 +145,7 @@ public class UIManager : MonoBehaviour
         else if (keys.Length == 1)
         {
             singleInfo.gameObject.SetActive(true);
-            singleInfo.ShowInformation(keys[0], count[0]);
+            //singleInfo.ShowInformation(keys[0], count[0]);
             commandSlot.SetCommandSlot(keys[0]);
         }
         else

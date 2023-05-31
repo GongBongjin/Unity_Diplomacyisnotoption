@@ -61,19 +61,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f843ca38d6822344fbed4885c91221e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridManager: {fileID: 3727236400897594580}
-  tempBuilding: {fileID: 8015873604521940259, guid: 1dd4eb2ab4da5fc49ad2d2895db26c88, type: 3}
-  dataFilePath: /Resources/BuildingData.json
-  buildingPrefabs:
-  - {fileID: 1782625763019960395, guid: b271f3a29a3923144b23bb1b9da05ace, type: 3}
-  - {fileID: 971229077591751231, guid: 5764b49cf55f4d845a61d5fc2b8136dc, type: 3}
-  - {fileID: 8015873604521940259, guid: 1dd4eb2ab4da5fc49ad2d2895db26c88, type: 3}
-  - {fileID: 2166096645007681590, guid: b25652495e8dd0e4ba22cff5dceb44fe, type: 3}
-  - {fileID: 1005831510709898072, guid: cbcfc50749aef3647bab286dc085408c, type: 3}
-  - {fileID: 5616689161755225731, guid: ac52fcffdfceb1b49b1030ffef40ba4f, type: 3}
-  - {fileID: 7043334927646140834, guid: bd1a01c17afbc2f409db9fba1fd36af2, type: 3}
-  - {fileID: 686237104647712270, guid: 59c8d1a862ebfe64aaa441adb52ef16f, type: 3}
-  - {fileID: 971229077591751231, guid: 5764b49cf55f4d845a61d5fc2b8136dc, type: 3}
+  tempCitizen: {fileID: 0}
 --- !u!114 &6402559383504924697
 MonoBehaviour:
   m_ObjectHideFlags: 0
