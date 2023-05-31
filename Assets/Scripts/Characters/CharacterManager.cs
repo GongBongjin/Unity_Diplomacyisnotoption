@@ -68,6 +68,23 @@ public class CharacterManager : MonoBehaviour
         //CreateCharacter(CharacterKey.USURPER, 1);
     }
 
+    // 추가(생산시 필요 자원가져와야함)
+    public CharacterData GetCharacterData(int key)
+    {
+        //if(characterDatas.ContainsKey(key))
+        return characterDatas[key];
+    }
+
+    // 추가
+    public void CreateCharacter(int key, Vector3 position, Vector3 rallyPoint = new Vector3())
+    {
+
+        if(rallyPoint.Equals(Vector3.zero))
+        {
+            // not move
+        }
+    }
+
     private void CreateCharacter(CharacterKey key, int poolCount)
     {
         List<GameObject> temp = new List<GameObject>();
@@ -130,6 +147,26 @@ public class CharacterManager : MonoBehaviour
             }
         }
         return pos;
+    }
+
+    // 추가
+    public void GetObjectsContainedInRect(Rect rect)
+    {
+        foreach (CharacterKey key in characterPools.Keys)
+        {
+            foreach (GameObject obj in characterPools[key])
+            {
+                // 활성화 되어있지 않은 오브젝트들은 검사 하지 않음
+                if (!obj.activeSelf) 
+                    continue;
+
+                // 아군객체만 돌면서 셀렉션 박스에 추가
+                if(rect.Contains(Camera.main.WorldToScreenPoint(obj.transform.position)))
+                {
+                    SelectionBox.instance.AddSelectObject((int)key, obj);
+                }
+            }
+        }
     }
 }
 
