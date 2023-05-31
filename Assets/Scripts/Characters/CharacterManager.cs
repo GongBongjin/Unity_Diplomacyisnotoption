@@ -68,6 +68,23 @@ public class CharacterManager : MonoBehaviour
         //CreateCharacter(CharacterKey.USURPER, 1);
     }
 
+    // 추가(생산시 필요 자원가져와야함)
+    public CharacterData GetCharacterData(int key)
+    {
+        //if(characterDatas.ContainsKey(key))
+        return characterDatas[key];
+    }
+
+    // 추가
+    public void CreateCharacter(int key, Vector3 position, Vector3 rallyPoint = new Vector3())
+    {
+
+        if(rallyPoint.Equals(Vector3.zero))
+        {
+            // not move
+        }
+    }
+
     private void CreateCharacter(CharacterKey key, int poolCount)
     {
         List<GameObject> temp = new List<GameObject>();

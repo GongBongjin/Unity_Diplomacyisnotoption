@@ -81,7 +81,7 @@ public class DataManager : MonoBehaviour
             buildingData.qty_Copper = int.Parse(reader[i]["Copper"].ToString());
             buildingData.prefab = Resources.Load<GameObject>(reader[i]["Prefab"].ToString());
             buildingData.icon = Resources.Load<Sprite>(reader[i]["Icon"].ToString());
-            buildingData.discription = reader[i]["Discription"].ToString();
+            buildingData.description = reader[i]["Description"].ToString();
             BuildManager.Instance.AddBuildingData(buildingData);
         }
     }

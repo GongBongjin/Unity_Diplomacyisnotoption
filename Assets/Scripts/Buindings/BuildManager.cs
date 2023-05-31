@@ -21,7 +21,7 @@ public struct BuildingData
     public int qty_Copper;
     public GameObject prefab;
     public Sprite icon;
-    public string discription;
+    public string description;
 }
 
 public class BuildManager : MonoBehaviour

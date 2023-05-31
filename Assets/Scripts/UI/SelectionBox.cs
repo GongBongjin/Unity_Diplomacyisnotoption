@@ -15,7 +15,7 @@ public class SelectionBox : MonoBehaviour
 
     Image selectionBox;
 
-    private Army army;
+    private bool isArmy = false;
     // CharacterKey-> int 로 변환
     //public Dictionary<CharacterKey, List<GameObject>> selectedObjects = new Dictionary<CharacterKey, List<GameObject>>(); //현재 list 구조라서 GameObject가 아닌 Character 구조에다가 데이터를 넣어서 키정보가없음.
     public Dictionary<int, List<GameObject>> selectedObjects = new Dictionary<int, List<GameObject>>();
@@ -65,6 +65,8 @@ public class SelectionBox : MonoBehaviour
                     bool isSelected = false;
                     GameObject obj;
                     int key;
+                    // 이 부분 바뀌었습니다.
+                    // Charcter를 포함한 시민, 빌딩, 오브젝트 선택 가능하도록 임시조치해놨어요
                     for (int i = 0; i < hits.Length; i++)
                     {
                         string tag = hits[i].transform.tag;
@@ -73,7 +75,12 @@ public class SelectionBox : MonoBehaviour
                         {
                             case "Army":
                                 isSelected = true;
-                                key = (int)obj.GetComponent<Army>().key;
+                                key = (int)obj.GetComponent<Character>().key;
+                                AddSelectObject(key, obj);
+                                break;
+                            case "Enemy":
+                                isSelected = true;
+                                key = (int)obj.GetComponent<Character>().key;
                                 AddSelectObject(key, obj);
                                 break;
                             case "Citizen":
@@ -91,6 +98,7 @@ public class SelectionBox : MonoBehaviour
                                 break;
                             case "Product":
                                 isSelected = true;
+                                // 나무, 광석 등 임시조치
                                 break;
                         }
                         if (isSelected) break;
@@ -138,8 +146,10 @@ public class SelectionBox : MonoBehaviour
                 switch (tag)
                 {
                     case "Army":
-                        army = obj.GetComponent<Army>();
-                        army.SetSelectOption(false);
+                        obj.GetComponent<Character>().SetSelectOption(false);
+                        break;
+                    case "Enemy":
+                        obj.GetComponent<Character>().SetSelectOption(false);
                         break;
                     case "Citizen":
                         obj.GetComponent<Citizen>().SetSelectObject(false);
@@ -176,6 +186,7 @@ public class SelectionBox : MonoBehaviour
         //}
         // 캐릭터 매니저에서 넣어주는걸로...?
         CharacterManager.instance.GetObjectsContainedInRect(selectionRect);
+        // citizenManager를 추가해서 넣어줄 것
 
     }
 
@@ -197,17 +208,36 @@ public class SelectionBox : MonoBehaviour
     {
         List<GameObject> temp = new List<GameObject>();
 
-        army = gameObject.GetComponent<Army>();
+        Character character = gameObject.GetComponent<Character>();
         
-        if (selectedObjects.ContainsKey((int)army.key))
+        if (selectedObjects.ContainsKey((int)character.key))
         {
-            int i = selectedObjects[(int)army.key].Count;
-            selectedObjects[(int)army.key].Insert(i, gameObject);
+            int i = selectedObjects[(int)character.key].Count;
+            selectedObjects[(int)character.key].Insert(i, gameObject);
         }
         else 
         {
             temp.Add(gameObject);
-            selectedObjects.Add((int)army.key, temp);
+            selectedObjects.Add((int)character.key, temp);
+        }
+    }
+
+    public void InputCommandKey(char hotKey)
+    {
+        switch (hotKey)
+        {
+            case 'M':
+                // true일때 좌클릭시 이동
+                break;
+            case 'H':
+                // Stop
+                break;
+            case 'F':
+                // 어택 땅
+                break;
+            case 'P':
+                // 순찰
+                break;
         }
     }
 
@@ -215,7 +245,8 @@ public class SelectionBox : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(1))
         {
-            if (selectedObjects != null)
+            if (!isArmy) return;
+            if (selectedObjects.Count != 0)
             {
                 Vector3 mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.farClipPlane);
                 Ray ray = Camera.main.ScreenPointToRay(mousePos);
@@ -244,11 +275,9 @@ public class SelectionBox : MonoBehaviour
 
             foreach (GameObject obj in selectedObjects[key])
             {
-                if (obj.gameObject.transform.tag == "Army")
-                {
-                    army = obj.GetComponent<Army>();
-                    army.SetSelectOption(true);
-                }
+                Character character = obj.GetComponent<Character>();
+                character.SetSelectOption(true);
+                
             }
         }
         UIManager.Instance.ShowInformation(keys, counts);
@@ -274,7 +303,7 @@ public class SelectionBox : MonoBehaviour
             foreach (GameObject obj in selectedObjects[key])
             {
                 //verticalCount+=6;
-                army = obj.GetComponent<Army>();
+                Army army = obj.GetComponent<Army>();
 
                 //if (verticalCount > 15)
                 //{
