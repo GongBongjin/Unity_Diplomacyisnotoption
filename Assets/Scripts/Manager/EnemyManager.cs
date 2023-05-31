@@ -27,9 +27,9 @@ public class EnemyManager : MonoBehaviour
 
     void Update()
     {
-        SetDestination();
-
-        Attack();
+        //SetDestination();
+        //
+        //Attack();
     }
 
     private void SetDestination()

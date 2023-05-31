@@ -29,6 +29,8 @@ public class Character : MonoBehaviour
 
     [SerializeField] protected float hp;
     [SerializeField] protected float maxHp;
+    [SerializeField] protected float dmg;
+    [SerializeField] protected float def;
     [SerializeField] protected bool isAttacking = false;
     [SerializeField] protected bool isDying = false;
     [SerializeField] protected bool isSelected = false;
@@ -43,16 +45,16 @@ public class Character : MonoBehaviour
         nvAgent = GetComponent<NavMeshAgent>();
         rigidBody = GetComponent<Rigidbody>();
         bodyCollider = GetComponent<CapsuleCollider>();
+        bodyCollider.enabled = true;
         atkCollider = GetComponent<SphereCollider>();
-        atkCollider.enabled = false;
+        //atkCollider.transform.tag = "AtckCollider";
+        atkCollider.enabled = true;
         selectCircle = transform.Find("Circle").gameObject;
         selectCircle.SetActive(false);
     }
 
     protected virtual void Start()
     {
-        bodyCollider.enabled = true;
-        atkCollider.enabled = false;
     }
 
     protected virtual void Update()
@@ -69,6 +71,8 @@ public class Character : MonoBehaviour
         characterType = data.characterType;
         maxHp = data.maxHp;
         hp = maxHp;
+        dmg = data.dmg;
+        def = data.def;
     }
 
     private void ShowSelectionCircle()
@@ -90,17 +94,19 @@ public class Character : MonoBehaviour
 
     public void SetSelectOption(bool isSelected) { this.isSelected = isSelected; }
 
+    public float GetDmg() { return dmg; }
+
     //Animation Event Function
 
     private void StartAttack()
     {
-        atkCollider.enabled = true;
+        atkCollider.enabled = false;
     }
     private void EndAttack()
     {
         isAttacking = false;
 
-        atkCollider.enabled = false;
+        atkCollider.enabled = true;
     }
 
     private void StartDead()
@@ -120,6 +126,7 @@ public class Character : MonoBehaviour
 
     //Collision Function
     public virtual void OnTriggerEnter(Collider other) { }
+
 
 
 

@@ -1,9 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Army : Character
-{   
+{
+    private Enemy target;
+
+    public bool isTargeting;
+
     protected override void Start()
     {
         base.Start();
@@ -11,16 +16,23 @@ public class Army : Character
 
     protected override void Update()
     {
+        if(target != null && !isTargeting) 
+            Move(target.transform.position);
+
         base.Update();
     }
 
     public override void Move(Vector3 destPos)
     {
-        if (isAttacking) return;
-        if (isDying) return;
+        if (!isTargeting)
+        {
+            if (isAttacking) return;
+            if (isDying) return;
+        }
 
         animator.SetFloat("MoveSpeed", 3.0f);
         nvAgent.SetDestination(destPos);
+        isTargeting = false;
     }
 
     public override void Attack()
@@ -36,23 +48,56 @@ public class Army : Character
 
     public override void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag != "Enemy") return;
         if(isDying) return;
 
-        if (other.gameObject.transform.parent.tag == "Enemy" && other.transform.tag == "AtkCollider")
-        {
-            hp -= 10.0f;
+        target = other.gameObject.GetComponent<Enemy>();
 
-            Debug.Log(this.data.prefab + "가"+ other.gameObject.transform + "와 충돌");
-            if (hp <= 0)
+        if (other.gameObject.transform.tag == "Enemy")
+        {
+            if(other.GetType() == typeof(SphereCollider))
             {
-                isDying = true;
-                //atkCollider.enabled = false;
-                //bodyCollider.enabled = false;
-                animator.SetTrigger("Dead");
+                hp -= target.GetDmg() - def;
+
+                if (hp <= 0)
+                {
+                    isDying = true;
+                    animator.SetTrigger("Dead");
+                }
             }
+            else if(other.GetType() == typeof(CapsuleCollider))
+            {
+                transform.LookAt(target.transform.position);
+                Attack();
+            }
+        }
+    }
+
+    //SelectionBox Command Functions
+    public void StopCommand()
+    {
+        nvAgent.isStopped = true;
+        nvAgent.ResetPath();
+    }
+
+    public void AttackCommand(Vector3 destPos)
+    {
+        //destPos의 일정범위내에 적군이 있는지에 대한 판단을 해야함
+        //피격을 당한다면?
+        //
+    }
+
+    public void PatrolCommand(Vector3 currentPos, Vector3 nextPos)
+    {
+        //현재 위치와 다음 위치를 입력받아서 아래의 내용 적용.
+        animator.SetFloat("MoveSpeed", 3.0f);
+        nvAgent.SetDestination(nextPos);
+
+        if (Vector3.Distance(transform.position, nextPos) < 1.0f)
+        {
+            nvAgent.ResetPath();
         }
 
     }
+
 
 }

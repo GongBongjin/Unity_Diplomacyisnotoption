@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using Unity.Burst.CompilerServices;
+using Unity.PlasticSCM.Editor.WebApi;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.EventSystems;
+using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
 
 public class SelectionBox : MonoBehaviour
@@ -15,7 +17,9 @@ public class SelectionBox : MonoBehaviour
 
     Image selectionBox;
 
-    private bool isArmy = false;
+    private bool isMoveable = true;
+    private bool isCommandM;
+    private bool isCommandP;
     // CharacterKey-> int 로 변환
     //public Dictionary<CharacterKey, List<GameObject>> selectedObjects = new Dictionary<CharacterKey, List<GameObject>>(); //현재 list 구조라서 GameObject가 아닌 Character 구조에다가 데이터를 넣어서 키정보가없음.
     public Dictionary<int, List<GameObject>> selectedObjects = new Dictionary<int, List<GameObject>>();
@@ -37,7 +41,7 @@ public class SelectionBox : MonoBehaviour
     void Update()
     {
         Select();
-        Move();
+        CommandControl();
     }
 
     private void Select()
@@ -79,6 +83,7 @@ public class SelectionBox : MonoBehaviour
                                 AddSelectObject(key, obj);
                                 break;
                             case "Enemy":
+                                isMoveable = false;
                                 isSelected = true;
                                 key = (int)obj.GetComponent<Character>().key;
                                 AddSelectObject(key, obj);
@@ -90,6 +95,7 @@ public class SelectionBox : MonoBehaviour
                                 AddSelectObject(1000, obj);
                                 break;
                             case "Building":
+                                isMoveable = false;
                                 isSelected = true;
                                 Building building = obj.GetComponent<Building>();
                                 building.SetSelectObject(true);
@@ -97,6 +103,7 @@ public class SelectionBox : MonoBehaviour
                                 AddSelectObject(key, obj);
                                 break;
                             case "Product":
+                                isMoveable = false;
                                 isSelected = true;
                                 // 나무, 광석 등 임시조치
                                 break;
@@ -164,6 +171,7 @@ public class SelectionBox : MonoBehaviour
             }
         }
         selectedObjects.Clear();
+        isMoveable = true;
     }
 
     private void UpdateDragBox(Vector3 currentMousePos)
@@ -195,6 +203,8 @@ public class SelectionBox : MonoBehaviour
     {
         if (selectedObjects.ContainsKey(key))
         {
+            //int i = selectedObjects[key].Count;
+            //selectedObjects[key].Insert(i, gameObject);
             selectedObjects[key].Add(gameObject);
         }
         else
@@ -222,43 +232,67 @@ public class SelectionBox : MonoBehaviour
         }
     }
 
+    private void CommandControl()
+    {
+        if (selectedObjects.Count == 0 && !isCommandM) return;
+
+        Move();
+
+        if(Input.anyKey)
+        {
+            string inputString = Input.inputString;
+            if(!string.IsNullOrEmpty(inputString))
+            {
+                char hotKey = inputString[0];
+                int ascii = 'a' - 'A';
+                if (hotKey >= 'a')
+                    hotKey = (char)(hotKey - ascii);
+
+                InputCommandKey(hotKey);
+            }
+        }
+    }
+
     public void InputCommandKey(char hotKey)
     {
         switch (hotKey)
         {
             case 'M':
                 // true일때 좌클릭시 이동
+                isCommandM = true;
+                Move();
                 break;
             case 'H':
-                // Stop
+                StopSelectedObjects();
                 break;
             case 'F':
                 // 어택 땅
+
                 break;
             case 'P':
                 // 순찰
+                //PatrolSelectedObjects();
                 break;
         }
     }
 
     private void Move()
     {
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonDown(1)|| isCommandM || isCommandP )
         {
-            if (!isArmy) return;
-            if (selectedObjects.Count != 0)
-            {
-                Vector3 mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.farClipPlane);
-                Ray ray = Camera.main.ScreenPointToRay(mousePos);
-                RaycastHit hit;
+            if (!isMoveable) return;
 
-                if (Physics.Raycast(ray, out hit))
-                {
-                    Vector3 destPos = new Vector3(hit.point.x, 0, hit.point.z);
-                    MoveSelectedObjects(destPos);
-                }
+            Vector3 mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.farClipPlane);
+            Ray ray = Camera.main.ScreenPointToRay(mousePos);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit))
+            {
+                Vector3 destPos = new Vector3(hit.point.x, 0, hit.point.z);
+                MoveSelectedObjects(destPos);
             }
         }
+        isCommandM = false;
     }
 
     private void DataReturn()
@@ -275,8 +309,11 @@ public class SelectionBox : MonoBehaviour
 
             foreach (GameObject obj in selectedObjects[key])
             {
-                Character character = obj.GetComponent<Character>();
-                character.SetSelectOption(true);
+                if (obj.tag.Equals("Army") || obj.tag.Equals("Enemy"))
+                {
+                    Character character = obj.GetComponent<Character>();
+                    character.SetSelectOption(true);
+                }
                 
             }
         }
@@ -312,12 +349,41 @@ public class SelectionBox : MonoBehaviour
                 //}
                 //
                 //destPos = SetDestPos(verticalCount, horizontalCount, destPos);
-
+                army.isTargeting = true;
                 army.Move(destPos);
             }
         }
     }
 
+    private void StopSelectedObjects()
+    {
+        foreach (int key in selectedObjects.Keys)
+        {
+            foreach (GameObject obj in selectedObjects[key])
+            {
+                Army army = obj.GetComponent<Army>();
+
+                army.StopCommand();
+            }
+        }
+    }
+
+    private void PatrolSelectedObjects()
+    {
+        while(isCommandP)
+        {
+            foreach (int key in selectedObjects.Keys)
+            {
+                foreach (GameObject obj in selectedObjects[key])
+                {
+                    Army army = obj.GetComponent<Army>();
+
+                    army.StopCommand();
+                }
+            }
+        }
+       
+    }
 
     private Vector3 SetDestPos(int verticalCount, int horizontalCount, Vector3 mousePos)
     {

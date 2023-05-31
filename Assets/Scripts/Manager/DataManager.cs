@@ -34,6 +34,7 @@ public class DataManager : MonoBehaviour
     {
         return characterDatas[key];
     }
+
     private void Awake()
     {
         instance = this;

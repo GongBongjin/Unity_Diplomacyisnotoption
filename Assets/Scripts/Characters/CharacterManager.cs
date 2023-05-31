@@ -52,19 +52,19 @@ public class CharacterManager : MonoBehaviour
             characterPrefabs.Add((CharacterKey)data.Value.key, characterPrefab);//여기서 DataManager에 넣은 key값, prefab 넣고있고
         }
 
-        CreateCharacter(CharacterKey.KNIGHT,2);
-        CreateCharacter(CharacterKey.DOGNIGHT, 2);
-        CreateCharacter(CharacterKey.SPEARMAN, 2);
-        CreateCharacter(CharacterKey.WIZARD, 2);
-        CreateCharacter(CharacterKey.GRUNT, 2);
+        CreateCharacter(CharacterKey.KNIGHT,1);
+        CreateCharacter(CharacterKey.DOGNIGHT, 1);
+        //CreateCharacter(CharacterKey.SPEARMAN, 2);
+        //CreateCharacter(CharacterKey.WIZARD, 2);
+        //CreateCharacter(CharacterKey.GRUNT, 2);
 
         //CreateCharacter(CharacterKey.TURTLE, 1);
         //CreateCharacter(CharacterKey.SLIME, 10);
         //CreateCharacter(CharacterKey.MUSHROOM, 10);
         //CreateCharacter(CharacterKey.CACTUS, 10);
         //CreateCharacter(CharacterKey.BEHOLDER, 10);
-        //CreateCharacter(CharacterKey.GOLEM, 3);
-        CreateCharacter(CharacterKey.USURPER, 1);
+        CreateCharacter(CharacterKey.GOLEM, 1);
+        //CreateCharacter(CharacterKey.USURPER, 1);
     }
 
     // 추가(생산시 필요 자원가져와야함)
@@ -153,6 +153,7 @@ public class CharacterManager : MonoBehaviour
     {
         foreach (CharacterKey key in characterPools.Keys)
         {
+            if (key >= CharacterKey.TURTLE) continue;
             foreach (GameObject obj in characterPools[key])
             {
                 // 활성화 되어있지 않은 오브젝트들은 검사 하지 않음
