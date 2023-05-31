@@ -7,11 +7,8 @@ public class Building : MonoBehaviour
     int key;
 
     Material material;
-
-    // Building Base Height
     float maxBuildTime = 30;
     float buildTime = 0;
-
     int matrixSize;    // build matrix size
 
     float maxHP;
@@ -19,10 +16,11 @@ public class Building : MonoBehaviour
 
     // 유닛
     bool isCompletion = false;  // 건물 완공 상태
-    bool isRepairDone = false;  // 수리필요?
-
+    //bool isRepairDone = false;  // 수리필요?
 
     GameObject selectCircle;
+    const float createOffset = 3.0f;
+    Vector3 rallyPoint = Vector3.zero;
 
     private void Awake()
     {
@@ -113,5 +111,42 @@ public class Building : MonoBehaviour
             curHP = 0;
             // destroy
         }
+    }
+
+    public void CreateUnit(int key)
+    {
+        Vector3 pos = FindUnitPlacement();
+        CitizenManager.Instance.CreateCharacter(pos, rallyPoint);
+    }
+
+    private Vector3 FindUnitPlacement()
+    {
+        float baseLength = matrixSize * GridManager.GRID_SIZE * 0.5f;
+        Vector3 direction = Vector3.back;
+        Vector3 basePos = transform.position + Vector3.up;
+        float dist = baseLength;
+        for (int i = 0; i > -360; i-=2)
+        {
+            // 건물 주변 사각형
+            float angle = Mathf.Abs(i) % 45;
+            if((i / 45) % 2 == 0)
+                angle = angle * (Mathf.PI / 180);
+            else
+                angle = (46 - angle) * (Mathf.PI / 180);
+
+            // 거리
+            dist = baseLength / Mathf.Cos(angle);
+
+            // 방향
+            Quaternion rot = Quaternion.Euler(0, i, 0);
+            direction = rot * Vector3.back;
+
+            RaycastHit[] hits = Physics.RaycastAll(basePos, direction, dist + createOffset);
+            
+            if (hits.Length < 1)
+                break;
+        }
+
+        return transform.position + (direction * (dist + createOffset));
     }
 }

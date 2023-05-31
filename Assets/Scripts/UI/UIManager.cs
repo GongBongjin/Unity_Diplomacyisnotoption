@@ -68,13 +68,13 @@ public class UIManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            int[] tempKey = new int[1] { 1000 };
-            int[] tempCount = new int[1] { 1 };
-            ShowInformation(tempKey, tempCount);
-            //target = Instantiate(buildings["TownHall"]);
-        }
+        //if (Input.GetKeyDown(KeyCode.B))
+        //{
+        //    int[] tempKey = new int[1] { 1000 };
+        //    int[] tempCount = new int[1] { 1 };
+        //    ShowInformation(tempKey, tempCount);
+        //    //target = Instantiate(buildings["TownHall"]);
+        //}
         // ChangeTimeTest
         //if(Input.GetKeyDown(KeyCode.U)) 
         //{

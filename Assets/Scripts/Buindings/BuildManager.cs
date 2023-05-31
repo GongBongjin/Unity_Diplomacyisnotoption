@@ -37,16 +37,22 @@ public class BuildManager : MonoBehaviour
 
     Dictionary<int, BuildingData> buildingDatas = new Dictionary<int, BuildingData>();
 
-    
-    bool isBuild = false;
+
     [Header("Buildings")]
+    GameObject townHall;
+    // Dictionary <key, List<GameObject>> Buildings
+    // AddBuilding
+    // RemoveBuilding
     GridManager gridManager;
     GameObject buildingParent;
 
     GameObject target = null;
 
+    bool isBuild = false;
+    
     [SerializeField]
     Citizen tempCitizen;
+
 
     private void Awake()
     {
@@ -60,15 +66,14 @@ public class BuildManager : MonoBehaviour
     void Start()
     {
         AddBuilding(2000);
-        target.transform.position = Vector3.zero;
+        townHall = target;
+        townHall.transform.position = Vector3.zero;
         target = null;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-
         if(isBuild && target != null)
         {
             Vector3 mPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.farClipPlane);
@@ -96,6 +101,11 @@ public class BuildManager : MonoBehaviour
                 target = null;
                 isBuild = false;
             }
+        }
+
+        if(Input.GetKeyDown(KeyCode.V)) 
+        {
+            townHall.GetComponent<Building>().CreateUnit(1000);
         }
     }
 

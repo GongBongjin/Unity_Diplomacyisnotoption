@@ -19,18 +19,31 @@ public struct CitizenData
 
 public class CitizenManager : MonoBehaviour
 {
+    private static CitizenManager instance;
+    public static CitizenManager Instance
+    {
+        get
+        {
+            return instance;
+        }
+    }
+
     CitizenData citizenData;
     GameObject citizenParent;
 
-    List<Citizen> citizenObjects;
+    List<GameObject> citizenObjects;
+
+    const int AddPoolCount = 10;
 
     private void Awake()
     {
+        instance = this;
+
         LoadCitizenData();
 
         citizenParent = new GameObject("citizenParent");
-        citizenObjects = new List<Citizen>();
-        
+        citizenObjects = new List<GameObject>();
+        CreateCharacterPool(AddPoolCount);
     }
 
     // Start is called before the first frame update
@@ -50,34 +63,55 @@ public class CitizenManager : MonoBehaviour
         for (int i = 0; i < poolCount; i++)
         {
             // 생성
+            GameObject obj = Instantiate(citizenData.prefab, citizenParent.transform);
+            obj.SetActive(false);
+            citizenObjects.Add(obj);
         }
     }
+
     public void CreateCharacter(Vector3 position, Vector3 rallyPoint = new Vector3())
     {
-
-        if (rallyPoint.Equals(Vector3.zero))
+        bool isCreatable = false;
+        int idx = -1;
+        // check Character Pool
+        for(int i = 0; i < citizenObjects.Count; i++)
         {
-            // not move
+            if (citizenObjects[i].activeSelf) continue;
+
+            isCreatable = true;
+            idx = i;
+            break;
         }
+        if(!isCreatable)
+        {
+            // 캐릭터 풀이 모자랄 때
+            idx = citizenObjects.Count;
+            CreateCharacterPool(AddPoolCount);
+        }
+
+        citizenObjects[idx].transform.position = position;
+        citizenObjects[idx].SetActive(true);
+
+        // 생산 후 이동
+        if (!rallyPoint.Equals(Vector3.zero))
+        {
+            citizenObjects[idx].GetComponent<Citizen>().MoveDestination(rallyPoint);
+        }
+
     }
 
     public void GetObjectsContainedInRect(Rect rect)
     {
-        //foreach (CharacterKey key in characterPools.Keys)
-        //{
-        //    foreach (GameObject obj in characterPools[key])
-        //    {
-        //        // 활성화 되어있지 않은 오브젝트들은 검사 하지 않음
-        //        if (!obj.activeSelf)
-        //            continue;
-        //
-        //        // 아군객체만 돌면서 셀렉션 박스에 추가
-        //        if (rect.Contains(Camera.main.WorldToScreenPoint(obj.transform.position)))
-        //        {
-        //            SelectionBox.instance.AddSelectObject((int)key, obj);
-        //        }
-        //    }
-        //}
+        foreach (GameObject obj in citizenObjects)
+        {
+            if (!obj.activeSelf)
+                continue;
+
+            if (rect.Contains(Camera.main.WorldToScreenPoint(obj.transform.position)))
+            {
+                SelectionBox.instance.AddSelectObject(citizenData.key, obj);
+            }
+        }
     }
 
     private void LoadCitizenData()

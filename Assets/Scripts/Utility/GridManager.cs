@@ -8,6 +8,8 @@ using static UnityEngine.GraphicsBuffer;
 
 public class GridManager : MonoBehaviour
 {
+    public const int GRID_SIZE = 5;
+
     [Header("Grid")]
     [Tooltip("It is recommended to create an even number of grid slots.")]
     private const int GRID_SLOT_WIDTH_COUNT = 11;
@@ -45,8 +47,8 @@ public class GridManager : MonoBehaviour
         }
 
         // 맵 전체의 slot정보 건물이 존재하는지 여부를 판단
-        int widthCount = (int)(TERRAIN_SIZE_WIDTH / 5);
-        int heightCount = (int)(TERRAIN_SIZE_HEIGHT / 5);
+        int widthCount = (int)(TERRAIN_SIZE_WIDTH / GRID_SIZE);
+        int heightCount = (int)(TERRAIN_SIZE_HEIGHT / GRID_SIZE);
         slotInfo = new bool[widthCount * heightCount];
         for(int i = 0; i < slotInfo.Length; i++) { slotInfo[i] = true; }
     }
@@ -152,8 +154,8 @@ public class GridManager : MonoBehaviour
         int xIndex = (int)(pos.x / baseGridSlotSize.x);
         int yIndex = (int)(pos.z / baseGridSlotSize.y);
 
-        int slotWidthCount = (TERRAIN_SIZE_WIDTH / 5);
-        int slotHeightCount = (TERRAIN_SIZE_HEIGHT / 5);
+        int slotWidthCount = (TERRAIN_SIZE_WIDTH / GRID_SIZE);
+        int slotHeightCount = (TERRAIN_SIZE_HEIGHT / GRID_SIZE);
         if (xIndex >= slotWidthCount || yIndex >= slotHeightCount)
             return;
 
@@ -168,8 +170,8 @@ public class GridManager : MonoBehaviour
         int xIndex = (int)(pos.x / baseGridSlotSize.x);
         int yIndex = (int)(pos.z / baseGridSlotSize.y);
 
-        int slotWidthCount = (TERRAIN_SIZE_WIDTH / 5);
-        int slotHeightCount = (TERRAIN_SIZE_HEIGHT / 5);
+        int slotWidthCount = (TERRAIN_SIZE_WIDTH / GRID_SIZE);
+        int slotHeightCount = (TERRAIN_SIZE_HEIGHT / GRID_SIZE);
         if (xIndex >= slotWidthCount || yIndex >= slotHeightCount)
             return false;
 

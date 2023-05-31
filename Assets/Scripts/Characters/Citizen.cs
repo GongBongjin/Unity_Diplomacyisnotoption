@@ -63,12 +63,11 @@ public class Citizen : MonoBehaviour
         tools[3] = rightHand.Find("PickAxe").gameObject;
 
         selectCircle = transform.Find("Circle").gameObject;
-        SetSelectObject(false);
     }
 
     void Start()
     {
-        
+        SetSelectObject(false);
     }
 
     void Update()
@@ -83,7 +82,7 @@ public class Citizen : MonoBehaviour
             {
                 Vector3 destPos = new Vector3(hit.point.x, 0, hit.point.z);
 
-                Debug.Log(hit.transform.name);
+                //Debug.Log(hit.transform.name);
                 MoveDestination(destPos);
                 //nvAgent.destination = desPos;
                 //selectedObject.transform.position = desPos;
@@ -179,7 +178,7 @@ public class Citizen : MonoBehaviour
         }
     }
 
-    void MoveDestination(Vector3 destination)
+    public void MoveDestination(Vector3 destination)
     {
         nvAgent.destination = destination;
         SetCitizenAnimationState(CitizenState.Move);
