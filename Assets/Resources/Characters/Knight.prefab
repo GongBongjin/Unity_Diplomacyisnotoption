@@ -1503,7 +1503,9 @@ MonoBehaviour:
   def: 0
   isAttacking: 0
   isDying: 0
+  isHitted: 0
   key: 0
+  isPatrol: 0
   isTargeting: 0
 --- !u!136 &479352269326620410
 CapsuleCollider:
@@ -1528,7 +1530,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 8243177804276801132}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 1
   m_Speed: 5
   m_Acceleration: 8
   avoidancePriority: 50

@@ -2467,7 +2467,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 6655640783749208060}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 1
   m_Speed: 5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -2527,8 +2527,9 @@ MonoBehaviour:
   def: 0
   isAttacking: 0
   isDying: 0
-  isSelected: 0
+  isHitted: 0
   key: 0
+  isPatrol: 0
   isTargeting: 0
 --- !u!1 &6655640783749208062
 GameObject:

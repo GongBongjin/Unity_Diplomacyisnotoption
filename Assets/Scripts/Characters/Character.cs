@@ -50,8 +50,8 @@ public class Character : Objects
         atkCollider = GetComponent<SphereCollider>();
         atkCollider.enabled = true;
         selectCircle = transform.Find("Circle").gameObject;
-        selectCircle.SetActive(false);
         hpBar = transform.Find("HpBar").GetComponent<HpBar>();
+        selectCircle.SetActive(false);
     }
 
     protected virtual void Start()

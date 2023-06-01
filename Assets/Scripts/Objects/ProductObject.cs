@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ProductObject : MonoBehaviour
+public class ProductObject : Objects
 {
     [SerializeField]
     Product product;
@@ -11,13 +11,13 @@ public class ProductObject : MonoBehaviour
     int maxAmount = 100;
     int curAmount;
 
-    GameObject selectCircle;
 
 
     private void Awake()
     {
         selectCircle = transform.Find("Circle").gameObject;
-        SetSelectObject(false);
+        hpBar = transform.Find("HpBar").GetComponent<HpBar>();
+        selectCircle.SetActive(false);
     }
 
     // Start is called before the first frame update
@@ -49,8 +49,4 @@ public class ProductObject : MonoBehaviour
         return value;
     }
 
-    public void SetSelectObject(bool isSelected)
-    {
-        selectCircle.SetActive(isSelected);
-    }
 }

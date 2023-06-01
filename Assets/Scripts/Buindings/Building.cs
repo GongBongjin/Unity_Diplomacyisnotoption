@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Building : MonoBehaviour
+public class Building : Objects
 {
     int key;
 
@@ -18,8 +18,7 @@ public class Building : MonoBehaviour
     bool isCompletion = false;  // 건물 완공 상태
     //bool isRepairDone = false;  // 수리필요?
 
-    GameObject selectCircle;
-    const float createOffset = 3.0f;
+    const float createOffset = 5.0f;
     Vector3 rallyPoint = Vector3.zero;
 
     private void Awake()
@@ -27,7 +26,8 @@ public class Building : MonoBehaviour
         material = transform.GetChild(0).GetComponent<MeshRenderer>().material;
 
         selectCircle = transform.Find("Circle").gameObject;
-        SetSelectObject(false);
+        hpBar = transform.Find("HpBar").GetComponent<HpBar>();
+        selectCircle.SetActive(false);
     }
 
     // Start is called before the first frame update
@@ -70,10 +70,6 @@ public class Building : MonoBehaviour
         return true;
     }
 
-    public void SetSelectObject(bool isSelected)
-    {
-        selectCircle.SetActive(isSelected);
-    }
 
     public void BuildUpBuilding(float value)
     {
@@ -116,7 +112,10 @@ public class Building : MonoBehaviour
     public void CreateUnit(int key)
     {
         Vector3 pos = FindUnitPlacement();
-        CitizenManager.Instance.CreateCharacter(pos, rallyPoint);
+        if (key == 1000)
+            CitizenManager.Instance.CreateCharacter(pos, rallyPoint);
+        else
+            CharacterManager.instance.CreateCharacter(key, FindUnitPlacement());
     }
 
     private Vector3 FindUnitPlacement()
@@ -125,7 +124,7 @@ public class Building : MonoBehaviour
         Vector3 direction = Vector3.back;
         Vector3 basePos = transform.position + Vector3.up;
         float dist = baseLength;
-        for (int i = 0; i > -360; i-=2)
+        for (int i = 0; i > -360; i-=3)
         {
             // 건물 주변 사각형
             float angle = Mathf.Abs(i) % 45;

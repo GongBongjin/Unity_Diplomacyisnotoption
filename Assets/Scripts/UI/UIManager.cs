@@ -30,10 +30,7 @@ public class UIManager : MonoBehaviour
     [SerializeField, Tooltip("Day Text in TimePanel")]
     private Text text_Day;
 
-    #region [Resources]
     ResourcesManager resourceManager;
-    
-    #endregion
 
     [SerializeField] SingleInformation singleInfo;
     [SerializeField] MultiInformation multiInfo;
@@ -113,7 +110,7 @@ public class UIManager : MonoBehaviour
         else if (keys.Length == 1)
         {
             singleInfo.gameObject.SetActive(true);
-            //singleInfo.ShowInformation(keys[0], count[0]);
+            singleInfo.ShowInformation(keys[0], count[0]);
             commandSlot.SetCommandSlot(keys[0]);
         }
         else

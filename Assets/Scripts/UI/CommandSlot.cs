@@ -104,8 +104,7 @@ public class CommandSlot : MonoBehaviour
         }
         else if (key > 1000)
         {
-            // 유닛 생산
-            // 배럭에게 정보 넘겨주기
+            SelectionBox.instance.CreateUnit(targetKey, key);
         }
         else if (key == 1000)
         {

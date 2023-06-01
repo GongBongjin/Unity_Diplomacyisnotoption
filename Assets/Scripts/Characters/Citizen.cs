@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Rendering;
 
-public class Citizen : MonoBehaviour
+public class Citizen : Objects
 {
     const int gridSize = 5;
     enum CitizenState
@@ -29,10 +29,6 @@ public class Citizen : MonoBehaviour
     Transform rightHand;
     GameObject[] tools = new GameObject[4]; // 도끼, 망치, 괭이, 곡괭이
 
-    GameObject selectCircle;
-
-    HpBar hpBar;
-
     GameObject workTarget = null;     // 작업장
     GameObject storageHouse = null;    // 저장소
 
@@ -50,7 +46,10 @@ public class Citizen : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         nvAgent = GetComponent<NavMeshAgent>();
+
+        selectCircle = transform.Find("Circle").gameObject;
         hpBar = transform.Find("HpBar").GetComponent<HpBar>();
+        selectCircle.SetActive(false);
 
         if (rightHand == null)
             Debug.Log("<color=red>RightHand is Null</color>");
@@ -59,13 +58,10 @@ public class Citizen : MonoBehaviour
         tools[1] = rightHand.Find("Hammer").gameObject;
         tools[2] = rightHand.Find("Hoe").gameObject;
         tools[3] = rightHand.Find("PickAxe").gameObject;
-
-        selectCircle = transform.Find("Circle").gameObject;
     }
 
     void Start()
     {
-        SetSelectObject(false);
     }
 
     void Update()
@@ -95,12 +91,6 @@ public class Citizen : MonoBehaviour
         // workState 검사해서 행동 루틴 반복
 
         WorkRoutine();
-    }
-
-    public void SetSelectObject(bool isSelected) 
-    { 
-        selectCircle.SetActive(isSelected);
-        hpBar.SetActiveProgressBar(isSelected);
     }
 
     void WorkRoutine()
