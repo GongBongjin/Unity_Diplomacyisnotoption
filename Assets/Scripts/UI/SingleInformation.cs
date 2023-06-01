@@ -86,7 +86,7 @@ public class SingleInformation : MonoBehaviour
             img_Profile.sprite = characterData.sprite;
             text_Name.text = characterData.prefab.name;
             text_GroupCount.text = count.ToString();
-            text_Discription.text = characterData.prefab.name;
+            text_Discription.text = characterData.description;
 
             SetAbilities();
         }

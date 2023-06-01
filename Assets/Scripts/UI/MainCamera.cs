@@ -5,13 +5,13 @@ using UnityEngine;
 public class MainCamera : MonoBehaviour
 {
     [SerializeField]
-    public float moveSpeed = 10.0f;
-    public float rotateSpeed = 50.0f;
+    public float moveSpeed = 100.0f;
+    public float rotateSpeed = 100.0f;
     public float zoomSpeed = 1000.0f;
 
     [HideInInspector] private float rotateAngle = 180.0f;
     [HideInInspector] private Quaternion initialRotation = Quaternion.Euler(45.0f, 180.0f, 0f);
-    [HideInInspector] private Vector3 initialPosition = new Vector3(0, 10, 20);
+    [HideInInspector] private Vector3 initialPosition = new Vector3(0, 49, 57);
 
     [HideInInspector] private float zoomMin = 1.0f;
     [HideInInspector] private float zoomMax = 50.0f;

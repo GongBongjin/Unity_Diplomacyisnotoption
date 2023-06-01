@@ -1,14 +1,14 @@
-key,characterType,maxHp,dmg,prefab,sprite
-1001,2,100,10,Characters/Knight,Sprites/Knight
-1002,2,100,10,Characters/DogKnight,Sprites/DogKnight
-1003,2,100,10,Characters/Spearman,Sprites/Spearman
-1004,2,100,10,Characters/Wizard,Sprites/Wizard
-1005,2,100,10,Characters/Grunt,Sprites/Grunt
-1006,3,100,10,Monsters/Turtle,Sprites/Turtle
-1007,3,100,10,Monsters/Slime,Sprites/Slime
-1008,3,100,10,Monsters/Mushroom,Sprites/Mushroom
-1009,3,100,10,Monsters/Cactus,Sprites/Cactus
-1010,3,100,10,Monsters/Mimic,Sprites/Mimic
-1011,3,100,10,Monsters/Beholder,Sprites/Beholder
-1012,3,100,10,Monsters/Golem,Sprites/Golem
-1013,3,100,10,Monsters/Usurper,Sprites/Usurper
+key,characterType,maxHp,dmg,def,moveSpeed,sightValue,atkspeed,food,wood,stone,copper,prefab,sprite,description
+1001,2,150,10,1,10,10,10,1,0,0,0,Characters/Knight,Sprites/Knight,?�쟁경험???��???베테??기사.
+1002,2,70,30,3,12,10,25,1,5,0,0,Characters/DogKnight,Sprites/DogKnight,?�렵??강아지 검??
+1003,2,100,15,5,10,10,20,2,5,5,0,Characters/Spearman,Sprites/Spearman,?�직??창기??
+1004,2,50,25,3,7,20,15,3,5,10,5,Characters/Wizard,Sprites/Wizard,?�겨먹다�?마법??
+1005,2,200,20,7,8,10,10,5,10,20,10,Characters/Grunt,Sprites/Grunt,비싼?�을 주고 고용???�크병사.
+1006,3,50,3,5,8,0,10,0,0,0,0,Monsters/Turtle,Sprites/Turtle,거북??
+1007,3,30,5,2,8,0,10,0,0,0,0,Monsters/Slime,Sprites/Slime,?�라??
+1008,3,60,7,2,8,0,10,0,0,0,0,Monsters/Mushroom,Sprites/Mushroom,주황버섯.
+1009,3,70,9,3,8,0,10,0,0,0,0,Monsters/Cactus,Sprites/Cactus,?�인??
+1010,3,80,12,5,8,0,10,0,0,0,0,Monsters/Mimic,Sprites/Mimic,�?보�??�고 ?�는 모�? 보물?�자(?)
+1011,3,100,15,5,10,0,10,0,0,0,0,Monsters/Beholder,Sprites/Beholder,공허 ?�명�?
+1012,3,330,20,10,6,0,5,0,0,0,0,Monsters/Golem,Sprites/Golem,?�악???�의 ?�식??
+1013,3,450,40,20,10,0,7,0,0,0,0,Monsters/Usurper,Sprites/Usurper,공포 군주.
