@@ -5,18 +5,32 @@ using UnityEngine;
 public class Enemy : Character
 {
     private GameObject target;
-    private Vector3 targetPos;
-    private SphereCollider rangeCollider;
+    public Vector3 targetPos = new Vector3(0,0,0);
+
+    public bool isMainEvent = false;
 
     protected override void Start()
     {
+        hpBar.SetFrontColor(Color.red);
         base.Start();
     }
 
     protected override void Update()
     {
-        if(target!=null)
-            Move(target.transform.position);
+        if(Input.GetKey(KeyCode.Z)) 
+        {
+            CharacterManager.instance.SetAttackCityHall(3); 
+        }
+
+        if(isMainEvent) 
+        {
+            if (target == null)
+                Move(targetPos);
+        }
+
+        ApporachDestination();
+
+        ShowHpBar();
 
         base.Update();
     }
@@ -25,9 +39,34 @@ public class Enemy : Character
     {
         if (isAttacking) return;
         if (isDying) return;
-
+        
         animator.SetFloat("MoveSpeed", 3.0f);
-        nvAgent.SetDestination(destPos);
+        //nvAgent.destination = transform.position + new Vector3(10,0,10);
+        nvAgent.SetDestination(transform.position + new Vector3(10, 0, 10));
+
+        //Debug.Log("cibla" + nvAgent.destination);
+        //Debug.Log(nvAgent.SetDestination(destPos));
+
+        //float distance = Vector3.Distance(transform.position, destPos);
+        //if (Vector3.Distance(transform.position, destPos) < 1.0f || isAttacking)
+        //{
+        //    animator.SetFloat("MoveSpeed", 0.0f);
+        //    nvAgent.isStopped = true;
+        //    nvAgent.ResetPath();
+        //}
+    }
+
+    private void ApporachDestination()
+    {
+        if (isDying) return;
+
+        float distance = Vector3.Distance(transform.position, nvAgent.destination);
+        if (distance < 1.0f || isAttacking)
+        {
+            animator.SetFloat("MoveSpeed", 0.0f);
+            nvAgent.isStopped = true;
+            nvAgent.ResetPath();
+        }
     }
 
     public override void Attack()
@@ -45,6 +84,10 @@ public class Enemy : Character
     {
         if (isDying) return;
 
+        if (other.gameObject.transform.tag == "Enemy") return;
+        if (other.gameObject.transform.tag == "Product") return;
+        if (other.gameObject.transform.tag == "Terrain") return;
+
         //피격 시
         if (other.GetType() == typeof(SphereCollider))
         {
@@ -56,50 +99,37 @@ public class Enemy : Character
             Army army = other.GetComponent<Army>();
 
             //피격처리
-            hp -= army.GetDmg() - def;
-            Debug.Log(target + "에게 공격당함.");
+            //if (army.GetAttacking())//
+                hp -= army.GetDmg() - (army.GetDmg() * (def / 100));
+
+            Debug.Log(transform.gameObject +"가 " + target + "에게" + (army.GetDmg() - def));
             if (hp <= 0)
             {
                 isDying = true;
                 animator.SetTrigger("Dead");
             }
+            isHitted = true;
+            if (isHitted)
+                Move(target.transform.position);
+
         }
-        else if(other.GetType() == typeof(CapsuleCollider))
+        else if(other.GetType() == typeof(CapsuleCollider) || other.GetType() == typeof(BoxCollider))
         {
+            isHitted = false;
             transform.LookAt(other.gameObject.transform.position);
             Attack();
         }
-       
-
-        //if (other.gameObject.transform.tag == "Army")
-        //{
-        //    if (other.GetType() == typeof(SphereCollider))
-        //    {
-        //        Army army = other.gameObject.GetComponent<Army>();
-        //        //여기 넘 맘에안듬 충돌할때마다 가져오는거 개빡침
-        //
-        //        float enemyDmg = army.GetDmg();
-        //
-        //        hp -= enemyDmg - def;
-        //
-        //        Debug.Log(this.data.prefab + "가" + other.gameObject.transform + "와 충돌");
-        //        if (hp <= 0)
-        //        {
-        //            isDying = true;
-        //            //atkCollider.enabled = false;
-        //            //bodyCollider.enabled = false;
-        //            animator.SetTrigger("Dead");
-        //        }
-        //    }
-        //    else if (other.GetType() == typeof(CapsuleCollider))
-        //    {
-        //        Attack();
-        //    }
-        //}
     }
-
-    private void SetDestination()
+    private void ShowHpBar()
     {
+        //if(isSelected)
+        //    hpBar.SetActiveProgressBar(true);
 
+        if (time > 0.0f)
+            hpBar.SetActiveProgressBar(true);
+        else
+            hpBar.SetActiveProgressBar(false);
+
+        time -= 1.0f * Time.deltaTime;
     }
 }

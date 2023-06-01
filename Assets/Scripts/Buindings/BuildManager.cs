@@ -59,9 +59,9 @@ public class BuildManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //AddBuilding(2000);
-        //target.transform.position = Vector3.zero;
-        //target = null;
+        AddBuilding(2000);
+        target.transform.position = Vector3.zero;
+        target = null;
     }
 
     // Update is called once per frame

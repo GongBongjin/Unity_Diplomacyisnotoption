@@ -144,30 +144,33 @@ public class SelectionBox : MonoBehaviour
         {
             foreach (GameObject obj in selectedObjects[key])
             {
-                string tag = obj.transform.tag;
+                Objects objects = obj.GetComponent<Objects>();
+                objects.SetSelectObject(false);
+
+                //string tag = obj.transform.tag;
                 //if (obj.gameObject.transform.tag == "Army")
                 //{
                 //    army = obj.GetComponent<Army>();
                 //    army.SetSelectOption(false);
                 //}
-                switch (tag)
-                {
-                    case "Army":
-                        obj.GetComponent<Character>().SetSelectOption(false);
-                        break;
-                    case "Enemy":
-                        obj.GetComponent<Character>().SetSelectOption(false);
-                        break;
-                    case "Citizen":
-                        obj.GetComponent<Citizen>().SetSelectObject(false);
-                        break;
-                    case "Building":
-                        obj.GetComponent<Building>().SetSelectObject(false);
-                        break;
-                    case "Product":
-                        //obj.GetComponent<ProductObject>().SetSelectObject(false);
-                        break;
-                }
+                //switch (tag)
+                //{
+                //    case "Army":
+                //        obj.GetComponent<Character>().SetSelectOption(false);
+                //        break;
+                //    case "Enemy":
+                //        obj.GetComponent<Character>().SetSelectOption(false);
+                //        break;
+                //    case "Citizen":
+                //        obj.GetComponent<Citizen>().SetSelectObject(false);
+                //        break;
+                //    case "Building":
+                //        obj.GetComponent<Building>().SetSelectObject(false);
+                //        break;
+                //    case "Product":
+                //        //obj.GetComponent<ProductObject>().SetSelectObject(false);
+                //        break;
+                //}
             }
         }
         selectedObjects.Clear();
@@ -267,18 +270,18 @@ public class SelectionBox : MonoBehaviour
                 break;
             case 'F':
                 // ¾îÅÃ ¶¥
-
+                AttackSelectedObjects();
                 break;
             case 'P':
                 // ¼øÂû
-                //PatrolSelectedObjects();
+                PatrolSelectedObjects();
                 break;
         }
     }
 
     private void Move()
     {
-        if (Input.GetMouseButtonDown(1)|| isCommandM || isCommandP )
+        if (Input.GetMouseButtonDown(1)|| isCommandM)
         {
             if (!isMoveable) return;
 
@@ -311,8 +314,10 @@ public class SelectionBox : MonoBehaviour
             {
                 if (obj.tag.Equals("Army") || obj.tag.Equals("Enemy"))
                 {
-                    Character character = obj.GetComponent<Character>();
-                    character.SetSelectOption(true);
+                    //Character character = obj.GetComponent<Character>();
+                    //character.SetSelectOption(true);
+                    Objects objects = obj.GetComponent<Objects>();
+                    objects.SetSelectObject(true);
                 }
                 
             }
@@ -342,6 +347,9 @@ public class SelectionBox : MonoBehaviour
                 //verticalCount+=6;
                 Army army = obj.GetComponent<Army>();
 
+                if(army.isPatrol)
+                    army.isPatrol = false;
+
                 //if (verticalCount > 15)
                 //{
                 //    verticalCount = -15;
@@ -363,26 +371,65 @@ public class SelectionBox : MonoBehaviour
             {
                 Army army = obj.GetComponent<Army>();
 
+                if (army.isPatrol)
+                    army.isPatrol = false;
+
                 army.StopCommand();
+            }
+        }
+    }
+
+    private void AttackSelectedObjects()
+    {
+        Enemy enmy = null;
+
+        Vector3 mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.farClipPlane);
+        Ray ray = Camera.main.ScreenPointToRay(mousePos);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            GameObject gameObject = hit.collider.gameObject;
+            enmy = gameObject.GetComponent<Enemy>();
+        }
+
+        foreach (int key in selectedObjects.Keys)
+        {
+            foreach (GameObject obj in selectedObjects[key])
+            {
+                Army army = obj.GetComponent<Army>();
+
+                if (army.isPatrol)
+                    army.isPatrol = false;
+
+                army.AttackCommand(enmy);
             }
         }
     }
 
     private void PatrolSelectedObjects()
     {
-        while(isCommandP)
-        {
-            foreach (int key in selectedObjects.Keys)
-            {
-                foreach (GameObject obj in selectedObjects[key])
-                {
-                    Army army = obj.GetComponent<Army>();
+        Vector3 mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.farClipPlane);
+        Ray ray = Camera.main.ScreenPointToRay(mousePos);
+        RaycastHit hit;
 
-                    army.StopCommand();
+        if(selectedObjects.Count!=0)
+        {
+            if (Physics.Raycast(ray, out hit))
+            {
+                Vector3 destPos = new Vector3(hit.point.x, 0, hit.point.z);
+
+                foreach (int key in selectedObjects.Keys)
+                {
+                    foreach (GameObject obj in selectedObjects[key])
+                    {
+                        Army army = obj.GetComponent<Army>();
+
+                        army.PatrolCommand(destPos);
+                    }
                 }
             }
         }
-       
     }
 
     private Vector3 SetDestPos(int verticalCount, int horizontalCount, Vector3 mousePos)

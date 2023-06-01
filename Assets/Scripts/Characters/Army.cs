@@ -6,7 +6,11 @@ using UnityEngine;
 public class Army : Character
 {
     private Enemy target;
+    private Vector3 patrolCurrentPos;
+    private Vector3 patrolPos;
 
+    private bool isTest = true;
+    public bool isPatrol;
     public bool isTargeting;
 
     protected override void Start()
@@ -16,8 +20,9 @@ public class Army : Character
 
     protected override void Update()
     {
-        if(target != null && !isTargeting) 
-            Move(target.transform.position);
+        PatrolMove();
+
+        ApporachDestination();
 
         base.Update();
     }
@@ -27,12 +32,38 @@ public class Army : Character
         if (!isTargeting)
         {
             if (isAttacking) return;
-            if (isDying) return;
         }
+
+        if (isDying) return;
 
         animator.SetFloat("MoveSpeed", 3.0f);
         nvAgent.SetDestination(destPos);
+
+        //Debug.Log("cibla" + nvAgent.destination);
+        //Debug.Log(nvAgent.SetDestination(destPos));
+
+        //float distance = Vector3.Distance(transform.position, destPos);
+        //if (Vector3.Distance(transform.position, destPos) < 1.0f || isAttacking)
+        //{
+        //    animator.SetFloat("MoveSpeed", 0.0f);
+        //    nvAgent.isStopped = true;
+        //    nvAgent.ResetPath();
+        //}
+
         isTargeting = false;
+    }
+
+    private void ApporachDestination()
+    {
+        if (isDying) return;
+
+        float distance = Vector3.Distance(transform.position, nvAgent.destination);
+        if (distance < 1.0f || isAttacking)
+        {
+            animator.SetFloat("MoveSpeed", 0.0f);
+            nvAgent.isStopped = true;
+            nvAgent.ResetPath();
+        }
     }
 
     public override void Attack()
@@ -40,7 +71,6 @@ public class Army : Character
         if (isAttacking) return;
         if (isDying) return;
 
-        isAttacking = true;
         nvAgent.isStopped = true;
         nvAgent.ResetPath();
         animator.SetTrigger("Attack");
@@ -54,18 +84,27 @@ public class Army : Character
 
         if (other.gameObject.transform.tag == "Enemy")
         {
-            if(other.GetType() == typeof(SphereCollider))
+            if (isPatrol) 
+                isPatrol = false;
+            if (other.GetType() == typeof(SphereCollider))
             {
-                hp -= target.GetDmg() - def;
+                //if(target.GetAttacking())//
+                    hp -= target.GetDmg() - (target.GetDmg()*(def/100));
 
                 if (hp <= 0)
                 {
                     isDying = true;
                     animator.SetTrigger("Dead");
                 }
+                isHitted = true;
+                if (isHitted)
+                    Move(target.transform.position);
+
             }
+
             else if(other.GetType() == typeof(CapsuleCollider))
             {
+                isHitted = false;
                 transform.LookAt(target.transform.position);
                 Attack();
             }
@@ -75,29 +114,64 @@ public class Army : Character
     //SelectionBox Command Functions
     public void StopCommand()
     {
+        if (isDying) return;
+
         nvAgent.isStopped = true;
         nvAgent.ResetPath();
     }
 
-    public void AttackCommand(Vector3 destPos)
+    public void AttackCommand(Enemy enemy)
     {
-        //destPos의 일정범위내에 적군이 있는지에 대한 판단을 해야함
-        //피격을 당한다면?
-        //
+        target = enemy;
+
+        Move(target.transform.position);
     }
 
-    public void PatrolCommand(Vector3 currentPos, Vector3 nextPos)
+    public void PatrolCommand(Vector3 nextPos)
     {
-        //현재 위치와 다음 위치를 입력받아서 아래의 내용 적용.
-        animator.SetFloat("MoveSpeed", 3.0f);
-        nvAgent.SetDestination(nextPos);
+        isPatrol = true;
 
-        if (Vector3.Distance(transform.position, nextPos) < 1.0f)
+        patrolCurrentPos = transform.position;
+        patrolPos = nextPos;
+    }
+
+    private void PatrolMove()
+    {
+        if(isDying) return;
+
+        if(isPatrol)
         {
-            nvAgent.ResetPath();
+            if(isTest)
+            {     
+                nvAgent.SetDestination(patrolPos);
+
+                animator.SetFloat("MoveSpeed", 3.0f);
+
+                if (Vector3.Distance(transform.position, patrolPos) < 1.0f)
+                {
+                    isTest = false;
+
+                    animator.SetFloat("MoveSpeed", 0.0f);
+
+                    //nvAgent.ResetPath();
+                }
+            }
+
+            else
+            {
+                nvAgent.SetDestination(patrolCurrentPos);
+
+                animator.SetFloat("MoveSpeed", 3.0f);
+
+                if (Vector3.Distance(transform.position, patrolCurrentPos) < 1.0f)
+                {
+                    isTest = true;
+
+                    animator.SetFloat("MoveSpeed", 0.0f);
+
+                    //nvAgent.ResetPath();
+                }
+            }
         }
-
     }
-
-
 }

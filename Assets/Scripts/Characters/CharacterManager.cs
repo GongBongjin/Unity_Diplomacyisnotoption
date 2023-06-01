@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -34,6 +35,11 @@ public class CharacterManager : MonoBehaviour
     private Dictionary<CharacterKey, GameObject> characterPrefabs = new Dictionary<CharacterKey, GameObject>();
     private Dictionary<CharacterKey, List<GameObject>> characterPools = new Dictionary<CharacterKey, List<GameObject>>();
 
+    private Vector3[] spawnPos = new Vector3[4];
+
+    private int dCount = 0;
+    private bool isEvnentOn = false;
+
     private void Awake()
     {
         instance = this;
@@ -41,6 +47,12 @@ public class CharacterManager : MonoBehaviour
 
     private void Start()
     {
+        spawnPos[0] = new Vector3(-70, 0, -70);
+        spawnPos[1] = new Vector3(-70, 0, +70);
+        spawnPos[2] = new Vector3(+70, 0, -70);
+        spawnPos[3] = new Vector3(+70, 0, +70);
+
+
         characterDatas = DataManager.instance.GetCharacterDatas();
 
         character = new GameObject("Character");
@@ -52,19 +64,22 @@ public class CharacterManager : MonoBehaviour
             characterPrefabs.Add((CharacterKey)data.Value.key, characterPrefab);//여기서 DataManager에 넣은 key값, prefab 넣고있고
         }
 
-        CreateCharacter(CharacterKey.KNIGHT,1);
-        CreateCharacter(CharacterKey.DOGNIGHT, 1);
-        //CreateCharacter(CharacterKey.SPEARMAN, 2);
-        //CreateCharacter(CharacterKey.WIZARD, 2);
-        //CreateCharacter(CharacterKey.GRUNT, 2);
+        CreateCharacter(CharacterKey.KNIGHT,4);
+        CreateCharacter(CharacterKey.DOGNIGHT, 2);
+        CreateCharacter(CharacterKey.SPEARMAN, 2);
+        CreateCharacter(CharacterKey.WIZARD, 3);
+        CreateCharacter(CharacterKey.GRUNT, 1);
 
-        //CreateCharacter(CharacterKey.TURTLE, 1);
-        //CreateCharacter(CharacterKey.SLIME, 10);
-        //CreateCharacter(CharacterKey.MUSHROOM, 10);
-        //CreateCharacter(CharacterKey.CACTUS, 10);
-        //CreateCharacter(CharacterKey.BEHOLDER, 10);
-        CreateCharacter(CharacterKey.GOLEM, 1);
+        //CreateCharacter(CharacterKey.TURTLE, 3);
+        //CreateCharacter(CharacterKey.SLIME, 12);
+        //CreateCharacter(CharacterKey.MUSHROOM, 8);
+        //CreateCharacter(CharacterKey.CACTUS, 8);
+        //CreateCharacter(CharacterKey.BEHOLDER, 8);
+        //CreateCharacter(CharacterKey.GOLEM, 16);
         //CreateCharacter(CharacterKey.USURPER, 1);
+
+        SpawnArmies();
+        SpawnEnmies();
     }
 
     // 추가(생산시 필요 자원가져와야함)
@@ -77,7 +92,6 @@ public class CharacterManager : MonoBehaviour
     // 추가
     public void CreateCharacter(int key, Vector3 position, Vector3 rallyPoint = new Vector3())
     {
-
         if(rallyPoint.Equals(Vector3.zero))
         {
             // not move
@@ -95,22 +109,51 @@ public class CharacterManager : MonoBehaviour
             Character character = obj.GetComponent<Character>();
 
             character.SetData(characterDatas[(int)key]);
-            obj.transform.position = new Vector3(Random.Range(-20f, 10f), 0, Random.Range(-10f, 20f));
-            obj.SetActive(true);
+            obj.SetActive(false);
 
             temp.Add(obj);
         }
         characterPools.Add(key, temp);
     }
 
-    private void SpawnCharacter(CharacterKey key)
+    private void SpawnArmies()
     {
-        foreach (GameObject obj in characterPools[(CharacterKey)key])
+        foreach (CharacterKey key in characterPools.Keys)
         {
-            if(!obj.activeSelf)
+            if (key >= CharacterKey.TURTLE) return;
+
+            foreach (GameObject obj in characterPools[key])
             {
-                obj.transform.position = new Vector3(Random.Range(-20f, 10f), 0, Random.Range(-10f, 20f));
-                obj.SetActive(true);
+                if (!obj.activeSelf)
+                {
+                    obj.transform.position = new Vector3(Random.Range(-15, 15), 0.0f,
+                        Random.Range(25, 40));
+                    obj.SetActive(true);
+                }
+            }
+        }
+    }
+
+
+    private void SpawnEnmies()
+    {
+        int spawnCount = 0;
+
+        foreach (CharacterKey key in characterPools.Keys)
+        {
+            if (key < CharacterKey.TURTLE) continue;
+
+            foreach (GameObject obj in characterPools[key])
+            {
+                if (!obj.activeSelf)
+                {
+                    obj.transform.position = new Vector3(Random.Range(spawnPos[spawnCount].x - 10f, spawnPos[spawnCount].x + 10f), 0,
+                        Random.Range(spawnPos[spawnCount].x - 10f, spawnPos[spawnCount].x + 10f));
+                    obj.SetActive(true);
+                    spawnCount++;
+                    if (spawnCount > 3)
+                        spawnCount = 0;
+                }
             }
         }
     }
@@ -168,42 +211,36 @@ public class CharacterManager : MonoBehaviour
             }
         }
     }
-}
 
-
-
-/*//UIManager
-//변수 : 캐릭터들 데이터 characterData
-//변수 : 빌딩 데이터 buildingData
-//
-//enum DataType
-//{
-    chData
-    bData
-//}
-//private void showInfo(DataType type)
-{
-    if(type == chdata)
-
+    public void SetAttackCityHall(int dayCount)
     {
-        atkinfo = chData.value.atkvalue;
-        definfo = chData.value.defvalue;
-    
+        if (dayCount % 3 == 0)      
+            isEvnentOn = true;
+        else
+            isEvnentOn = false;
+
+        if(isEvnentOn)
+        {
+            foreach (CharacterKey key in characterPools.Keys)
+            {
+                if (key < CharacterKey.TURTLE) continue;
+
+                int count = characterPools[key].Count;
+
+                for (int i = 0; i<count; i+=1)
+                {
+                    GameObject obj = characterPools[key][i];
+                        
+                    Enemy enemy = obj.GetComponent<Enemy>();
+                    
+                    if(!enemy.isMainEvent)
+                        enemy.isMainEvent = true;
+
+                    //enemy.Move(enemy.targetPos);
+                }
+            }
+            dCount++;
+        }
+        
     }
-
-//private void UIfunction()
-{
-    Image image = chdata.value.sprite;
-    image.transform.position = 수기;
-    
-    
-    vector<Image> images;
-
-    images.push_back(image);
-
-    foreach(Image obj in images)
-    obj.enable = true;
 }
-
-
-*/
