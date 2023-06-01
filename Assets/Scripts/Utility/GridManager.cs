@@ -74,6 +74,18 @@ public class GridManager : MonoBehaviour
         _grid.enabled = isShowGrid;
     }
     // BuildManager call this function
+
+    public void SetSlotDefault()
+    {
+        for (int z = 0; z < GRID_SLOT_HEIGHT_COUNT; z++)
+        {
+            for (int x = 0; x < GRID_SLOT_WIDTH_COUNT; x++)
+            {
+                int index = z * GRID_SLOT_HEIGHT_COUNT + x;
+                gridSlots[index].SetActive(false);
+            }
+       }
+    }
     public void ShowGridSlot()
     {
         Vector3 mPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.farClipPlane);
@@ -144,7 +156,6 @@ public class GridManager : MonoBehaviour
         z -= (int)(TERRAIN_SIZE_HEIGHT * 0.5f);
 
         Vector3 basePosition = new Vector3(x, 0, z);
-        Debug.Log(basePosition);
         ShowGridSlot(basePosition, matrixSize);
         return basePosition;
     }

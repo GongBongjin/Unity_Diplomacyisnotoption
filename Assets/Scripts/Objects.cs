@@ -1,6 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Objects : MonoBehaviour
@@ -15,6 +13,18 @@ public class Objects : MonoBehaviour
     {
         selectCircle.SetActive(isSelected);
         hpBar.SetActiveProgressBar(isSelected);
+    }
+
+    public void SelectObjectFlicker()
+    {
+        StartCoroutine(Flicker());
+    }
+
+    IEnumerator Flicker()
+    {
+        SetSelectObject(true);
+        yield return new WaitForSeconds(0.5f);
+        SetSelectObject(false);
     }
 
     protected void Update()

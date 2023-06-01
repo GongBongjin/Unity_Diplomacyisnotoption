@@ -1,0 +1,9 @@
+﻿Key,Name,MaxAmount,ProductTime,Output,Icon,Prefab,Description
+3000,농지,100,10,10,Icons/Products/Farmland,Products/Farm,소중한 식량을 얻을 수 있습니다.
+3001,뿔 나무,20,5,5,Icons/Products/ConeTree,Products/ConeTree,원뿔처럼 생긴 나무입니다.
+3002,세쿼이아,30,5,6,Icons/Products/Sequoia,Products/Sequoia,소나무같은 큰 나무입니다.
+3003,뚱 나무,20,5,5,Icons/Products/SphereTree,Products/SphereTree,둥글둥글한 나무입니다.
+3004,석재,20,5,5,Icons/Products/Stone1,Products/Stone1,단단한 돌 입니다.
+3005,석재,30,5,6,Icons/Products/Stone2,Products/Stone2,단단한 돌 입니다.
+3006,광물,20,5,5,Icons/Products/Copper1,Products/Copper1,귀중한 광물입니다.
+3007,광물,30,5,6,Icons/Products/Copper2,Products/Copper2,귀중한 광물입니다.

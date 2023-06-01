@@ -18,7 +18,8 @@ public class ResourcesManager : MonoBehaviour
 {
     struct NaturalResources
     {
-        public string name;
+        public Product name;
+        public int value;
         public Slider slider;
         public Text text;
     }
@@ -32,26 +33,17 @@ public class ResourcesManager : MonoBehaviour
     private int maxPopulation = 10;
     private int maxStorage = 100;
 
-    private int population;     // 인구
-    private int food;           // 식량
-    private int wood;           // 목재
-    private int stone;          // 석재
-    private int copper;         // 구리
-
-    private delegate void onResourcesChange();
-    private onResourcesChange OnResourcesChange;
 
     private void Awake()
     {
         SetResourceObject();
-        OnResourcesChange += SetSliderValue;
     }
 
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        SetSliderValue();
     }
 
     // Update is called once per frame
@@ -67,7 +59,8 @@ public class ResourcesManager : MonoBehaviour
         for (int i = 0; i < cnt; i++)
         {
             resources[i] = new NaturalResources();
-            resources[i].name = ResourceParents[i].name;
+            resources[i].name = (Product)i;
+            resources[i].value = 0;
             resources[i].slider = ResourceParents[i].transform.Find("Slider").GetComponent<Slider>();
             resources[i].text = ResourceParents[i].transform.Find("Text_Value").GetComponent<Text>();
         }
@@ -78,8 +71,16 @@ public class ResourcesManager : MonoBehaviour
         int cnt = ResourceParents.Length;
         for (int i = 0; i < cnt; i++)
         {
-            resources[i].slider.value = 1.0f;
-            //resources[i].text.text
+            if(i == 0)
+            {
+                resources[i].slider.value = resources[i].value / (maxPopulation * 1.0f);
+                resources[i].text.text = resources[i].value.ToString() + "/" + maxPopulation.ToString();
+            }
+            else
+            {
+                resources[i].slider.value = resources[i].value / (maxStorage * 1.0f);
+                resources[i].text.text = resources[i].value.ToString() + "/" + maxStorage.ToString();
+            }
         }
     }
 
@@ -97,61 +98,27 @@ public class ResourcesManager : MonoBehaviour
 
     public void IncreasesResources(Product product, int qty)
     {
-        switch(product)
+        for(int i = 0; i < resources.Length; i++)
         {
-            case Product.POPULATION:
-                population += qty;
-                break;
-            case Product.FOOD:
-                food += qty;
-                break;
-            case Product.WOOD:
-                wood += qty; 
-                break;
-            case Product.STONE:
-                stone += qty;
-                break;
-            case Product.COPPER:
-                copper += qty;
-                break;
+            if (product.Equals(resources[i].name))
+            {
+                resources[i].value += qty;
+            }
         }
         SetSliderValue();
     }
 
     public void DecreasesResources(Product product, int qty)
     {
-        switch (product)
+        for (int i = 0; i < resources.Length; i++)
         {
-            case Product.POPULATION:
-                if (population >= qty)
+            if (product.Equals(resources[i].name))
+            {
+                if (resources[i].value >= qty)
                 {
-                    population -= qty;
+                    resources[i].value -= qty;
                 }
-                break;
-            case Product.FOOD:
-                if(food >= qty)
-                {
-                    food -= qty;
-                }
-                break;
-            case Product.WOOD:
-                if(wood >= qty)
-                {
-                    wood -= qty;
-                }
-                break;
-            case Product.STONE:
-                if(stone >= qty)
-                {
-                    stone -= qty;
-                }
-                break;
-            case Product.COPPER:
-                if(copper >= qty)
-                {
-                    copper -= qty;
-                }
-                break;
+            }
         }
         SetSliderValue();
     }

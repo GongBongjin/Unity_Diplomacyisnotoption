@@ -1,11 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Resources;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEngine.GraphicsBuffer;
 
 public class UIManager : MonoBehaviour
 {
@@ -85,6 +79,15 @@ public class UIManager : MonoBehaviour
     {
         CharacterManager.instance.SetAttackCityHall(day);
         text_Day.text = day.ToString();
+    }
+
+    public void IncreasMaxPopulation(int value)
+    {
+        resourceManager.UpdateMaxPopulation(value);
+    }
+    public void IncreasMaxStorage(int value)
+    {
+        resourceManager.UpdateMaxStorage(value);
     }
 
     public void IncreasesResources(Product product, int qty)

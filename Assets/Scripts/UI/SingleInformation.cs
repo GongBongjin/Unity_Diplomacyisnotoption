@@ -77,19 +77,37 @@ public class SingleInformation : MonoBehaviour
     public void ShowInformation(int key, int count = 1)
     {
         targetKey = key;
-
         int type = key / 1000;
-        if (type == 1)
+        SetAbilities(false);
+        SetProduction(false);
+        if (key == 1000)
         {
-            if (key == 1000) return;
+            CitizenData characterData = CitizenManager.Instance.GetCitizenData();
+            img_Profile.sprite = characterData.icon;
+            text_Name.text = characterData.name;
+            text_GroupCount.text = count.ToString();
+            text_Discription.text = characterData.description;
+            //SetAbilities();
+            //text_AbilityValue[0].text = characterData..ToString();
+            //text_AbilityValue[1].text = characterData.def.ToString();
+            //text_AbilityValue[2].text = characterData.moveSpeed.ToString();
+            //text_AbilityValue[3].text = characterData.sightValue.ToString();
+            //text_AbilityValue[4].text = characterData.attackSpeed.ToString();
+        }
+        else if (type == 1)
+        {
             CharacterData characterData = DataManager.instance.GetCharacterDatas(key);
-
+            
             img_Profile.sprite = characterData.sprite;
             text_Name.text = characterData.prefab.name;
             text_GroupCount.text = count.ToString();
             text_Discription.text = characterData.description;
-
-            SetAbilities();
+            SetAbilities(true);
+            text_AbilityValue[0].text = characterData.dmg.ToString();
+            text_AbilityValue[1].text = characterData.def.ToString();
+            text_AbilityValue[2].text = characterData.moveSpeed.ToString();
+            text_AbilityValue[3].text = characterData.sightValue.ToString();
+            text_AbilityValue[4].text = characterData.attackSpeed.ToString();
         }
         else if (type == 2)
         {
@@ -104,15 +122,30 @@ public class SingleInformation : MonoBehaviour
             //    abilities[i].SetActive(false);
             //}
         }
+        else if (type == 3)
+        {
+            // Building
+            ProductData productData = TerrainObjectManager.Instance.GetProductData(key);
+            img_Profile.sprite = productData.icon;
+            text_Name.text = productData.name;
+            text_GroupCount.text = count.ToString();
+            text_Discription.text = productData.description;
+            //for (int i = 0; i < abilities.Length; i++)
+            //{
+            //    abilities[i].SetActive(false);
+            //}
+        }
     }
 
-    private void SetAbilities()
+    private void SetAbilities(bool active)
     {
-        production.SetActive(false);
-        ability.SetActive(true);
-        // Character
-        // getCharacterAbility(key)
+        ability.SetActive(active);
     }
+    private void SetProduction(bool active)
+    {
+        production.SetActive(active);
+    }
+        
 
     // 유닛이나 업그레이드 시 소요시간 업데이트
     public void UpdateProductionDuration(float curValue, float maxValue)

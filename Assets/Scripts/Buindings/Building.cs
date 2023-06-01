@@ -116,12 +116,13 @@ public class Building : Objects
             CitizenManager.Instance.CreateCharacter(pos, rallyPoint);
         else
             CharacterManager.instance.CreateCharacter(key, FindUnitPlacement());
+        UIManager.Instance.IncreasesResources(Product.POPULATION, 1);
     }
 
     private Vector3 FindUnitPlacement()
     {
         float baseLength = matrixSize * GridManager.GRID_SIZE * 0.5f;
-        Vector3 direction = Vector3.back;
+        Vector3 direction = Vector3.forward;
         Vector3 basePos = transform.position + Vector3.up;
         float dist = baseLength;
         for (int i = 0; i > -360; i-=3)
@@ -138,7 +139,7 @@ public class Building : Objects
 
             // πÊ«‚
             Quaternion rot = Quaternion.Euler(0, i, 0);
-            direction = rot * Vector3.back;
+            direction = rot * Vector3.forward;
 
             RaycastHit[] hits = Physics.RaycastAll(basePos, direction, dist + createOffset);
             
