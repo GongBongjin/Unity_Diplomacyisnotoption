@@ -46,8 +46,6 @@ public class Citizen : MonoBehaviour
     bool isBuild = false;
 
 
-
-
     private void Awake()
     {
         animator = GetComponent<Animator>();
@@ -72,22 +70,19 @@ public class Citizen : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetMouseButtonDown(1))
-        {
-            // 우클릭시 이동
-            Vector3 mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.farClipPlane);
-            Ray ray = Camera.main.ScreenPointToRay(mousePos);
-
-            if (Physics.Raycast(ray, out RaycastHit hit))
-            {
-                Vector3 destPos = new Vector3(hit.point.x, 0, hit.point.z);
-
-                //Debug.Log(hit.transform.name);
-                MoveDestination(destPos);
-                //nvAgent.destination = desPos;
-                //selectedObject.transform.position = desPos;
-            }
-        }
+        //if(Input.GetMouseButtonDown(1))
+        //{
+        //    // 우클릭시 이동
+        //    Vector3 mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.farClipPlane);
+        //    Ray ray = Camera.main.ScreenPointToRay(mousePos);
+        //
+        //    if (Physics.Raycast(ray, out RaycastHit hit))
+        //    {
+        //        Vector3 destPos = new Vector3(hit.point.x, 0, hit.point.z);
+        //
+        //        MoveDestination(destPos);
+        //    }
+        //}
 
         if (isMove)
         {

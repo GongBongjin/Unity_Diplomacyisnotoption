@@ -23,6 +23,17 @@ public class Command
         LoadCommandData();
         LoadCommandList();
     }
+
+    public CommandData GetCommand(string name)
+    {
+        return commands[name];
+    }
+
+    public CommandData[] GetCommands(int key)
+    {
+        return objectCommand[key];
+    }
+
     private void LoadCommandData()
     {
         List<Dictionary<string, object>> reader = CSVReader.Read("TextData/CommandData");
@@ -56,9 +67,5 @@ public class Command
         }
     }
 
-    public CommandData[] GetCommands(int key)
-    {
-        return objectCommand[key];
-    }
 }
 

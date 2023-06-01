@@ -181,17 +181,9 @@ public class SelectionBox : MonoBehaviour
         selectionBox.rectTransform.sizeDelta = selectionRect.size;
 
         selectedObjects.Clear();
-        //foreach (GameObject obj in FindObjectsOfType<GameObject>())
-        //{
-        //    if (obj.transform.tag == "Army" && selectionRect.Contains(Camera.main.WorldToScreenPoint(obj.transform.position)))
-        //    {
-        //        SelectObject(obj);
-        //    }
-        //}
-        // 캐릭터 매니저에서 넣어주는걸로...?
         CharacterManager.instance.GetObjectsContainedInRect(selectionRect);
-        // citizenManager를 추가해서 넣어줄 것
-
+        // -------------------------------------------------
+        CitizenManager.Instance.GetObjectsContainedInRect(selectionRect);
     }
 
     // 아래 함수 변형
@@ -284,7 +276,6 @@ public class SelectionBox : MonoBehaviour
                     Character character = obj.GetComponent<Character>();
                     character.SetSelectOption(true);
                 }
-                
             }
         }
         UIManager.Instance.ShowInformation(keys, counts);
@@ -307,6 +298,14 @@ public class SelectionBox : MonoBehaviour
 
         foreach (int key in selectedObjects.Keys)
         {
+            if(key == 1000)
+            {
+                foreach (GameObject obj in selectedObjects[key])
+                {
+                    obj.GetComponent<Citizen>().MoveDestination(destPos);
+                }
+                continue;
+            }
             foreach (GameObject obj in selectedObjects[key])
             {
                 //verticalCount+=6;

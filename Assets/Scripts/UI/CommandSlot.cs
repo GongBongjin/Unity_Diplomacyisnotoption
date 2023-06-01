@@ -79,6 +79,18 @@ public class CommandSlot : MonoBehaviour
             img_SlotIcons[i].sprite = commandDatas[i].icon;
         }
     }
+    public void SetDefaultCommandSlot()
+    {
+        //commandDatas = null;
+        targetKey = 0;
+        CommandData cmd = command.GetCommand("NONE");
+
+        for (int i = 0; i < slots.Length; i++)
+        {
+            img_SlotIcons[i].sprite = cmd.icon;
+        }
+    }
+
 
     // 명령 버튼 클릭
     public void CommandSlotClick(int idx)
@@ -97,6 +109,7 @@ public class CommandSlot : MonoBehaviour
         }
         else if (key == 1000)
         {
+            BuildManager.Instance.GetTownHall().CreateUnit(key);
             // 시민 생산
             // 시청에게 정보 넘겨주기
         }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,30 +16,37 @@ public enum Product
 }
 public class ResourcesManager : MonoBehaviour
 {
-    private static ResourcesManager instance = null;
-    public ResourcesManager Instance
+    struct NaturalResources
     {
-        get 
-        {
-            if (instance == null)
-                instance = this;
-            return instance; 
-        }
+        public string name;
+        public Slider slider;
+        public Text text;
     }
 
-    private void Awake()
-    {
-        instance = this;
+    [Header("Resources")]
+    [SerializeField, Tooltip("(popul, food, wood, stone, copper) Object in ResourcePanel")]
+    GameObject[] ResourceParents;
+    NaturalResources[] resources;
 
-    }
 
-    private int maxPopulation;
+    private int maxPopulation = 10;
+    private int maxStorage = 100;
+
     private int population;     // 인구
-
     private int food;           // 식량
     private int wood;           // 목재
     private int stone;          // 석재
     private int copper;         // 구리
+
+    private delegate void onResourcesChange();
+    private onResourcesChange OnResourcesChange;
+
+    private void Awake()
+    {
+        SetResourceObject();
+        OnResourcesChange += SetSliderValue;
+    }
+
 
     // Start is called before the first frame update
     void Start()
@@ -52,10 +60,39 @@ public class ResourcesManager : MonoBehaviour
         
     }
 
+    private void SetResourceObject()
+    {
+        int cnt = ResourceParents.Length;
+        resources = new NaturalResources[cnt];
+        for (int i = 0; i < cnt; i++)
+        {
+            resources[i] = new NaturalResources();
+            resources[i].name = ResourceParents[i].name;
+            resources[i].slider = ResourceParents[i].transform.Find("Slider").GetComponent<Slider>();
+            resources[i].text = ResourceParents[i].transform.Find("Text_Value").GetComponent<Text>();
+        }
+    }
+
+    private void SetSliderValue()
+    {
+        int cnt = ResourceParents.Length;
+        for (int i = 0; i < cnt; i++)
+        {
+            resources[i].slider.value = 1.0f;
+            //resources[i].text.text
+        }
+    }
+
 
     public void UpdateMaxPopulation(int value)
     {
         maxPopulation += value;
+        SetSliderValue();
+    }
+    public void UpdateMaxStorage(int value)
+    {
+        maxStorage += value;
+        SetSliderValue();
     }
 
     public void IncreasesResources(Product product, int qty)
@@ -78,18 +115,23 @@ public class ResourcesManager : MonoBehaviour
                 copper += qty;
                 break;
         }
+        SetSliderValue();
     }
 
-    public bool DecreasesResources(Product product, int qty)
+    public void DecreasesResources(Product product, int qty)
     {
-        bool isDecrease = false;
         switch (product)
         {
+            case Product.POPULATION:
+                if (population >= qty)
+                {
+                    population -= qty;
+                }
+                break;
             case Product.FOOD:
                 if(food >= qty)
                 {
                     food -= qty;
-                    isDecrease = true;
                 }
                 break;
             case Product.WOOD:
@@ -111,6 +153,6 @@ public class ResourcesManager : MonoBehaviour
                 }
                 break;
         }
-        return isDecrease;
+        SetSliderValue();
     }
 }

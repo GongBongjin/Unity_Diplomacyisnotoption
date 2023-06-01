@@ -12,6 +12,8 @@ public class HpBar : MonoBehaviour
 
     [SerializeField] private bool isShow;
 
+    [SerializeField, Range(0.0f, 1.0f)] float fillRate;
+
     private void Awake()
     {
         meshRenderer = GetComponent<MeshRenderer>();
@@ -25,8 +27,9 @@ public class HpBar : MonoBehaviour
     {
         if (!isShow) return;
 
-        transform.LookAt(Camera.main.transform.position);
+        transform.LookAt(Camera.main.transform.position, Vector3.down);
     }
+    
 
     public void SetActiveProgressBar(bool active)
     {
@@ -49,6 +52,7 @@ public class HpBar : MonoBehaviour
     public void SetProgressBar(float fillRate)
     {
         // 0 to 1
+        this.fillRate = fillRate;
         material.SetFloat("_FillRate", fillRate);
     }
 

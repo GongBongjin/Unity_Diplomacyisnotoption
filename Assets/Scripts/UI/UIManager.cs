@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Resources;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,16 +31,8 @@ public class UIManager : MonoBehaviour
     private Text text_Day;
 
     #region [Resources]
-    struct NaturalResources {
-        public string name;
-        public Slider slider;
-        public Text text;
-    }
-
-    [Header("Resources")]
-    [SerializeField, Tooltip("(popul, food, wood, stone, copper) Object in ResourcePanel")]
-    GameObject[] ResourceParents;
-    NaturalResources[] resources;
+    ResourcesManager resourceManager;
+    
     #endregion
 
     [SerializeField] SingleInformation singleInfo;
@@ -54,8 +47,7 @@ public class UIManager : MonoBehaviour
 
         LoadCursor();
         LoadSpriteIcon();
-
-        SetResourceObject();
+        resourceManager = GetComponent<ResourcesManager>();
     }
 
     // Start is called before the first frame update
@@ -68,18 +60,7 @@ public class UIManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //if (Input.GetKeyDown(KeyCode.B))
-        //{
-        //    int[] tempKey = new int[1] { 1000 };
-        //    int[] tempCount = new int[1] { 1 };
-        //    ShowInformation(tempKey, tempCount);
-        //    //target = Instantiate(buildings["TownHall"]);
-        //}
-        // ChangeTimeTest
-        //if(Input.GetKeyDown(KeyCode.U)) 
-        //{
-        //    ChangeTime(temp); 
-        //}
+
     }
 
     private void LoadCursor()
@@ -96,18 +77,7 @@ public class UIManager : MonoBehaviour
     }
 
     // 자원 관리용 오브젝트 설정
-    private void SetResourceObject()
-    {
-        int cnt = ResourceParents.Length;
-        resources = new NaturalResources[cnt];
-        for (int i = 0; i < cnt; i++)
-        {
-            resources[i] = new NaturalResources();
-            resources[i].name = ResourceParents[i].name;
-            resources[i].slider = ResourceParents[i].transform.Find("Slider").GetComponent<Slider>();
-            resources[i].text = ResourceParents[i].transform.Find("Text_Value").GetComponent<Text>();
-        }
-    }
+    
     // 0.0f ~ 23.99f
     public void ChangeTime(float hour)
     {
@@ -123,15 +93,15 @@ public class UIManager : MonoBehaviour
         text_Day.text = day.ToString();
     }
 
-    // Resource 변할때마다 이벤트 호출
+    public void IncreasesResources(Product product, int qty)
+    {
+        resourceManager.IncreasesResources(product, qty);
+    }
+    public void DecreasesResources(Product product, int qty)
+    {
+        resourceManager.DecreasesResources(product, qty);
+    }
 
-
-    // Information
-    //public void ShowInformation(int key, int count)
-    //{
-    //    singleInfo.ShowInformation(key, count);
-    //}
-    
 
     public void ShowInformation(int[] keys, int[] count)
     {
@@ -141,6 +111,7 @@ public class UIManager : MonoBehaviour
         if (keys.Length == 0)
         {
             //clear
+            commandSlot.SetDefaultCommandSlot();
         }
         else if (keys.Length == 1)
         {
