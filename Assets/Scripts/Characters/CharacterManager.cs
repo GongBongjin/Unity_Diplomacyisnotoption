@@ -92,13 +92,20 @@ public class CharacterManager : MonoBehaviour
     // Ãß°¡
     public void CreateCharacter(int key, Vector3 position, Vector3 rallyPoint = new Vector3())
     {
-        if(rallyPoint.Equals(Vector3.zero))
+        GameObject obj = Instantiate(characterPrefabs[(CharacterKey)key], this.character.transform);
+        obj.transform.position = position;
+        Character character = obj.GetComponent<Character>();
+        character.SetData(characterDatas[(int)key]);
+        obj.SetActive(true);
+        characterPools[(CharacterKey)key].Add(obj);
+
+        if (rallyPoint.Equals(Vector3.zero))
         {
             // not move
         }
     }
 
-    private void CreateCharacter(CharacterKey key, int poolCount)
+    private void CreateCharacter(CharacterKey key, int poolCount = 1)
     {
         List<GameObject> temp = new List<GameObject>();
 

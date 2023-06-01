@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Rendering;
 
-public class Citizen : MonoBehaviour
+public class Citizen : Objects
 {
     const int gridSize = 5;
     enum CitizenState
@@ -29,10 +29,6 @@ public class Citizen : MonoBehaviour
     Transform rightHand;
     GameObject[] tools = new GameObject[4]; // 도끼, 망치, 괭이, 곡괭이
 
-    GameObject selectCircle;
-
-    HpBar hpBar;
-
     GameObject workTarget = null;     // 작업장
     GameObject storageHouse = null;    // 저장소
 
@@ -46,13 +42,14 @@ public class Citizen : MonoBehaviour
     bool isBuild = false;
 
 
-
-
     private void Awake()
     {
         animator = GetComponent<Animator>();
         nvAgent = GetComponent<NavMeshAgent>();
+
+        selectCircle = transform.Find("Circle").gameObject;
         hpBar = transform.Find("HpBar").GetComponent<HpBar>();
+        selectCircle.SetActive(false);
 
         if (rightHand == null)
             Debug.Log("<color=red>RightHand is Null</color>");
@@ -61,34 +58,27 @@ public class Citizen : MonoBehaviour
         tools[1] = rightHand.Find("Hammer").gameObject;
         tools[2] = rightHand.Find("Hoe").gameObject;
         tools[3] = rightHand.Find("PickAxe").gameObject;
-
-        selectCircle = transform.Find("Circle").gameObject;
-        SetSelectObject(false);
     }
 
     void Start()
     {
-        
     }
 
     void Update()
     {
-        if(Input.GetMouseButtonDown(1))
-        {
-            // 우클릭시 이동
-            Vector3 mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.farClipPlane);
-            Ray ray = Camera.main.ScreenPointToRay(mousePos);
-
-            if (Physics.Raycast(ray, out RaycastHit hit))
-            {
-                Vector3 destPos = new Vector3(hit.point.x, 0, hit.point.z);
-
-                Debug.Log(hit.transform.name);
-                MoveDestination(destPos);
-                //nvAgent.destination = desPos;
-                //selectedObject.transform.position = desPos;
-            }
-        }
+        //if(Input.GetMouseButtonDown(1))
+        //{
+        //    // 우클릭시 이동
+        //    Vector3 mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.farClipPlane);
+        //    Ray ray = Camera.main.ScreenPointToRay(mousePos);
+        //
+        //    if (Physics.Raycast(ray, out RaycastHit hit))
+        //    {
+        //        Vector3 destPos = new Vector3(hit.point.x, 0, hit.point.z);
+        //
+        //        MoveDestination(destPos);
+        //    }
+        //}
 
         if (isMove)
         {
@@ -101,12 +91,6 @@ public class Citizen : MonoBehaviour
         // workState 검사해서 행동 루틴 반복
 
         WorkRoutine();
-    }
-
-    public void SetSelectObject(bool isSelected) 
-    { 
-        selectCircle.SetActive(isSelected);
-        hpBar.SetActiveProgressBar(isSelected);
     }
 
     void WorkRoutine()
@@ -179,7 +163,7 @@ public class Citizen : MonoBehaviour
         }
     }
 
-    void MoveDestination(Vector3 destination)
+    public void MoveDestination(Vector3 destination)
     {
         nvAgent.destination = destination;
         SetCitizenAnimationState(CitizenState.Move);

@@ -20,8 +20,6 @@ public class SelectionBox : MonoBehaviour
     private bool isMoveable = true;
     private bool isCommandM;
     private bool isCommandP;
-    // CharacterKey-> int 로 변환
-    //public Dictionary<CharacterKey, List<GameObject>> selectedObjects = new Dictionary<CharacterKey, List<GameObject>>(); //현재 list 구조라서 GameObject가 아닌 Character 구조에다가 데이터를 넣어서 키정보가없음.
     public Dictionary<int, List<GameObject>> selectedObjects = new Dictionary<int, List<GameObject>>();
 
     //Drag
@@ -146,31 +144,6 @@ public class SelectionBox : MonoBehaviour
             {
                 Objects objects = obj.GetComponent<Objects>();
                 objects.SetSelectObject(false);
-
-                //string tag = obj.transform.tag;
-                //if (obj.gameObject.transform.tag == "Army")
-                //{
-                //    army = obj.GetComponent<Army>();
-                //    army.SetSelectOption(false);
-                //}
-                //switch (tag)
-                //{
-                //    case "Army":
-                //        obj.GetComponent<Character>().SetSelectOption(false);
-                //        break;
-                //    case "Enemy":
-                //        obj.GetComponent<Character>().SetSelectOption(false);
-                //        break;
-                //    case "Citizen":
-                //        obj.GetComponent<Citizen>().SetSelectObject(false);
-                //        break;
-                //    case "Building":
-                //        obj.GetComponent<Building>().SetSelectObject(false);
-                //        break;
-                //    case "Product":
-                //        //obj.GetComponent<ProductObject>().SetSelectObject(false);
-                //        break;
-                //}
             }
         }
         selectedObjects.Clear();
@@ -188,16 +161,8 @@ public class SelectionBox : MonoBehaviour
         selectionBox.rectTransform.sizeDelta = selectionRect.size;
 
         selectedObjects.Clear();
-        //foreach (GameObject obj in FindObjectsOfType<GameObject>())
-        //{
-        //    if (obj.transform.tag == "Army" && selectionRect.Contains(Camera.main.WorldToScreenPoint(obj.transform.position)))
-        //    {
-        //        SelectObject(obj);
-        //    }
-        //}
-        // 캐릭터 매니저에서 넣어주는걸로...?
         CharacterManager.instance.GetObjectsContainedInRect(selectionRect);
-        // citizenManager를 추가해서 넣어줄 것
+        CitizenManager.Instance.GetObjectsContainedInRect(selectionRect);
 
     }
 
@@ -206,32 +171,12 @@ public class SelectionBox : MonoBehaviour
     {
         if (selectedObjects.ContainsKey(key))
         {
-            //int i = selectedObjects[key].Count;
-            //selectedObjects[key].Insert(i, gameObject);
             selectedObjects[key].Add(gameObject);
         }
         else
         {
             selectedObjects.Add(key, new List<GameObject>());
             selectedObjects[key].Add(gameObject);
-        }
-    }
-
-    private void SelectObject(GameObject gameObject)
-    {
-        List<GameObject> temp = new List<GameObject>();
-
-        Character character = gameObject.GetComponent<Character>();
-        
-        if (selectedObjects.ContainsKey((int)character.key))
-        {
-            int i = selectedObjects[(int)character.key].Count;
-            selectedObjects[(int)character.key].Insert(i, gameObject);
-        }
-        else 
-        {
-            temp.Add(gameObject);
-            selectedObjects.Add((int)character.key, temp);
         }
     }
 
@@ -312,13 +257,13 @@ public class SelectionBox : MonoBehaviour
 
             foreach (GameObject obj in selectedObjects[key])
             {
-                if (obj.tag.Equals("Army") || obj.tag.Equals("Enemy"))
-                {
+                //if (obj.tag.Equals("Army") || obj.tag.Equals("Enemy"))
+                //{
                     //Character character = obj.GetComponent<Character>();
                     //character.SetSelectOption(true);
                     Objects objects = obj.GetComponent<Objects>();
                     objects.SetSelectObject(true);
-                }
+                //}
                 
             }
         }
@@ -337,26 +282,23 @@ public class SelectionBox : MonoBehaviour
 
     private void MoveSelectedObjects(Vector3 destPos)
     {
-        int verticalCount = -15;
-        int horizontalCount = 0;
-
         foreach (int key in selectedObjects.Keys)
         {
+            if (key == 1000)
+            {
+                foreach (GameObject obj in selectedObjects[key])
+                {
+                    obj.GetComponent<Citizen>().MoveDestination(destPos);
+                }
+                continue;
+            }
             foreach (GameObject obj in selectedObjects[key])
             {
-                //verticalCount+=6;
                 Army army = obj.GetComponent<Army>();
 
                 if(army.isPatrol)
                     army.isPatrol = false;
 
-                //if (verticalCount > 15)
-                //{
-                //    verticalCount = -15;
-                //    horizontalCount+=6;
-                //}
-                //
-                //destPos = SetDestPos(verticalCount, horizontalCount, destPos);
                 army.isTargeting = true;
                 army.Move(destPos);
             }
@@ -432,10 +374,8 @@ public class SelectionBox : MonoBehaviour
         }
     }
 
-    private Vector3 SetDestPos(int verticalCount, int horizontalCount, Vector3 mousePos)
+    public void CreateUnit(int buildingKey, int key)
     {
-        Vector3 pos = new Vector3(mousePos.x + verticalCount, 0, mousePos.z + horizontalCount);
-
-        return pos;
+        selectedObjects[buildingKey][0].GetComponent<Building>().CreateUnit(key);
     }
 }

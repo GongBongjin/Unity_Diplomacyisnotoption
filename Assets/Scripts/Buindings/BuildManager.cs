@@ -37,16 +37,22 @@ public class BuildManager : MonoBehaviour
 
     Dictionary<int, BuildingData> buildingDatas = new Dictionary<int, BuildingData>();
 
-    
-    bool isBuild = false;
+
     [Header("Buildings")]
+    GameObject townHall;
+    // Dictionary <key, List<GameObject>> Buildings
+    // AddBuilding
+    // RemoveBuilding
     GridManager gridManager;
     GameObject buildingParent;
 
     GameObject target = null;
 
+    bool isBuild = false;
+    
     [SerializeField]
     Citizen tempCitizen;
+
 
     private void Awake()
     {
@@ -60,17 +66,18 @@ public class BuildManager : MonoBehaviour
     void Start()
     {
         AddBuilding(2000);
-        target.transform.position = Vector3.zero;
+        townHall = target;
+        townHall.transform.position = Vector3.zero;
         target = null;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-
         if(isBuild && target != null)
         {
+            Building targetBuilding = target.GetComponent<Building>();
+
             Vector3 mPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.farClipPlane);
             Ray ray = Camera.main.ScreenPointToRay(mPos);
             RaycastHit[] hits;
@@ -80,7 +87,8 @@ public class BuildManager : MonoBehaviour
                 if (hits[i].transform.tag.Equals("Terrain"))
                 {
                     gridManager.SetShowGrid(true);
-                    target.transform.position = gridManager.GetBuildPosition(hits[i].point, target.GetComponent<Building>().GetMatrixSize());
+                    target.transform.position = gridManager.GetBuildPosition(hits[i].point, targetBuilding.GetMatrixSize());
+                    //Debug.Log(target.transform.position);
                     //gridManager.SetSlotIsEmpty(hit.point, false);
                     break;
                 }
@@ -88,15 +96,26 @@ public class BuildManager : MonoBehaviour
             
             if (Input.GetMouseButtonDown(0))
             {
-                gridManager.SetShowGrid(false);
-
-                // 시민에게 적용시켜야함
-                // 셀렉션 오브젝트에 넘겨서 시민에게 전달될 수 있도록
-                tempCitizen.BuildingOrder(target);
-                target = null;
-                isBuild = false;
+                if(gridManager.GetBuildable(target.transform.position, targetBuilding.GetMatrixSize()))
+                {
+                    gridManager.SetSlotIsEmpty(target.transform.position, targetBuilding.GetMatrixSize(), false);
+                    gridManager.SetShowGrid(false);
+                    tempCitizen.BuildingOrder(target);
+                    target = null;
+                    isBuild = false;
+                }
             }
         }
+
+        if(Input.GetKeyDown(KeyCode.V)) 
+        {
+            townHall.GetComponent<Building>().CreateUnit(1000);
+        }
+    }
+
+    public Building GetTownHall()
+    {
+        return townHall.GetComponent<Building>();
     }
 
     public BuildingData GetBuildData(int key)

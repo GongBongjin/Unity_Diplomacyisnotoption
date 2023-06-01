@@ -13,11 +13,11 @@
 1011,,,,,,,,,,,,,,,
 1012,,,,,,,,,,,,,,,
 1013,,,,,,,,,,,,,,,
-2000,Citizen,,,,Upgrade,,,,,,,,,,
+2000,Citizen,,,,Upgrade,,,,,Flag,,,,,
 2001,,,,,Upgrade,,,,,,,,,,Remove
 2002,,,,,Upgrade,,,,,,,,,,Remove
 2003,,,,,Upgrade,,,,,,,,,,Remove
-2004,Knight,Spearman,DogKnight,,Upgrade,Grunt,Wizard,,,,AttackUpgrade,DefenceUpgrade,,,Remove
+2004,Knight,Spearman,DogKnight,,Upgrade,Grunt,Wizard,,,Flag,AttackUpgrade,DefenceUpgrade,,,Remove
 2005,,,,,Upgrade,,,,,,AttackUpgrade,DefenceUpgrade,,,Remove
 2006,,,,,Upgrade,,,,,,AttackUpgrade,DefenceUpgrade,,,Remove
 2007,,,,,Upgrade,,,,,,AttackUpgrade,DefenceUpgrade,,,Remove

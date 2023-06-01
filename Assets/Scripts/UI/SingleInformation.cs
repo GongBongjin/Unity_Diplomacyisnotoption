@@ -81,6 +81,7 @@ public class SingleInformation : MonoBehaviour
         int type = key / 1000;
         if (type == 1)
         {
+            if (key == 1000) return;
             CharacterData characterData = DataManager.instance.GetCharacterDatas(key);
 
             img_Profile.sprite = characterData.sprite;
