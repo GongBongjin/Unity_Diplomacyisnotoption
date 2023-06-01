@@ -8,8 +8,17 @@ public struct CharacterData
     public CharacterType characterType;
     public float maxHp;
     public float dmg;
+    public float def;
+    public float moveSpeed;
+    public float sightValue;
+    public float attackSpeed;
+    public int food;
+    public int wood;
+    public int stone;
+    public int copper;
     public GameObject prefab;
     public Sprite sprite;
+    public string description;
 }
 
 
@@ -25,6 +34,7 @@ public class DataManager : MonoBehaviour
     {
         return characterDatas[key];
     }
+
     private void Awake()
     {
         instance = this;
@@ -57,8 +67,17 @@ public class DataManager : MonoBehaviour
             characterData.characterType = (CharacterType)int.Parse(data[1]);
             characterData.maxHp = float.Parse(data[2]);
             characterData.dmg = float.Parse(data[3]);
-            characterData.prefab = Resources.Load<GameObject>(data[4]);
-            characterData.sprite = Resources.Load<Sprite>(data[5]);
+            characterData.def = float.Parse(data[4]);
+            characterData.moveSpeed = float.Parse(data[5]);
+            characterData.sightValue = float.Parse(data[6]);
+            characterData.attackSpeed = float.Parse(data[7]);
+            characterData.food = int.Parse(data[8]);
+            characterData.wood = int.Parse(data[9]);
+            characterData.stone = int.Parse(data[10]);
+            characterData.copper = int.Parse(data[11]);
+            characterData.prefab = Resources.Load<GameObject>(data[12]);
+            characterData.sprite = Resources.Load<Sprite>(data[13]);
+            characterData.description = data[14];
 
             characterDatas.Add(characterData.key, characterData);
         }

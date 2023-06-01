@@ -81,15 +81,12 @@ public class UIManager : MonoBehaviour
     // 0.0f ~ 23.99f
     public void ChangeTime(float hour)
     {
-        // 0 = 90
-        // 23.99 = -270
-        float ratio = hour / 24.0f;
-        float zRot = ratio * -360 + 90;
-        timeCircle.rotation = Quaternion.Euler(0, 0, zRot);
+        timeCircle.rotation = Quaternion.Euler(0, 0, hour + 135.0f);
     }
 
     public void UpdateDay(int day)
     {
+        CharacterManager.instance.SetAttackCityHall(day);
         text_Day.text = day.ToString();
     }
 

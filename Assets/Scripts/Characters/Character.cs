@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.IO.LowLevel.Unsafe;
+using Unity.VisualScripting;
 using UnityEditor.Build;
 using UnityEngine;
 using UnityEngine.AI;
@@ -17,21 +18,23 @@ public enum CharacterState
     IDLE, MOVE, ATTACK, DEAD
 }
 
-public class Character : MonoBehaviour
+public class Character : Objects
 { 
     [HideInInspector] protected Animator animator;
     [HideInInspector] protected NavMeshAgent nvAgent;
     [HideInInspector] protected Rigidbody rigidBody;
     [HideInInspector] protected CapsuleCollider bodyCollider;
     [HideInInspector] protected SphereCollider atkCollider;
-    [HideInInspector] protected GameObject selectCircle;
-
 
     [SerializeField] protected float hp;
     [SerializeField] protected float maxHp;
+    [SerializeField] protected float dmg;
+    [SerializeField] protected float def;
     [SerializeField] protected bool isAttacking = false;
     [SerializeField] protected bool isDying = false;
-    [SerializeField] protected bool isSelected = false;
+    [SerializeField] protected bool isHitted = false;
+
+    protected float time = 0.0f;
 
     protected CharacterData data;
     public CharacterKey key;
@@ -43,24 +46,26 @@ public class Character : MonoBehaviour
         nvAgent = GetComponent<NavMeshAgent>();
         rigidBody = GetComponent<Rigidbody>();
         bodyCollider = GetComponent<CapsuleCollider>();
+        bodyCollider.enabled = true;
         atkCollider = GetComponent<SphereCollider>();
-        atkCollider.enabled = false;
+        atkCollider.enabled = true;
         selectCircle = transform.Find("Circle").gameObject;
-        //selectCircle.transform.localScale = nvAgent.Get
         selectCircle.SetActive(false);
+        hpBar = transform.Find("HpBar").GetComponent<HpBar>();
     }
 
     protected virtual void Start()
     {
-        bodyCollider.enabled = true;
-        atkCollider.enabled = false;
     }
 
     protected virtual void Update()
     {
-        ShowSelectionCircle();
+        if (!isDying)
+            hpBar.SetProgressBar(hp / maxHp);
+        else
+            hpBar.SetActiveProgressBar(false);
 
-        ApporachDestination();
+        base.Update();
     }
 
     public void SetData(CharacterData characterData)
@@ -70,42 +75,34 @@ public class Character : MonoBehaviour
         characterType = data.characterType;
         maxHp = data.maxHp;
         hp = maxHp;
+        dmg = data.dmg;
+        def = data.def;
     }
 
-    private void ShowSelectionCircle()
-    {
-        if(isSelected)
-            selectCircle.SetActive(true);
-        else
-            selectCircle.SetActive(false);
-    }
-
-    private void ApporachDestination()
-    {
-        float distance = Vector3.Distance(gameObject.transform.position, nvAgent.destination);
-        if (distance < 1.0f || isAttacking)
-            animator.SetFloat("MoveSpeed", 0.0f);
-    }
-
-    public CharacterData GetCharacterData() { return  data; }
-
-    public void SetSelectOption(bool isSelected) { this.isSelected = isSelected; }
+    public bool GetAttacking() { return isAttacking; }
+    
+    public float GetDmg() { return dmg; }
 
     //Animation Event Function
 
     private void StartAttack()
     {
-        atkCollider.enabled = true;
+        isAttacking = true;
+
+        atkCollider.enabled = false;
+
+        time = 5.0f;
     }
     private void EndAttack()
     {
         isAttacking = false;
 
-        atkCollider.enabled = false;
+        atkCollider.enabled = true;
     }
 
     private void StartDead()
     {
+        isDying = true;
         bodyCollider.enabled = false;
         atkCollider.enabled = false;
     }
@@ -121,4 +118,20 @@ public class Character : MonoBehaviour
 
     //Collision Function
     public virtual void OnTriggerEnter(Collider other) { }
+
+
+
+
+
+
+    /*
+     army & enmey 공통부분
+
+    이동시에 적군을 만나면 공격하는 함수
+    아군 - 히트당하면
+    적군 - range 안에 들어오면
+
+    target 위치받아서 이동 -> 공격함수 실행
+     
+     */
 }
