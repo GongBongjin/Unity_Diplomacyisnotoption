@@ -1,14 +1,7 @@
-using System.Collections;
+
 using System.Collections.Generic;
-using System.Linq;
-using TMPro;
-using Unity.Burst.CompilerServices;
-using Unity.PlasticSCM.Editor.WebApi;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.AI;
 using UnityEngine.EventSystems;
-using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
 
 public class SelectionBox : MonoBehaviour
@@ -90,7 +83,7 @@ public class SelectionBox : MonoBehaviour
                                 isSelected = true;
                                 Citizen citizen = obj.GetComponent<Citizen>();
                                 citizen.SetSelectObject(true);
-                                AddSelectObject(1000, obj);
+                                AddSelectObject(citizen.GetKey(), obj);
                                 break;
                             case "Building":
                                 isMoveable = false;
@@ -103,6 +96,10 @@ public class SelectionBox : MonoBehaviour
                             case "Product":
                                 isMoveable = false;
                                 isSelected = true;
+                                ProductObject product = obj.GetComponent<ProductObject>();
+                                product.SetSelectObject(true);
+                                key = product.GetKey();
+                                AddSelectObject(key, obj);
                                 // 나무, 광석 등 임시조치
                                 break;
                         }
@@ -163,7 +160,6 @@ public class SelectionBox : MonoBehaviour
         selectedObjects.Clear();
         CharacterManager.instance.GetObjectsContainedInRect(selectionRect);
         CitizenManager.Instance.GetObjectsContainedInRect(selectionRect);
-
     }
 
     // 아래 함수 변형
@@ -182,23 +178,23 @@ public class SelectionBox : MonoBehaviour
 
     private void CommandControl()
     {
-        if (selectedObjects.Count == 0 && !isCommandM) return;
+        //if (selectedObjects.Count == 0 && !isCommandM) return;
 
         Move();
 
-        if(Input.anyKey)
-        {
-            string inputString = Input.inputString;
-            if(!string.IsNullOrEmpty(inputString))
-            {
-                char hotKey = inputString[0];
-                int ascii = 'a' - 'A';
-                if (hotKey >= 'a')
-                    hotKey = (char)(hotKey - ascii);
-
-                InputCommandKey(hotKey);
-            }
-        }
+        //if(Input.anyKey)
+        //{
+        //    string inputString = Input.inputString;
+        //    if(!string.IsNullOrEmpty(inputString))
+        //    {
+        //        char hotKey = inputString[0];
+        //        int ascii = 'a' - 'A';
+        //        if (hotKey >= 'a')
+        //            hotKey = (char)(hotKey - ascii);
+        //
+        //        InputCommandKey(hotKey);
+        //    }
+        //}
     }
 
     public void InputCommandKey(char hotKey)
@@ -238,9 +234,45 @@ public class SelectionBox : MonoBehaviour
             {
                 Vector3 destPos = new Vector3(hit.point.x, 0, hit.point.z);
                 MoveSelectedObjects(destPos);
+
+                if (hit.transform.tag.Equals("Product"))
+                {
+                    CitizenProductionOrder(hit.transform.gameObject);
+                    hit.transform.GetComponent<Objects>().SelectObjectFlicker();
+                }
+                else if(hit.transform.tag.Equals("Building"))
+                {
+                    CitizenBuildingOrder(hit.transform.gameObject);
+                    hit.transform.GetComponent<Objects>().SelectObjectFlicker();
+                }
             }
         }
         isCommandM = false;
+    }
+
+    private void CitizenProductionOrder(GameObject product)
+    {
+        int citizenKey = CitizenManager.Instance.GetCitizenKey();
+        if (selectedObjects[citizenKey].Count == 0)
+            return;
+
+        foreach (GameObject obj in selectedObjects[citizenKey])
+        {
+            Citizen citizen = obj.GetComponent<Citizen>();
+            citizen.ProductionOrder(product);
+        }
+    }
+    private void CitizenBuildingOrder(GameObject building)
+    {
+        int citizenKey = CitizenManager.Instance.GetCitizenKey();
+        if (selectedObjects[citizenKey].Count == 0)
+            return;
+
+        foreach (GameObject obj in selectedObjects[citizenKey])
+        {
+            Citizen citizen = obj.GetComponent<Citizen>();
+            citizen.BuildingOrder(building);
+        }
     }
 
     private void DataReturn()
@@ -257,14 +289,8 @@ public class SelectionBox : MonoBehaviour
 
             foreach (GameObject obj in selectedObjects[key])
             {
-                //if (obj.tag.Equals("Army") || obj.tag.Equals("Enemy"))
-                //{
-                    //Character character = obj.GetComponent<Character>();
-                    //character.SetSelectOption(true);
-                    Objects objects = obj.GetComponent<Objects>();
-                    objects.SetSelectObject(true);
-                //}
-                
+                Objects objects = obj.GetComponent<Objects>();
+                objects.SetSelectObject(true);
             }
         }
         UIManager.Instance.ShowInformation(keys, counts);
@@ -377,5 +403,13 @@ public class SelectionBox : MonoBehaviour
     public void CreateUnit(int buildingKey, int key)
     {
         selectedObjects[buildingKey][0].GetComponent<Building>().CreateUnit(key);
+    }
+
+    public void BuildingOrder(int citizenKey, GameObject building)
+    {
+        for(int i = 0; i < selectedObjects[citizenKey].Count; i++)
+        {
+            selectedObjects[citizenKey][i].GetComponent<Citizen>().BuildingOrder(building);
+        }
     }
 }

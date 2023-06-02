@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class CommandSlot : MonoBehaviour
 {
-    const int buildingKey = 3000;
+    const int buildingKey = 2100;
     
     [Header("Command Slots")]
     [SerializeField] GameObject slotParent;
@@ -100,7 +100,7 @@ public class CommandSlot : MonoBehaviour
         if (key > 2000)
         {
             // °Ç¼³
-            BuildManager.Instance.AddBuilding(key);
+            BuildManager.Instance.ReadyConstruction(key);
         }
         else if (key > 1000)
         {

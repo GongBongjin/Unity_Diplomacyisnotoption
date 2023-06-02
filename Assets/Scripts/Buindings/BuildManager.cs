@@ -1,13 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.ComponentModel;
-using Unity.Collections;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Unity.Burst.CompilerServices;
 
 public struct BuildingData
 {
@@ -36,24 +28,21 @@ public class BuildManager : MonoBehaviour
     }
 
     Dictionary<int, BuildingData> buildingDatas = new Dictionary<int, BuildingData>();
+    Dictionary<int, List<GameObject>> buildings = new Dictionary<int, List<GameObject>>();
 
+    GridManager gridManager;
 
     [Header("Buildings")]
     GameObject townHall;
-    // Dictionary <key, List<GameObject>> Buildings
-    // AddBuilding
-    // RemoveBuilding
-    GridManager gridManager;
+
     GameObject buildingParent;
 
+    int targetKey = 0;
     GameObject target = null;
 
     bool isBuild = false;
+        
     
-    [SerializeField]
-    Citizen tempCitizen;
-
-
     private void Awake()
     {
         instance = this;
@@ -65,10 +54,8 @@ public class BuildManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        AddBuilding(2000);
-        townHall = target;
-        townHall.transform.position = Vector3.zero;
-        target = null;
+        CreateBaseTownHall();
+        CreateBaseCitizen(4);
     }
 
     // Update is called once per frame
@@ -87,35 +74,26 @@ public class BuildManager : MonoBehaviour
                 if (hits[i].transform.tag.Equals("Terrain"))
                 {
                     gridManager.SetShowGrid(true);
-                    target.transform.position = gridManager.GetBuildPosition(hits[i].point, targetBuilding.GetMatrixSize());
-                    //Debug.Log(target.transform.position);
-                    //gridManager.SetSlotIsEmpty(hit.point, false);
+                    target.transform.position = gridManager.GetBuildPosition(hits[i].point, GetBuildingMatrixSize(targetKey));
                     break;
                 }
             }
             
             if (Input.GetMouseButtonDown(0))
             {
-                if(gridManager.GetBuildable(target.transform.position, targetBuilding.GetMatrixSize()))
-                {
-                    gridManager.SetSlotIsEmpty(target.transform.position, targetBuilding.GetMatrixSize(), false);
-                    gridManager.SetShowGrid(false);
-                    tempCitizen.BuildingOrder(target);
-                    target = null;
-                    isBuild = false;
-                }
+                AddBuilding();
             }
         }
 
-        if(Input.GetKeyDown(KeyCode.V)) 
-        {
-            townHall.GetComponent<Building>().CreateUnit(1000);
-        }
+        //if(Input.GetKeyDown(KeyCode.V)) 
+        //{
+        //    townHall.GetComponent<Building>().CreateUnit(1000);
+        //}
     }
 
     public Building GetTownHall()
     {
-        return townHall.GetComponent<Building>();
+        return buildings[2000][0].GetComponent<Building>();
     }
 
     public BuildingData GetBuildData(int key)
@@ -123,8 +101,48 @@ public class BuildManager : MonoBehaviour
         return buildingDatas[key];
     }
 
-    public void AddBuilding(int key)
+    public int GetBuildingMatrixSize(int key)
     {
+        return buildingDatas[key].matrixSize;
+    }
+
+    public void CreateBaseTownHall()
+    {
+        ReadyConstruction(2000);
+        townHall = target;
+        target = null;
+        townHall.transform.position = Vector3.zero;
+        buildings[2000].Add(townHall);
+        gridManager.SetSlotIsEmpty(townHall.transform.position, GetBuildData(2000).matrixSize, false);
+    }
+
+    public void CreateBaseCitizen(int count)
+    {
+        for(int i = 0; i < count; i++)
+        {
+            townHall.GetComponent<Building>().CreateUnit(CitizenManager.Instance.GetCitizenKey());
+        }
+    }
+
+    public void AddBuilding()
+    {
+        Building targetBuilding = target.GetComponent<Building>();
+
+        if (gridManager.GetBuildable(target.transform.position, targetBuilding.GetMatrixSize()))
+        {
+            gridManager.SetSlotIsEmpty(target.transform.position, targetBuilding.GetMatrixSize(), false);
+            gridManager.SetShowGrid(false);
+            SelectionBox.instance.BuildingOrder(CitizenManager.Instance.GetCitizenKey(), target);
+            buildings[targetKey].Add(target);
+            targetKey = 0;
+            target = null;
+            isBuild = false;
+            gridManager.SetSlotDefault();
+        }
+    }
+    public void ReadyConstruction(int key)
+    {
+        targetKey = key;
         GameObject obj = buildingDatas[key].prefab;
         isBuild = true;
         target = Instantiate(obj, buildingParent.transform);
@@ -138,5 +156,25 @@ public class BuildManager : MonoBehaviour
     public void AddBuildingData(BuildingData data)
     {
         buildingDatas.Add(data.key, data);
+        buildings[data.key] = new List<GameObject>();
+    }
+
+    public GameObject GetNearestStorage(Vector3 pos)
+    {
+        int storageKey = 2003;
+        GameObject nearTarget = townHall;
+        float dist = Vector3.Distance(pos, nearTarget.transform.position);
+
+        for(int i = 0; i < buildings[storageKey].Count; i++)
+        {
+            Vector3 bp = buildings[storageKey][i].transform.position;
+            float compareDist = Vector3.Distance(pos, bp);
+            if (compareDist < dist)
+            {
+                nearTarget = buildings[storageKey][i];
+            }
+        }
+
+        return nearTarget;
     }
 }

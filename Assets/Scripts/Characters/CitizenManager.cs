@@ -58,6 +58,16 @@ public class CitizenManager : MonoBehaviour
         
     }
 
+    public int GetCitizenKey()
+    {
+        return citizenData.key;
+    }
+
+    public CitizenData GetCitizenData()
+    {
+        return citizenData;
+    }
+
     private void CreateCharacterPool(int poolCount)
     {
         for (int i = 0; i < poolCount; i++)

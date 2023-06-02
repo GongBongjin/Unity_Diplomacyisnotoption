@@ -764,7 +764,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 0}
   m_FillRect: {fileID: 5372237367427013696}
   m_HandleRect: {fileID: 0}
@@ -1793,7 +1793,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 0}
   m_FillRect: {fileID: 7355694296761741249}
   m_HandleRect: {fileID: 0}
@@ -3973,7 +3973,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 0}
   m_FillRect: {fileID: 121518465725127135}
   m_HandleRect: {fileID: 0}
@@ -5994,6 +5994,7 @@ GameObject:
   - component: {fileID: 3368953643341504995}
   - component: {fileID: 3368953643341504996}
   - component: {fileID: 2895355574454508674}
+  - component: {fileID: 1195594020}
   m_Layer: 5
   m_Name: MainCanvas
   m_TagString: Untagged
@@ -6099,15 +6100,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   timeCircle: {fileID: 7970627470538912977}
   text_Day: {fileID: 4932560454190681680}
+  singleInfo: {fileID: 1654462443}
+  multiInfo: {fileID: 3368953643767045227}
+  commandSlot: {fileID: 3368953643767045228}
+--- !u!114 &1195594020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3368953643341504997}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de96c2f47e2f67f4da974624a901315a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   ResourceParents:
   - {fileID: 8163196114153608091}
   - {fileID: 618235827813910373}
   - {fileID: 8244832092966548534}
   - {fileID: 8902570618848350102}
   - {fileID: 5490243313394012356}
-  singleInfo: {fileID: 1654462443}
-  multiInfo: {fileID: 3368953643767045227}
-  commandSlot: {fileID: 3368953643767045228}
 --- !u!1 &3447701093725350538
 GameObject:
   m_ObjectHideFlags: 0
@@ -8654,7 +8667,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 0}
   m_FillRect: {fileID: 6990461407792274926}
   m_HandleRect: {fileID: 0}
@@ -13310,7 +13323,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 0}
   m_FillRect: {fileID: 1502863073308356983}
   m_HandleRect: {fileID: 0}

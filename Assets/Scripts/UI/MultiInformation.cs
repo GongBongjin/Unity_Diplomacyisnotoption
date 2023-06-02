@@ -57,7 +57,13 @@ public class MultiInformation : MonoBehaviour
         {
             targetKeys[i] = keys[i];
             units[i].SetActive(true);
-
+            if (keys[i] == 1000)
+            {
+                CitizenData citizenData = CitizenManager.Instance.GetCitizenData();
+                img_Icons[i].sprite = citizenData.icon;
+                text_UnitCounts[i].text = count[i].ToString();
+                continue;
+            }
             CharacterData characterData = DataManager.instance.GetCharacterDatas(keys[i]);
 
             img_Icons[i].sprite = characterData.sprite;

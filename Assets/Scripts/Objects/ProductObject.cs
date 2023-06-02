@@ -8,10 +8,13 @@ public class ProductObject : Objects
     Product product;
 
     // 총량, 남은양
-    int maxAmount = 100;
+    int key = 3000;
+    int maxAmount = 50;
     int curAmount;
+    float productTime;
+    int output;
 
-
+    float outputTime;
 
     private void Awake()
     {
@@ -31,9 +34,35 @@ public class ProductObject : Objects
         
     }
 
+    public void SetProductProperty(ProductData data)
+    {
+        key = data.key;
+        maxAmount = data.maxAmount;
+        curAmount = maxAmount;
+        productTime = data.productTime;
+        output = data.output;
+    }
+
+    public int GetKey()
+    {
+        return key;
+    }
+
     public Product GetProductName()
     {
         return product;
+    }
+
+    public int Production(float speed)
+    {
+        outputTime += speed * Time.deltaTime;
+        if(outputTime > productTime)
+        {
+            outputTime -= productTime;
+            return SpendResources(output);
+        }
+
+        return 0;
     }
 
     public int SpendResources(int amount)
@@ -44,6 +73,9 @@ public class ProductObject : Objects
         if (curAmount <= 0)
         {
             value += curAmount;
+            // 반환값이 음수일 때 파괴
+            return -value - 1;
+            // 파괴~
         }
 
         return value;
