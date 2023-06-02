@@ -102,7 +102,7 @@ public class Enemy : Character
             //if (army.GetAttacking())//
                 hp -= army.GetDmg() - (army.GetDmg() * (def / 100));
 
-            Debug.Log(transform.gameObject +"가 " + target + "에게" + (army.GetDmg() - def));
+            //Debug.Log(transform.gameObject +"가 " + target + "에게" + (army.GetDmg() - def));
             if (hp <= 0)
             {
                 isDying = true;

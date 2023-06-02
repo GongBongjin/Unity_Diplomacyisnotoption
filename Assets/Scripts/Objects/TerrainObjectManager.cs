@@ -80,7 +80,8 @@ public class TerrainObjectManager : MonoBehaviour
         fileName[4] = "stone2.stone";
         fileName[5] = "Copper1.stone";
         fileName[6] = "Copper2.stone";
-        string filePath = Application.dataPath + "/Resources/TerrainData/";
+        //string filePath = Application.dataPath + "/Resources/TerrainData/";
+        string filePath = Application.streamingAssetsPath + "/TerrainData/";
         FileStream fileStream;
         BinaryReader reader;
         GameObject obj;
