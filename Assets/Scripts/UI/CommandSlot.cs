@@ -108,7 +108,7 @@ public class CommandSlot : MonoBehaviour
         }
         else if (key == 1000)
         {
-            BuildManager.Instance.GetTownHall().CreateUnit(key);
+            BuildManager.Instance.GetTownHall().AddUnitProduct(key);
             // 시민 생산
             // 시청에게 정보 넘겨주기
         }
@@ -132,7 +132,6 @@ public class CommandSlot : MonoBehaviour
         if (!isCommandable) return;
 
         char hotKey = (char)key;
-        Debug.Log(key + " : " + hotKey);
         
         switch(hotKey)
         {
@@ -140,6 +139,7 @@ public class CommandSlot : MonoBehaviour
                 SetCommandSlot(buildingKey);
                 break;
             case 'C':   // 취소
+                //SelectionBox.instance.CreateUnit(targetKey, hotKey);
                 break;
             case 'F':   // 어택 땅
             case 'H':   // 스탑
@@ -149,18 +149,19 @@ public class CommandSlot : MonoBehaviour
                 SelectionBox.instance.InputCommandKey(hotKey);
                 break;
             case 'J':   // 공업
-                break;
+                //break;
             case 'K':   // 방업
-                break;
+                //break;
             case 'L':   // 랠리포인트
-                break;
+                //break;
             case 'R':   // 수리
-                break;
+                //break;
             case 'U':   // 업글
-                break;
+                //break;
             case 'X':   // 삭제
-                break;
+                //break;
             case 'Z':   // 뒤로
+                //SelectionBox.instance.CreateUnit(targetKey, hotKey);
                 break;
         }
     }

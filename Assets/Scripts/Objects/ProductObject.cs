@@ -7,12 +7,12 @@ public class ProductObject : Objects
     [SerializeField]
     Product product;
 
-    // ÃÑ·®, ³²Àº¾ç
+    // ÃÑ·®, ³²Àº¾ç (³óÀåÀº ¿¹¿Ü·Î ÀÌ °ªÀ» ¾¸)
     int key = 3000;
-    int maxAmount = 50;
+    int maxAmount = 100;
     int curAmount;
-    float productTime;
-    int output;
+    float productTime = 5;
+    int output = 1;
 
     float outputTime;
 
@@ -33,6 +33,7 @@ public class ProductObject : Objects
     {
         
     }
+
 
     public void SetProductProperty(ProductData data)
     {
@@ -55,6 +56,7 @@ public class ProductObject : Objects
 
     public int Production(float speed)
     {
+        //Debug.Log(outputTime + " / " + productTime + " , " + speed);
         outputTime += speed * Time.deltaTime;
         if(outputTime > productTime)
         {

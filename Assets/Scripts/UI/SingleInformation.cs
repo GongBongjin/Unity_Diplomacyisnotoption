@@ -27,6 +27,8 @@ public class SingleInformation : MonoBehaviour
     [Header("Discription")]
     [SerializeField] Text text_Discription;
 
+    Building building;
+
     private void Awake()
     {
         SetProductObject();
@@ -43,7 +45,33 @@ public class SingleInformation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!gameObject.activeSelf)
+            return;
 
+        if (building == null)
+            return;
+
+        if(building.GetIsProduction())
+        {
+            production.SetActive(true);
+
+            int[] keys = building.GetProductionKeys();
+            for(int i = 0; i < keys.Length; i++)
+            {
+                if (keys[i] == 0)
+                    img_ProductIcons[i].sprite = UIManager.Instance.GetDefaultSpriteIcon();
+                else if (keys[i] == 1000)
+                    img_ProductIcons[i].sprite = CitizenManager.Instance.GetCitizenData().icon;
+                else
+                    img_ProductIcons[i].sprite = CharacterManager.instance.GetCharacterData(keys[i]).sprite;
+
+            }
+            productDuration.value = building.GetProductionProgress();
+        }
+        else
+        {
+            production.SetActive(false);
+        }
     }
 
     #region [AwakeSetting]
@@ -74,12 +102,17 @@ public class SingleInformation : MonoBehaviour
     }
     #endregion
 
+    public void SetProductionBuilding(Building building)
+    {
+        Debug.Log(building.name);
+        this.building = building;
+    }
+
     public void ShowInformation(int key, int count = 1)
     {
         targetKey = key;
         int type = key / 1000;
         SetAbilities(false);
-        SetProduction(false);
         if (key == 1000)
         {
             CitizenData characterData = CitizenManager.Instance.GetCitizenData();
@@ -87,12 +120,6 @@ public class SingleInformation : MonoBehaviour
             text_Name.text = characterData.name;
             text_GroupCount.text = count.ToString();
             text_Discription.text = characterData.description;
-            //SetAbilities();
-            //text_AbilityValue[0].text = characterData..ToString();
-            //text_AbilityValue[1].text = characterData.def.ToString();
-            //text_AbilityValue[2].text = characterData.moveSpeed.ToString();
-            //text_AbilityValue[3].text = characterData.sightValue.ToString();
-            //text_AbilityValue[4].text = characterData.attackSpeed.ToString();
         }
         else if (type == 1)
         {
@@ -146,7 +173,10 @@ public class SingleInformation : MonoBehaviour
         production.SetActive(active);
     }
         
-
+    // 빌딩에서 업그레이드 하고 있는 정보를 가져와야 함
+    // 현재 싱글에서는 빌딩 정보를 가지고 있지 않음
+    // UI 매니저에서 받아서 사용하기에는 어떤 것을 선택하고 있는지 모름
+    // 빌딩 정보를 가지고 있는게 제일 베스트일지도
     // 유닛이나 업그레이드 시 소요시간 업데이트
     public void UpdateProductionDuration(float curValue, float maxValue)
     {

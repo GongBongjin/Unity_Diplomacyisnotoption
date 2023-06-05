@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.UI.GridLayoutGroup;
 
 public struct BuildingData
 {
@@ -55,6 +56,7 @@ public class BuildManager : MonoBehaviour
     void Start()
     {
         CreateBaseTownHall();
+        // 기본 시민 생산 4명
         CreateBaseCitizen(4);
     }
 
@@ -91,6 +93,11 @@ public class BuildManager : MonoBehaviour
         //}
     }
 
+    public bool GetIsBuild()
+    {
+        return isBuild;
+    }
+
     public Building GetTownHall()
     {
         return buildings[2000][0].GetComponent<Building>();
@@ -114,14 +121,16 @@ public class BuildManager : MonoBehaviour
         townHall.transform.position = Vector3.zero;
         buildings[2000].Add(townHall);
         gridManager.SetSlotIsEmpty(townHall.transform.position, GetBuildData(2000).matrixSize, false);
+        isBuild = false;
     }
 
     public void CreateBaseCitizen(int count)
     {
         for(int i = 0; i < count; i++)
         {
-            townHall.GetComponent<Building>().CreateUnit(CitizenManager.Instance.GetCitizenKey());
+            townHall.GetComponent<Building>().Production(CitizenManager.Instance.GetCitizenKey());
         }
+        UIManager.Instance.IncreasesResources(Product.POPULATION, count);
     }
 
     public void AddBuilding()
@@ -142,15 +151,20 @@ public class BuildManager : MonoBehaviour
     }
     public void ReadyConstruction(int key)
     {
-        targetKey = key;
-        GameObject obj = buildingDatas[key].prefab;
-        isBuild = true;
-        target = Instantiate(obj, buildingParent.transform);
-        target.GetComponent<Building>().SetBuildingProperty(
-            buildingDatas[key].key,
-            buildingDatas[key].matrixSize,
-            buildingDatas[key].maxHP,
-            buildingDatas[key].buildTime);
+        if (UIManager.Instance.CheckRemainingResources(0, 0, buildingDatas[key].qty_Wood, buildingDatas[key].qty_Stone, buildingDatas[key].qty_Copper))
+        {
+            UIManager.Instance.SpendResources(0, 0, buildingDatas[key].qty_Wood, buildingDatas[key].qty_Stone, buildingDatas[key].qty_Copper);
+
+            targetKey = key;
+            GameObject obj = buildingDatas[key].prefab;
+            isBuild = true;
+            target = Instantiate(obj, buildingParent.transform);
+            target.GetComponent<Building>().SetBuildingProperty(
+                buildingDatas[key].key,
+                buildingDatas[key].matrixSize,
+                buildingDatas[key].maxHP,
+                buildingDatas[key].buildTime);
+        }
     }
 
     public void AddBuildingData(BuildingData data)

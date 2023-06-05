@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Building : Objects
 {
-    int key;
+    int primaryKey;
 
     Material material;
     float maxBuildTime = 30;
@@ -14,15 +14,22 @@ public class Building : Objects
     float maxHP;
     float curHP;
 
-    // 유닛
     bool isCompletion = false;  // 건물 완공 상태
     //bool isRepairDone = false;  // 수리필요?
+
+    int maxProduction = 7;
+    bool isProduction = false;
+    List<int> productObject;
+    int characterKey;
+    float maxProductTime = 10;
+    float productTime = 0;
 
     const float createOffset = 5.0f;
     Vector3 rallyPoint = Vector3.zero;
 
     private void Awake()
     {
+        productObject = new List<int>();
         material = transform.GetChild(0).GetComponent<MeshRenderer>().material;
 
         selectCircle = transform.Find("Circle").gameObject;
@@ -39,12 +46,12 @@ public class Building : Objects
     // Update is called once per frame
     void Update()
     {
-        
+        ProductionUnit();
     }
 
     public void SetBuildingProperty(int key, int matrixSize, int maxHP, int buildTime)
     {
-        this.key = key;
+        this.primaryKey = key;
         this.matrixSize = matrixSize;
         this.maxHP = maxHP;
         this.maxBuildTime = buildTime;
@@ -53,7 +60,7 @@ public class Building : Objects
 
     public int GetKey()
     {
-        return key;
+        return primaryKey;
     }
 
     public int GetMatrixSize()
@@ -109,14 +116,102 @@ public class Building : Objects
         }
     }
 
-    public void CreateUnit(int key)
+    public bool GetIsProduction()
+    {
+        return isProduction;
+    }
+
+    public int[] GetProductionKeys()
+    {
+        int[] keys = new int[maxProduction];
+        for(int i = 0; i < maxProduction; i++)
+        {
+            if(i < productObject.Count)
+                keys[i] = productObject[i];
+            else
+                keys[i] = 0;
+        }
+        return keys;
+    }
+
+    public float GetProductionProgress()
+    {
+        return productTime / maxProductTime;
+    }
+
+    private void ProductionUnit()
+    {
+        if (!isProduction)
+        {
+            if(productObject.Count > 0)
+            {
+                Debug.Log("ProductionCount : " + productObject.Count);
+                characterKey = productObject[0];
+                isProduction = true;
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        productTime += Time.deltaTime;
+        //if(productionTime >= characterData.productionTime)
+        if (productTime >= maxProductTime)
+        {
+            Production(characterKey);
+            productObject.RemoveAt(0);
+            productTime = 0;
+            isProduction = false;
+        }
+    }
+
+    public void AddUnitProduct(int key)
+    {
+        if (!isCompletion) 
+            return;
+
+        if (productObject.Count >= maxProduction)
+            return;
+
+        int population = 1;
+        int food = 0;
+        int wood = 0;
+        int stone = 0;
+        int copper = 0;
+        if(key == 1000)
+        {
+            CitizenData data = CitizenManager.Instance.GetCitizenData();
+            food = data.food;
+            wood = data.wood;
+            stone = data.stone;
+            copper = data.copper;
+        }
+        else
+        {
+            CharacterData data = CharacterManager.instance.GetCharacterData(key);
+            food = data.food;
+            wood = data.wood;
+            stone = data.stone;
+            copper = data.copper;
+        }
+        // 리소스가 충분한지 확인
+        if (UIManager.Instance.CheckRemainingResources(population, food, wood, stone, copper))
+        {
+            UIManager.Instance.SpendResources(population, food, wood, stone, copper);
+            productObject.Add(key);
+        }
+    }
+
+    public void Production(int key)
     {
         Vector3 pos = FindUnitPlacement();
-        if (key == 1000)
+        if(key < 1000)
+        { }
+        else if (key == 1000)
             CitizenManager.Instance.CreateCharacter(pos, rallyPoint);
         else
             CharacterManager.instance.CreateCharacter(key, FindUnitPlacement());
-        UIManager.Instance.IncreasesResources(Product.POPULATION, 1);
     }
 
     private Vector3 FindUnitPlacement()

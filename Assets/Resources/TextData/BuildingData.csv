@@ -1,7 +1,7 @@
 ﻿Keys,Name,Size,HP,BuildTime,Wood,Stone,Copper,Prefab,Icon,Description
 2000,시청,8,2000,0,0,0,0,Buildings/TownHall,Icons/Building/TownHall,이 구역의 행정을 담당합니다.
 2001,집,3,100,20,50,20,0,Buildings/House,Icons/Building/House,시민이 살고 있는 집 입니다.
-2002,농장,2,100,0,30,20,0,Buildings/Farm,Icons/Building/Farm,농사를 짓고 음식을 조달할 수 있습니다.
+2002,농장,2,100,5,30,20,0,Buildings/Farm,Icons/Building/Farm,농사를 짓고 음식을 조달할 수 있습니다.
 2003,창고,3,200,15,50,50,0,Buildings/Storage,Icons/Building/Storage,"음식, 나무, 돌, 구리 등을 저장할 수 있습니다."
 2004,병영,4,500,25,100,50,20,Buildings/Barrack,Icons/Building/Barrack,병사를 뽑고 군대를 꾸려 마을을 지킬 수 있습니다.
 2005,군견훈련소,2,300,15,50,80,50,Buildings/DogKnight,Icons/Building/DogHouse,강아지를 훈련시킬 수 있습니다.

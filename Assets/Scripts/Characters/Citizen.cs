@@ -1,4 +1,5 @@
 
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -89,8 +90,6 @@ public class Citizen : Objects
 
     void WorkRoutine()
     {
-        if (!workTarget) return;
-
         switch (workState)
         {
             case CitizenState.Felling:
@@ -129,9 +128,9 @@ public class Citizen : Objects
                     int key = targetBuilding.GetKey();
 
                     if (key == 2001)
-                        UIManager.Instance.IncreasMaxPopulation(10);
+                        UIManager.Instance.IncreaseMaxPopulation(10);
                     if (key == 2003)
-                        UIManager.Instance.IncreasMaxStorage(100);
+                        UIManager.Instance.IncreaseMaxStorage(100);
                     SetCitizenWorkState(CitizenState.Idle);
                 }
                 break;
@@ -143,25 +142,33 @@ public class Citizen : Objects
 
     private void Production()
     {
-        if(workTarget == null)
+        if(!workTarget)
         {
+            if (FindWorkSpace())
+            {
+                if (!isCarry)
+                    ProductionOrder(workTarget);
+            }
+            else
+                SetCitizenWorkState(CitizenState.Idle);
         }
+
         if (isProduction)
         {
             output = targetProduct.Production(workSpeed);
-            //Debug.Log("Output : " + output);
         }
+        if (output == 0)
+            return;
         if (output < 0)
         {
             // Product 고갈 & 파괴
             Debug.Log("Product 고갈");
             output = (-output) + 1;
-            Destroy(workTarget);
 
-            if (!FindWolkSpace())
+            if (!FindWorkSpace())
                 SetCitizenWorkState(CitizenState.Idle);
         }
-        if (output > 0)
+        if (!isCarry && output > 0)
         {
             isCarry = true;
             isProduction = false;
@@ -291,9 +298,10 @@ public class Citizen : Objects
     }
 
     // 작업하던 것 이어서 작업
-    private bool FindWolkSpace()
+    private bool FindWorkSpace()
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, workSpaceRadius);
+        Vector3 pos = transform.position + Vector3.up;
+        Collider[] hits = Physics.OverlapSphere(pos, workSpaceRadius);
         GameObject tempTarget = null;
         float minDistance = workSpaceRadius * 2;
         ProductObject productObj;
@@ -302,21 +310,28 @@ public class Citizen : Objects
             // 생산품목인지 검사
             if (!hits[i].tag.Equals("Product"))
                 continue;
+
+            if (hits[i].gameObject.Equals(workTarget))
+                continue;
             // 생산하던 것과 똑같은건지 검사
             productObj = hits[i].GetComponent<ProductObject>();
             if (!productObj.GetProductName().Equals(product))
                 continue;
 
+            //Debug.Log(hits[i].tag);
             // 최소 작업거리 검사
             float dist = Vector3.Distance(transform.position, hits[i].transform.position);
             if(dist < minDistance)
             {
+                //Debug.Log(dist + " < minDistance");
                 tempTarget = hits[i].gameObject;
                 minDistance = dist;
             }
         }
+
+        Destroy(workTarget);
         // 작업거리 안에 같은 작업이 있으면 이어서 진행
-        if(tempTarget != null)
+        if (tempTarget != null)
         {
             workTarget = tempTarget;
             targetProduct = tempTarget.GetComponent<ProductObject>();
@@ -325,6 +340,7 @@ public class Citizen : Objects
         else
         {
             // 없으면 작업 중지
+            Debug.Log("못찾음?");
             workTarget = null;
             targetProduct = null;
             return false;
@@ -361,8 +377,15 @@ public class Citizen : Objects
                 isCarry = false;
                 UIManager.Instance.IncreasesResources(product, output);
                 output = 0;
-                if(workTarget!= null)
+                if (workTarget != null)
+                {
+                    Debug.Log("work : " + workState.ToString() + ", workTarget :" + workTarget.name);
                     MoveDestination(workTarget.transform.position);
+                }
+                else
+                {
+                    Debug.Log("왜 Null?");
+                }
 
             }
         }

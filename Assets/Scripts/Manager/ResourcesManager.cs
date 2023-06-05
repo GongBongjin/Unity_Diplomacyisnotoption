@@ -49,7 +49,39 @@ public class ResourcesManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+    }
+
+    public int GetMaxPopulation() {  return maxPopulation; }
+    public int GetMaxStorage() { return maxStorage; }
+    public int GetPopulation() { return GetProductResources(Product.POPULATION); }
+    public int GetFood() { return GetProductResources(Product.FOOD); }
+    public int GetWood() { return GetProductResources(Product.WOOD); }
+    public int GetStone() { return GetProductResources(Product.STONE); }
+    public int GetCopper() { return GetProductResources(Product.COPPER); }
+
+
+    public int GetProductResources(Product product)
+    {
+        for (int i = 0; i < resources.Length; i++)
+        {
+            if (product.Equals(resources[i].name))
+            {
+                return resources[i].value;
+            }
+        }
+        return 0;
+    }
+    public bool GetCheckResourceCount(Product product, int value)
+    {
+        for (int i = 0; i < resources.Length; i++)
+        {
+            if (product.Equals(resources[i].name))
+            {
+                if (resources[i].value >= value)
+                    return true;
+            }
+        }
+        return false;
     }
 
     private void SetResourceObject()
@@ -61,6 +93,8 @@ public class ResourcesManager : MonoBehaviour
             resources[i] = new NaturalResources();
             resources[i].name = (Product)i;
             resources[i].value = 0;
+            //if(i != 0)
+            //    resources[i].value = 100;
             resources[i].slider = ResourceParents[i].transform.Find("Slider").GetComponent<Slider>();
             resources[i].text = ResourceParents[i].transform.Find("Text_Value").GetComponent<Text>();
         }
@@ -103,6 +137,9 @@ public class ResourcesManager : MonoBehaviour
             if (product.Equals(resources[i].name))
             {
                 resources[i].value += qty;
+                if(resources[i].value > maxStorage)
+                    resources[i].value = maxStorage;
+                break;
             }
         }
         SetSliderValue();
@@ -117,6 +154,7 @@ public class ResourcesManager : MonoBehaviour
                 if (resources[i].value >= qty)
                 {
                     resources[i].value -= qty;
+                    break;
                 }
             }
         }
