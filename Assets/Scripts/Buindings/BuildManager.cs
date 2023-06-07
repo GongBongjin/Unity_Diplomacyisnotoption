@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using static UnityEngine.UI.GridLayoutGroup;
 
 public struct BuildingData
@@ -117,10 +118,12 @@ public class BuildManager : MonoBehaviour
     {
         ReadyConstruction(2000);
         townHall = target;
-        target = null;
         townHall.transform.position = Vector3.zero;
+        Building building = townHall.GetComponent<Building>();
+        building.PlacementComplete(true);
         buildings[2000].Add(townHall);
         gridManager.SetSlotIsEmpty(townHall.transform.position, GetBuildData(2000).matrixSize, false);
+        target = null;
         isBuild = false;
     }
 
@@ -143,6 +146,8 @@ public class BuildManager : MonoBehaviour
             gridManager.SetShowGrid(false);
             SelectionBox.instance.BuildingOrder(CitizenManager.Instance.GetCitizenKey(), target);
             buildings[targetKey].Add(target);
+            Building building = target.GetComponent<Building>();
+            building.PlacementComplete(true);
             targetKey = 0;
             target = null;
             isBuild = false;
@@ -159,7 +164,9 @@ public class BuildManager : MonoBehaviour
             GameObject obj = buildingDatas[key].prefab;
             isBuild = true;
             target = Instantiate(obj, buildingParent.transform);
-            target.GetComponent<Building>().SetBuildingProperty(
+            Building building = target.GetComponent<Building>();
+            building.PlacementComplete(false);
+            building.SetBuildingProperty(
                 buildingDatas[key].key,
                 buildingDatas[key].matrixSize,
                 buildingDatas[key].maxHP,

@@ -38,7 +38,8 @@ public class Citizen : Objects
 
     bool isProduction = false;
     bool isCarry = false;
-    bool isMove = false;
+    //bool isMove = false;
+    float moveSpeed = 0.0f;
     float workSpeed = 1.0f;     // 작업 속도
     bool isBuild = false;
 
@@ -70,14 +71,15 @@ public class Citizen : Objects
     void Update()
     {
 
-        if (isMove)
-        {
-            if (nvAgent.remainingDistance <= 0.0f)
-            {
-                isMove = false;
-                animator.SetBool("Move", isMove);
-            }
-        }
+        moveSpeed = nvAgent.velocity.magnitude / nvAgent.speed;
+        animator.SetFloat("MoveSpeed", moveSpeed);
+
+        //Debug.Log(nvAgent.velocity.magnitude / nvAgent.speed);
+        //if (nvAgent.remainingDistance <= 0.0f)
+        //{
+        //    isMove = false;
+        //    //animator.SetBool("Move", isMove);
+        //}
         // workState 검사해서 행동 루틴 반복
 
         WorkRoutine();
@@ -185,14 +187,14 @@ public class Citizen : Objects
     void SetCitizenWorkState(CitizenState state)
     {
         if (workState == state) return;
-
+        Debug.Log("WorkState : " + state);
         workState = state;
     }
 
     // 작업장 도착 후 내용 체크
     void CheckWorkState()
     {
-        //Debug.Log("WorkState Check : " + workState);
+        Debug.Log("WorkState Check : " + workState);
         switch (workState)
         {
             case CitizenState.Felling:
@@ -206,7 +208,6 @@ public class Citizen : Objects
                 animator.SetBool("Build", isBuild);
                 break;
             case CitizenState.Fix:
-                Debug.Log("Citizen Work Fix");
                 SetCitizenAnimationState(CitizenState.Fix);
                 animator.SetBool("Fix", true);
                 break;
@@ -223,17 +224,45 @@ public class Citizen : Objects
         }
     }
 
+    public void StopWork()
+    {
+        workTarget = null;
+        switch (workState)
+        {
+            case CitizenState.Felling:
+                isProduction = false;
+                animator.SetBool("Felling", isProduction);
+                break;
+            case CitizenState.Building:
+                isBuild = false;
+                animator.SetBool("Build", isBuild);
+                break;
+            case CitizenState.Fix:
+                animator.SetBool("Fix", false);
+                break;
+            case CitizenState.Hoeing:
+                isProduction = false;
+                animator.SetBool("Mining", isProduction);
+                break;
+            case CitizenState.Mining:
+                isProduction = false;
+                animator.SetBool("Mining", isProduction);
+                break;
+        }
+        SetCitizenWorkState(CitizenState.Idle);
+    }
+
     public void MoveDestination(Vector3 destination)
     {
+        nvAgent.velocity = Vector3.zero;
         nvAgent.destination = destination;
         SetCitizenAnimationState(CitizenState.Move);
-        isMove = true;
-        animator.SetBool("Move", isMove);
     }
 
     // 생산 명령
     public void ProductionOrder(GameObject obj)
     {
+        StopWork();
         workTarget = obj;
         targetProduct = obj.GetComponent<ProductObject>();
         product = targetProduct.GetProductName();
@@ -262,6 +291,8 @@ public class Citizen : Objects
     // 건설 및 수리
     public void BuildingOrder(GameObject obj)
     {
+        StopWork();
+        //isBuild = false;
         workTarget = obj;
         targetBuilding = obj.GetComponent<Building>();
         SelectTools(1);
@@ -363,10 +394,11 @@ public class Citizen : Objects
         {
             if (other.gameObject.Equals(workTarget))
             {
-                isMove = false;
-                animator.SetBool("Move", isMove);
+                //isMove = false;
+                //animator.SetBool("Move", isMove);
                 CheckWorkState();
-                nvAgent.ResetPath();
+                //nvAgent.ResetPath();
+                MoveDestination(transform.position);
             }
         }
 
@@ -374,6 +406,7 @@ public class Citizen : Objects
         {
             if(other.gameObject.Equals(storageHouse))
             {
+                nvAgent.velocity = Vector3.zero;
                 isCarry = false;
                 UIManager.Instance.IncreasesResources(product, output);
                 output = 0;

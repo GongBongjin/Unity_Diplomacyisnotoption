@@ -11,6 +11,7 @@ public class Objects : MonoBehaviour
 
     public void SetSelectObject(bool isSelected)
     {
+        this.isSelected = isSelected;
         selectCircle.SetActive(isSelected);
         hpBar.SetActiveProgressBar(isSelected);
     }

@@ -104,7 +104,7 @@ public class SingleInformation : MonoBehaviour
 
     public void SetProductionBuilding(Building building)
     {
-        Debug.Log(building.name);
+        //Debug.Log(building.name);
         this.building = building;
     }
 

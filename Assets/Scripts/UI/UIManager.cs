@@ -13,7 +13,6 @@ public class UIManager : MonoBehaviour
         }
     }
 
-
     Texture2D defaultCursor;
     Texture2D targetCursor;
 

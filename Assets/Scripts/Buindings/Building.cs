@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Windows.Input;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Building : Objects
 {
@@ -47,6 +49,18 @@ public class Building : Objects
     void Update()
     {
         ProductionUnit();
+        if (isSelected && Input.GetMouseButtonDown(1))
+        {
+            Vector3 mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.farClipPlane);
+            Ray ray = Camera.main.ScreenPointToRay(mousePos);
+            RaycastHit hit;
+        
+            if (Physics.Raycast(ray, out hit))
+            {
+                Vector3 destPos = new Vector3(hit.point.x, 0, hit.point.z);
+                rallyPoint = destPos;
+            }
+        }
     }
 
     public void SetBuildingProperty(int key, int matrixSize, int maxHP, int buildTime)
@@ -72,12 +86,21 @@ public class Building : Objects
     {
         return isCompletion;
     }    
+
+    public void SetIsCompletion(bool isComplete)
+    {
+        isCompletion = isComplete;
+    }
     public bool GetIsRepairDone()
     {
         return true;
     }
 
-
+    public void PlacementComplete(bool placement)
+    {
+        transform.GetComponent<Collider>().enabled = placement;
+        transform.GetComponent<NavMeshObstacle>().enabled = placement;
+    }
     public void BuildUpBuilding(float value)
     {
         float increaseValue = value * Time.deltaTime;
@@ -145,7 +168,6 @@ public class Building : Objects
         {
             if(productObject.Count > 0)
             {
-                Debug.Log("ProductionCount : " + productObject.Count);
                 characterKey = productObject[0];
                 isProduction = true;
             }
@@ -211,7 +233,7 @@ public class Building : Objects
         else if (key == 1000)
             CitizenManager.Instance.CreateCharacter(pos, rallyPoint);
         else
-            CharacterManager.instance.CreateCharacter(key, FindUnitPlacement());
+            CharacterManager.instance.CreateCharacter(key, FindUnitPlacement(), rallyPoint);
     }
 
     private Vector3 FindUnitPlacement()

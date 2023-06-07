@@ -316,6 +316,7 @@ public class SelectionBox : MonoBehaviour
                 {
                     foreach (GameObject obj in selectedObjects[key])
                     {
+                        obj.GetComponent<Citizen>().StopWork();
                         obj.GetComponent<Citizen>().MoveDestination(destPos);
                     }
                 }
@@ -338,6 +339,10 @@ public class SelectionBox : MonoBehaviour
     {
         foreach (int key in selectedObjects.Keys)
         {
+            if(key == 1000)
+            {
+                continue;
+            }
             foreach (GameObject obj in selectedObjects[key])
             {
                 Army army = obj.GetComponent<Army>();
