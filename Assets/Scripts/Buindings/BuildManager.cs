@@ -116,13 +116,21 @@ public class BuildManager : MonoBehaviour
 
     public void CreateBaseTownHall()
     {
-        ReadyConstruction(2000);
+        int key = 2000;
+        ReadyConstruction(key);
         townHall = target;
         townHall.transform.position = Vector3.zero;
         Building building = townHall.GetComponent<Building>();
+        building.SetBuildingProperty(
+                buildingDatas[key].key,
+                buildingDatas[key].matrixSize,
+                buildingDatas[key].maxHP,
+                buildingDatas[key].buildTime);
         building.PlacementComplete(true);
-        buildings[2000].Add(townHall);
-        gridManager.SetSlotIsEmpty(townHall.transform.position, GetBuildData(2000).matrixSize, false);
+        building.ResetHP();
+        building.SetIsCompletion(true);
+        buildings[key].Add(townHall);
+        gridManager.SetSlotIsEmpty(townHall.transform.position, GetBuildData(key).matrixSize, false);
         target = null;
         isBuild = false;
     }
@@ -172,6 +180,21 @@ public class BuildManager : MonoBehaviour
                 buildingDatas[key].maxHP,
                 buildingDatas[key].buildTime);
         }
+    }
+
+    public void DestroyBuilding(int targetKey, GameObject destroyObj)
+    {
+        for(int i = 0; i < buildings[targetKey].Count; i++)
+        {
+            if (buildings[targetKey][i].Equals(destroyObj))
+            {
+                Debug.Log("Destroyed : " + destroyObj.name);
+                buildings[targetKey].RemoveAt(i);
+                Destroy(destroyObj);
+                break;
+            }
+        }
+        
     }
 
     public void AddBuildingData(BuildingData data)

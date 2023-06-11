@@ -42,9 +42,9 @@ public class GridManager : MonoBehaviour
         gridSlotsRenderer = new MeshRenderer[count];
         for (int i = 0; i < count; i++)
         {
-            gridSlots[i] = Instantiate(gridSlotPrefab);
-            gridSlots[i].transform.SetParent(slotParent.transform);
+            gridSlots[i] = Instantiate(gridSlotPrefab, slotParent.transform);
             gridSlotsRenderer[i] = gridSlots[i].GetComponent<MeshRenderer>();
+            gridSlots[i].SetActive(false);
         }
 
         // 맵 전체의 slot정보 건물이 존재하는지 여부를 판단

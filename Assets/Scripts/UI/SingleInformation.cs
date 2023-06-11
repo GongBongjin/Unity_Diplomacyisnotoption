@@ -49,7 +49,10 @@ public class SingleInformation : MonoBehaviour
             return;
 
         if (building == null)
+        {
+            production.SetActive(false);
             return;
+        }
 
         if(building.GetIsProduction())
         {
@@ -115,6 +118,7 @@ public class SingleInformation : MonoBehaviour
         SetAbilities(false);
         if (key == 1000)
         {
+            building = null;
             CitizenData characterData = CitizenManager.Instance.GetCitizenData();
             img_Profile.sprite = characterData.icon;
             text_Name.text = characterData.name;
@@ -123,6 +127,7 @@ public class SingleInformation : MonoBehaviour
         }
         else if (type == 1)
         {
+            building = null;
             CharacterData characterData = DataManager.instance.GetCharacterDatas(key);
             
             img_Profile.sprite = characterData.sprite;
@@ -151,6 +156,7 @@ public class SingleInformation : MonoBehaviour
         }
         else if (type == 3)
         {
+            building = null;
             // Building
             ProductData productData = TerrainObjectManager.Instance.GetProductData(key);
             img_Profile.sprite = productData.icon;

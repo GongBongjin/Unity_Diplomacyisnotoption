@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Input;
+using Unity.VisualScripting;
+using UnityEditor.Build.Reporting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -17,7 +19,7 @@ public class Building : Objects
     float curHP;
 
     bool isCompletion = false;  // 건물 완공 상태
-    //bool isRepairDone = false;  // 수리필요?
+    bool isRepairDone = false;  // 수리필요?
 
     int maxProduction = 7;
     bool isProduction = false;
@@ -26,8 +28,14 @@ public class Building : Objects
     float maxProductTime = 10;
     float productTime = 0;
 
+    const float destroyTime = 5.0f;
+    bool isDestroy = false;
+
     const float createOffset = 5.0f;
     Vector3 rallyPoint = Vector3.zero;
+
+    const int maxParticleCount = 10;
+    GameObject[] fireParticle;
 
     private void Awake()
     {
@@ -37,6 +45,8 @@ public class Building : Objects
         selectCircle = transform.Find("Circle").gameObject;
         hpBar = transform.Find("HpBar").GetComponent<HpBar>();
         selectCircle.SetActive(false);
+
+        fireParticle = new GameObject[maxParticleCount];
     }
 
     // Start is called before the first frame update
@@ -61,6 +71,11 @@ public class Building : Objects
                 rallyPoint = destPos;
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            BeAttacked(100);
+        }
     }
 
     public void SetBuildingProperty(int key, int matrixSize, int maxHP, int buildTime)
@@ -69,6 +84,7 @@ public class Building : Objects
         this.matrixSize = matrixSize;
         this.maxHP = maxHP;
         this.maxBuildTime = buildTime;
+        hpBar.SetProgressBar(curHP/ maxHP);
         material.SetFloat("_GridStepValue", 0.5f);
     }
 
@@ -96,6 +112,17 @@ public class Building : Objects
         return true;
     }
 
+    public bool GetIsDestroy()
+    {
+        return isDestroy;
+    }
+
+    public void ResetHP()
+    {
+        curHP = maxHP;
+        hpBar.SetProgressBar(curHP / maxHP);
+    }
+
     public void PlacementComplete(bool placement)
     {
         transform.GetComponent<Collider>().enabled = placement;
@@ -115,27 +142,90 @@ public class Building : Objects
                 curHP = maxHP;
             isCompletion = true;
         }
+        Debug.Log(curHP + " / " + maxHP);
+        hpBar.SetProgressBar(curHP / maxHP);
     }
 
-    public bool RepairBuilding(float value)
+    public void RepairBuilding(float value)
     {
         curHP += value;
         if(curHP > maxHP) 
         { 
             curHP = maxHP;
-            return true;
+            isRepairDone = false;
         }
-        return false;
+        hpBar.SetProgressBar(curHP / maxHP);
+        int count = 10 - (int)(curHP / maxHP * 10);
+        ActiveBuildingFireParticle(count);
     }
 
 
     public void BeAttacked(float damage)
     {
+        if (isDestroy) return;
         curHP -= damage;
-        if(curHP <= 0)
+        isRepairDone = true;
+        if (curHP <= 0)
         {
+            isDestroy = true;
             curHP = 0;
-            // destroy
+            hpBar.SetProgressBar(0);
+            ActiveBuildingFireParticle(0);
+            Vector3 size = new Vector3(matrixSize * GridManager.GRID_SIZE, 1, matrixSize * GridManager.GRID_SIZE);
+            SmokeParticleManager.Instance.ActiveParticle(transform.position, size);
+            StartCoroutine(DestroyMoving());
+            //GetComponent<Animator>().SetBool("Destroy", isDestroy);
+        }
+        else
+        {
+            hpBar.SetProgressBar(curHP / maxHP);
+            int count = 10 - (int)(curHP / maxHP * 10);
+            ActiveBuildingFireParticle(count);
+        }
+    }
+
+    IEnumerator DestroyMoving()
+    {
+        float time = 0;
+        float destroyValue = maxBuildTime / destroyTime;
+        Debug.Log(maxBuildTime + " : " + destroyTime + ", = " + destroyValue);
+
+        while (time < destroyTime)
+        {
+            yield return null;
+            time += Time.deltaTime;
+            transform.position += Vector3.down * destroyValue * Time.deltaTime;
+        }
+        EndDestroy();
+    }
+
+    public void EndDestroy()
+    {
+        BuildManager.Instance.DestroyBuilding(primaryKey, gameObject);
+    }
+
+    private void ActiveBuildingFireParticle(int count)
+    {
+        for(int i = 0; i < maxParticleCount; i++)
+        {
+            if(i < count)
+            {
+                if (fireParticle[i] == null)
+                {
+                    //float basicSize = matrixSize * GridManager.GRID_SIZE * 0.5f;
+                    Mesh _Mesh = transform.GetChild(0).GetComponent<MeshFilter>().mesh;
+                    Vector3 pos = transform.position + _Mesh.vertices[UnityEngine.Random.Range(0, _Mesh.vertices.Length)];
+                    fireParticle[i] = FireParticleManager.Instance.ActiveParticle(pos);
+                }
+            }
+            else
+            {
+                if (fireParticle[i] != null)
+                {
+                    fireParticle[i].SetActive(false);
+                    fireParticle[i] = null;
+                }
+            }
         }
     }
 

@@ -81,6 +81,21 @@ public class CharacterManager : MonoBehaviour
         SpawnArmies();
         SpawnEnmies();
     }
+    public void SetMinimapPosition()
+    {
+        foreach (CharacterKey key in characterPools.Keys)
+        {
+            if (key >= CharacterKey.TURTLE) return;
+
+            foreach (GameObject obj in characterPools[key])
+            {
+                if (obj.activeSelf)
+                {
+                    MiniMap.Instance.AddPosition(obj.transform.position);
+                }
+            }
+        }
+    }
 
     // 추가(생산시 필요 자원가져와야함)
     public CharacterData GetCharacterData(int key)
