@@ -28,7 +28,7 @@ public class LightManager : MonoBehaviour
 
     private void UpdateLight()
     {
-        rotAngle += Time.deltaTime * 3.0f;
+        rotAngle += Time.deltaTime;// * 3.0f;
 
         light.transform.rotation = Quaternion.Euler(rotAngle, 90, 0);
 

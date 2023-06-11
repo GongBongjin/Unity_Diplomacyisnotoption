@@ -19,6 +19,7 @@ public class MiniMap : MonoBehaviour
 
     [SerializeField] RenderTexture _RenderTexture;
     [SerializeField] RawImage miniMap;
+    Texture2D texture;
 
     Color red = Color.red;
     Color green = Color.green;
@@ -48,7 +49,9 @@ public class MiniMap : MonoBehaviour
         CharacterManager.instance.SetMinimapPosition();
         EnemyManager.instance.SetMinimapPosition();
         CitizenManager.Instance.SetMinimapPosition();
-        Texture2D texture = new Texture2D(_RenderTexture.width, _RenderTexture.height, TextureFormat.ARGB32, false);
+        if(texture != null)
+            Destroy(texture);
+        texture = new Texture2D(_RenderTexture.width, _RenderTexture.height, TextureFormat.ARGB32, false);
         RenderTexture.active = _RenderTexture;
         texture.ReadPixels(new Rect(0, 0, _RenderTexture.width, _RenderTexture.height), 0, 0);
 

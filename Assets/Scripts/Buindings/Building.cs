@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Input;
-using Unity.VisualScripting;
-using UnityEditor.Build.Reporting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -25,7 +23,7 @@ public class Building : Objects
     bool isProduction = false;
     List<int> productObject;
     int characterKey;
-    float maxProductTime = 10;
+    float maxProductTime = 10f;
     float productTime = 0;
 
     const float destroyTime = 5.0f;
@@ -142,7 +140,6 @@ public class Building : Objects
                 curHP = maxHP;
             isCompletion = true;
         }
-        Debug.Log(curHP + " / " + maxHP);
         hpBar.SetProgressBar(curHP / maxHP);
     }
 

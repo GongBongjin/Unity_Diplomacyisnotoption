@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 4953125213091779857}
   - component: {fileID: 4953125213091779856}
   - component: {fileID: 4953125213091779863}
-  - component: {fileID: 8030714516349400639}
   - component: {fileID: 1942845840}
   m_Layer: 0
   m_Name: Main Camera
@@ -102,23 +101,6 @@ MonoBehaviour:
   moveSpeed: 100
   rotateSpeed: 100
   zoomSpeed: 1000
---- !u!114 &8030714516349400639
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4953125213091779859}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33fd4297adfdaff4e8aabc6dec0e1b00, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gridMaterial: {fileID: 2100000, guid: 2a4171135c1dc24418e515775cac56b4, type: 2}
-  gridHalfWidth: 500
-  gridHalfHeight: 500
-  gridIntervalWidth: 1
-  gridIntervalheight: 1
 --- !u!114 &1942845840
 MonoBehaviour:
   m_ObjectHideFlags: 0

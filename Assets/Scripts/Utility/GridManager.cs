@@ -16,7 +16,7 @@ public class GridManager : MonoBehaviour
     private const int GRID_SLOT_WIDTH_COUNT = 11;
     private const int GRID_SLOT_HEIGHT_COUNT = 11;
 
-    ShowGrid _grid;
+    //ShowGrid _grid;
     [SerializeField, Tooltip("3d flat(plane) object with Material set to gpu instancing")]
     private GameObject gridSlotPrefab;
     [SerializeField, Tooltip("Add 2 materials of different colors")]
@@ -35,7 +35,7 @@ public class GridManager : MonoBehaviour
 
     private void Awake()
     {
-        _grid = Camera.main.gameObject.GetComponent<ShowGrid>();
+        //_grid = Camera.main.gameObject.GetComponent<ShowGrid>();
         slotParent = new GameObject("Slots");
         int count = GRID_SLOT_WIDTH_COUNT * GRID_SLOT_HEIGHT_COUNT;
         gridSlots = new GameObject[count];
@@ -71,7 +71,7 @@ public class GridManager : MonoBehaviour
     {
         isShowGrid = isShow;
         //slotParent.SetActive(isShowGrid);
-        _grid.enabled = isShowGrid;
+        //_grid.enabled = isShowGrid;
     }
     // BuildManager call this function
 

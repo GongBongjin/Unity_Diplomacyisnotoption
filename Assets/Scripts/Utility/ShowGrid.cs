@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class ShowGrid : MonoBehaviour
 {
@@ -18,7 +20,45 @@ public class ShowGrid : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        RenderPipelineManager.endCameraRendering += OnEndCameraRendering;
+    }
+
+    private void OnEndCameraRendering(ScriptableRenderContext context, Camera camera)
+    {
+        GL.PushMatrix();
+        gridMaterial.SetPass(0);
+        //GL.LoadOrtho();
+
+        GL.Begin(GL.LINES);
+        //GL.Color(gridColor);
+
+        Vector3 startVertex = Vector3.zero + Vector3.up;
+        Vector3 endVertex = Vector3.zero + Vector3.up;
+
+        // z รเ
+        startVertex.x = -gridHalfWidth;
+        endVertex.x = gridHalfWidth;
+        for (int z = -gridHalfHeight; z < gridHalfHeight; z += gridIntervalheight)
+        {
+            startVertex.z = z;
+            endVertex.z = z;
+            GL.Vertex(startVertex);
+            GL.Vertex(endVertex);
+        }
+        // x รเ
+        startVertex.z = -gridHalfHeight;
+        endVertex.z = gridHalfHeight;
+        for (int x = -gridHalfWidth; x < gridHalfWidth; x += gridIntervalWidth)
+        {
+            startVertex.x = x;
+            endVertex.x = x;
+            GL.Vertex(startVertex);
+            GL.Vertex(endVertex);
+        }
+
+        GL.End();
+
+        GL.PopMatrix();
     }
 
     // Update is called once per frame
@@ -26,6 +66,7 @@ public class ShowGrid : MonoBehaviour
     {
         
     }
+
 
     private void OnPostRender()
     {
@@ -37,12 +78,13 @@ public class ShowGrid : MonoBehaviour
         GL.Begin(GL.LINES);
         //GL.Color(gridColor);
 
-        Vector3 startVertex = Vector3.zero;
-        Vector3 endVertex = Vector3.zero;
+        Vector3 startVertex = Vector3.zero + Vector3.up;
+        Vector3 endVertex = Vector3.zero + Vector3.up;
 
         // z รเ
         startVertex.x = -gridHalfWidth;
         endVertex.x = gridHalfWidth;
+        Debug.Log(startVertex);
         for (int z = -gridHalfHeight; z < gridHalfHeight; z += gridIntervalheight)
         {
             startVertex.z = z;

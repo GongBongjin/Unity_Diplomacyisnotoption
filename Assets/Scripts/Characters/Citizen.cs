@@ -16,7 +16,7 @@ public class Citizen : Objects
         Building,   // 건설
         Fix,        // 수리
         Hoeing,     // 농사
-        Mining     // 채광
+        Mining      // 채광
     }
     CitizenState animState = CitizenState.Idle;
     CitizenState workState = CitizenState.None;
@@ -73,15 +73,6 @@ public class Citizen : Objects
 
         moveSpeed = nvAgent.velocity.magnitude / nvAgent.speed;
         animator.SetFloat("MoveSpeed", moveSpeed);
-
-        //Debug.Log(nvAgent.velocity.magnitude / nvAgent.speed);
-        //if (nvAgent.remainingDistance <= 0.0f)
-        //{
-        //    isMove = false;
-        //    //animator.SetBool("Move", isMove);
-        //}
-        // workState 검사해서 행동 루틴 반복
-
         WorkRoutine();
     }
 

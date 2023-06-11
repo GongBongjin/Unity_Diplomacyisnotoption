@@ -109,19 +109,6 @@ public class TerrainObjectManager : MonoBehaviour
                 obj.GetComponent<ProductObject>().SetProductProperty(productDatas[key]);
 
             }
-            
-            //tempCube[i].transform.position = new Vector3(x, y, z);
-            //reader.Read()
-            //for (int j = 0; j < instances.Length; j++)
-            //{
-            //    if (instances[j].prototypeIndex != i)
-            //        continue;
-            //
-            //    writer.Write(instances[j].position.x);
-            //    writer.Write(instances[j].position.y);
-            //    writer.Write(instances[j].position.z);
-            //}
-            //writer.Close();
             fileStream.Close();
         }
     }
