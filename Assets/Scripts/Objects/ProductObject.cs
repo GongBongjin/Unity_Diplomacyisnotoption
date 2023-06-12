@@ -56,7 +56,6 @@ public class ProductObject : Objects
 
     public int Production(float speed)
     {
-        //Debug.Log(outputTime + " / " + productTime + " , " + speed);
         outputTime += speed * Time.deltaTime;
         if(outputTime > productTime)
         {
@@ -75,11 +74,9 @@ public class ProductObject : Objects
         if (curAmount <= 0)
         {
             value += curAmount;
-            // 반환값이 음수일 때 파괴
+            // 반환값이 음수일 때 자원 고갈
             return -value - 1;
-            // 파괴~
         }
-
         return value;
     }
 

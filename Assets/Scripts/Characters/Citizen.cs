@@ -178,14 +178,14 @@ public class Citizen : Objects
     void SetCitizenWorkState(CitizenState state)
     {
         if (workState == state) return;
-        Debug.Log("WorkState : " + state);
+        //Debug.Log("WorkState : " + state);
         workState = state;
     }
 
     // 작업장 도착 후 내용 체크
     void CheckWorkState()
     {
-        Debug.Log("WorkState Check : " + workState);
+        //Debug.Log("WorkState Check : " + workState);
         switch (workState)
         {
             case CitizenState.Felling:
@@ -335,17 +335,15 @@ public class Citizen : Objects
 
             if (hits[i].gameObject.Equals(workTarget))
                 continue;
-            // 생산하던 것과 똑같은건지 검사
+            // 생산하던 것과 똑같은 품목인지 검사
             productObj = hits[i].GetComponent<ProductObject>();
             if (!productObj.GetProductName().Equals(product))
                 continue;
 
-            //Debug.Log(hits[i].tag);
             // 최소 작업거리 검사
             float dist = Vector3.Distance(transform.position, hits[i].transform.position);
             if(dist < minDistance)
             {
-                //Debug.Log(dist + " < minDistance");
                 tempTarget = hits[i].gameObject;
                 minDistance = dist;
             }

@@ -162,7 +162,6 @@ public class GridManager : MonoBehaviour
 
     private void ShowGridSlot(Vector3 pos, int size)
     {
-        bool isEven = size % 2 == 0;
         int halfIndex = size / 2;
         float halfGridSize = GRID_SIZE * 0.5f;
         for (int z = 0; z < GRID_SLOT_HEIGHT_COUNT; z++)
@@ -177,7 +176,7 @@ public class GridManager : MonoBehaviour
                     Vector3 gridPosition = pos + new Vector3((x- halfIndex ) * GRID_SIZE, 0.1f, (z - halfIndex) * GRID_SIZE);
                     if(size % 2 == 0)
                     {
-                        gridPosition += new Vector3(halfGridSize, 0, halfGridSize);
+                        gridPosition += new Vector3(halfGridSize, 0.1f, halfGridSize);
                     }
                     gridSlots[index].SetActive(true);
                     gridSlots[index].transform.position = gridPosition;
