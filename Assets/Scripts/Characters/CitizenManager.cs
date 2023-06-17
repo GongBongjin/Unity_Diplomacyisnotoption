@@ -105,6 +105,7 @@ public class CitizenManager : MonoBehaviour
             CreateCharacterPool(AddPoolCount);
         }
 
+        citizenObjects[idx].GetComponent<Citizen>().SetCitizenProperty(citizenData.key, citizenData.maxHP, citizenData.workSpeed);
         citizenObjects[idx].transform.position = position;
         citizenObjects[idx].SetActive(true);
 

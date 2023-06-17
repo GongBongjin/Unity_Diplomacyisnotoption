@@ -188,7 +188,8 @@ public class BuildManager : MonoBehaviour
         {
             if (buildings[targetKey][i].Equals(destroyObj))
             {
-                Debug.Log("Destroyed : " + destroyObj.name);
+                gridManager.SetSlotIsEmpty(buildings[targetKey][i].transform.position, buildings[targetKey][i].GetComponent<Building>().GetMatrixSize(), true);
+                //Debug.Log("Destroyed : " + destroyObj.name);
                 buildings[targetKey].RemoveAt(i);
                 Destroy(destroyObj);
                 break;
@@ -211,10 +212,13 @@ public class BuildManager : MonoBehaviour
 
         for(int i = 0; i < buildings[storageKey].Count; i++)
         {
+            if (!buildings[storageKey][i].GetComponent<Building>().GetIsCompletion())
+                continue;
             Vector3 bp = buildings[storageKey][i].transform.position;
             float compareDist = Vector3.Distance(pos, bp);
             if (compareDist < dist)
             {
+                dist = compareDist;
                 nearTarget = buildings[storageKey][i];
             }
         }

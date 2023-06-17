@@ -72,7 +72,7 @@ public class Building : Objects
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            BeAttacked(100);
+            BeAttacked(10);
         }
     }
 
@@ -128,6 +128,7 @@ public class Building : Objects
     }
     public void BuildUpBuilding(float value)
     {
+        if (isCompletion) return;
         float increaseValue = value * Time.deltaTime;
         buildTime += increaseValue;
         curHP += increaseValue / maxBuildTime * maxHP;
@@ -139,6 +140,10 @@ public class Building : Objects
             if(curHP > maxHP)
                 curHP = maxHP;
             isCompletion = true;
+            if (primaryKey == 2001)
+                UIManager.Instance.IncreaseMaxPopulation(10);
+            if (primaryKey == 2003)
+                UIManager.Instance.IncreaseMaxStorage(100);
         }
         hpBar.SetProgressBar(curHP / maxHP);
     }
@@ -198,6 +203,10 @@ public class Building : Objects
 
     public void EndDestroy()
     {
+        if (primaryKey == 2001)
+            UIManager.Instance.IncreaseMaxPopulation(-10);
+        if (primaryKey == 2003)
+            UIManager.Instance.IncreaseMaxStorage(-100);
         BuildManager.Instance.DestroyBuilding(primaryKey, gameObject);
     }
 

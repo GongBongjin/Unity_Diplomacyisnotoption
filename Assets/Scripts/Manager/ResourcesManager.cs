@@ -92,9 +92,8 @@ public class ResourcesManager : MonoBehaviour
         {
             resources[i] = new NaturalResources();
             resources[i].name = (Product)i;
-            resources[i].value = 0;
-            //if(i != 0)
-            //    resources[i].value = 100;
+            if(i != 0)
+                resources[i].value = 50;
             resources[i].slider = ResourceParents[i].transform.Find("Slider").GetComponent<Slider>();
             resources[i].text = ResourceParents[i].transform.Find("Text_Value").GetComponent<Text>();
         }

@@ -1,12 +1,12 @@
 Keys,Name,Size,HP,BuildTime,Wood,Stone,Copper,Prefab,Icon,Description
 2000,시청,8,2000,50,0,0,0,Buildings/TownHall,Icons/Building/TownHall,이 구역의 행정을 담당합니다.
-2001,집,3,100,20,50,20,0,Buildings/House,Icons/Building/House,시민이 살고 있는 집 입니다.
-2002,농장,2,100,5,30,20,0,Buildings/Farm,Icons/Building/Farm,농사를 짓고 음식을 조달할 수 있습니다.
-2003,창고,3,200,15,50,50,0,Buildings/Storage,Icons/Building/Storage,"음식, 나무, 돌, 구리 등을 저장할 수 있습니다."
-2004,병영,4,500,25,100,50,20,Buildings/Barrack,Icons/Building/Barrack,병사를 뽑고 군대를 꾸려 마을을 지킬 수 있습니다.
-2005,군견훈련소,2,300,15,50,80,50,Buildings/DogKnight,Icons/Building/DogHouse,강아지를 훈련시킬 수 있습니다.
-2006,선술집,5,600,20,60,30,80,Buildings/Tavern,Icons/Building/Tavern,막강한 전사를 영입할 수 있습니다.
-2007,공학,5,800,25,50,100,150,Buildings/Engineering,Icons/Building/Engineering,공성에 뛰어난 대포를 제작할 수 있습니다.
-2008,대학,6,400,35,40,80,120,Buildings/Univercity,Icons/Building/Univercity,마법을 배울 수 있습니다.
-2009,벽,1,500,20,30,30,30,Buildings/Wall,Icons/Building/Wall,튼튼한 벽 입니다.
-2010,타워,2,1000,30,50,100,100,Buildings/Tower,Icons/Building/Tower,유닛을 배치하여 마을을 효율적으로 지킬 수 있습니다.
+2001,집,3,200,15,30,0,0,Buildings/House,Icons/Building/House,시민이 살고 있는 집 입니다.
+2002,농장,2,100,5,10,0,0,Buildings/Farm,Icons/Building/Farm,농사를 짓고 음식을 조달할 수 있습니다.
+2003,창고,3,200,15,20,0,0,Buildings/Storage,Icons/Building/Storage,"음식, 나무, 돌, 구리 등을 저장할 수 있습니다."
+2004,병영,4,500,25,50,10,30,Buildings/Barrack,Icons/Building/Barrack,병사를 뽑고 군대를 꾸려 마을을 지킬 수 있습니다.
+2005,군견훈련소,2,300,15,30,10,50,Buildings/DogKnight,Icons/Building/DogHouse,강아지를 훈련시킬 수 있습니다.
+2006,선술집,5,600,20,60,20,60,Buildings/Tavern,Icons/Building/Tavern,막강한 전사를 영입할 수 있습니다.
+2007,공학,5,800,25,50,30,80,Buildings/Engineering,Icons/Building/Engineering,공성에 뛰어난 대포를 제작할 수 있습니다.
+2008,대학,6,400,35,50,30,80,Buildings/Univercity,Icons/Building/Univercity,마법을 배울 수 있습니다.
+2009,벽,1,500,20,10,0,10,Buildings/Wall,Icons/Building/Wall,튼튼한 벽 입니다.
+2010,타워,2,1000,30,30,10,30,Buildings/Tower,Icons/Building/Tower,유닛을 배치하여 마을을 효율적으로 지킬 수 있습니다.
