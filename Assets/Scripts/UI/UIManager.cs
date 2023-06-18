@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,7 +12,6 @@ public class UIManager : MonoBehaviour
             return instance;
         }
     }
-
 
     Texture2D defaultCursor;
     Texture2D targetCursor;
@@ -37,7 +37,7 @@ public class UIManager : MonoBehaviour
 
 
         LoadCursor();
-        LoadSpriteIcon();
+        LoadDefaultSpriteIcon();
         resourceManager = GetComponent<ResourcesManager>();
     }
 
@@ -62,9 +62,14 @@ public class UIManager : MonoBehaviour
         Cursor.SetCursor(defaultCursor, Vector2.zero, CursorMode.Auto);
     }
 
-    private void LoadSpriteIcon()
+    private void LoadDefaultSpriteIcon()
     {
         defaultSprite = Resources.Load<Sprite>("Icons/default");
+    }
+
+    public Sprite GetDefaultSpriteIcon()
+    {
+        return defaultSprite;
     }
 
     // 자원 관리용 오브젝트 설정
@@ -81,11 +86,34 @@ public class UIManager : MonoBehaviour
         text_Day.text = day.ToString();
     }
 
-    public void IncreasMaxPopulation(int value)
+    public bool CheckRemainingResources(int population = 0, int food = 0, int wood = 0, int stone = 0, int copper = 0)
+    {
+        bool isEnough = true;
+        // 인구 비교, 자원 비교
+        if (resourceManager.GetPopulation() + population > resourceManager.GetMaxPopulation())
+            isEnough = false;
+
+        if(!(resourceManager.GetCheckResourceCount(Product.FOOD, food) && resourceManager.GetCheckResourceCount(Product.WOOD, wood) &&
+            resourceManager.GetCheckResourceCount(Product.STONE, stone) && resourceManager.GetCheckResourceCount(Product.COPPER, copper)))
+            isEnough = false;
+
+        return isEnough;
+    }
+
+    public void SpendResources(int population = 0, int food = 0, int wood = 0, int stone = 0, int copper = 0)
+    {
+        IncreasesResources(Product.POPULATION, population);
+        DecreasesResources(Product.FOOD, food);
+        DecreasesResources(Product.WOOD, wood);
+        DecreasesResources(Product.STONE, stone);
+        DecreasesResources(Product.COPPER, copper);
+    }
+
+    public void IncreaseMaxPopulation(int value)
     {
         resourceManager.UpdateMaxPopulation(value);
     }
-    public void IncreasMaxStorage(int value)
+    public void IncreaseMaxStorage(int value)
     {
         resourceManager.UpdateMaxStorage(value);
     }
@@ -99,6 +127,10 @@ public class UIManager : MonoBehaviour
         resourceManager.DecreasesResources(product, qty);
     }
 
+    public void SetProductionBuilding(Building building)
+    {
+        singleInfo.SetProductionBuilding(building);
+    }
 
     public void ShowInformation(int[] keys, int[] count)
     {

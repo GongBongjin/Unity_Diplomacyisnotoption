@@ -7,12 +7,12 @@ public class ProductObject : Objects
     [SerializeField]
     Product product;
 
-    // 총량, 남은양
+    // 총량, 남은양 (농장은 예외로 이 값을 씀)
     int key = 3000;
-    int maxAmount = 50;
+    int maxAmount = 100;
     int curAmount;
-    float productTime;
-    int output;
+    float productTime = 5;
+    int output = 1;
 
     float outputTime;
 
@@ -33,6 +33,7 @@ public class ProductObject : Objects
     {
         
     }
+
 
     public void SetProductProperty(ProductData data)
     {
@@ -73,11 +74,9 @@ public class ProductObject : Objects
         if (curAmount <= 0)
         {
             value += curAmount;
-            // 반환값이 음수일 때 파괴
+            // 반환값이 음수일 때 자원 고갈
             return -value - 1;
-            // 파괴~
         }
-
         return value;
     }
 

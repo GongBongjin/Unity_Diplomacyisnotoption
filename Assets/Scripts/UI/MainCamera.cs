@@ -14,7 +14,7 @@ public class MainCamera : MonoBehaviour
     [HideInInspector] private Vector3 initialPosition = new Vector3(0, 49, 57);
 
     [HideInInspector] private float zoomMin = 1.0f;
-    [HideInInspector] private float zoomMax = 50.0f;
+    [HideInInspector] private float zoomMax = 100.0f;
 
     private void Start()
     {

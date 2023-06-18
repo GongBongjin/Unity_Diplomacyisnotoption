@@ -1,2 +1,2 @@
 ﻿Key,Name,MaxHP,WorkSpeed,Food,Wood,Stone,Copper,Prefab,Icon,Description
-1000,시민,100,1,10,0,0,0,Characters/Citizen,Icons/Character/Citizen,마을의 발전을 위해 꼭 필요한 시민입니다.
+1000,시민,100,1,5,0,0,0,Characters/Citizen,Icons/Character/Citizen,마을의 발전을 위해 꼭 필요한 시민입니다.

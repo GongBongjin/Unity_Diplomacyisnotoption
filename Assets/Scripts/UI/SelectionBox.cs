@@ -37,6 +37,9 @@ public class SelectionBox : MonoBehaviour
 
     private void Select()
     {
+        if (BuildManager.Instance.GetIsBuild())
+            return;
+
         if (Input.GetMouseButtonDown(0))
         {
             if (!EventSystem.current.IsPointerOverGameObject())
@@ -81,24 +84,21 @@ public class SelectionBox : MonoBehaviour
                                 break;
                             case "Citizen":
                                 isSelected = true;
-                                Citizen citizen = obj.GetComponent<Citizen>();
-                                citizen.SetSelectObject(true);
-                                AddSelectObject(citizen.GetKey(), obj);
+                                key = obj.GetComponent<Citizen>().GetKey();
+                                AddSelectObject(key, obj);
                                 break;
                             case "Building":
                                 isMoveable = false;
                                 isSelected = true;
                                 Building building = obj.GetComponent<Building>();
-                                building.SetSelectObject(true);
                                 key = building.GetKey();
+                                UIManager.Instance.SetProductionBuilding(building);
                                 AddSelectObject(key, obj);
                                 break;
                             case "Product":
                                 isMoveable = false;
                                 isSelected = true;
-                                ProductObject product = obj.GetComponent<ProductObject>();
-                                product.SetSelectObject(true);
-                                key = product.GetKey();
+                                key = obj.GetComponent<ProductObject>().GetKey();
                                 AddSelectObject(key, obj);
                                 // 나무, 광석 등 임시조치
                                 break;
@@ -233,18 +233,8 @@ public class SelectionBox : MonoBehaviour
             if (Physics.Raycast(ray, out hit))
             {
                 Vector3 destPos = new Vector3(hit.point.x, 0, hit.point.z);
-                MoveSelectedObjects(destPos);
+                MoveSelectedObjects(destPos, hit);
 
-                if (hit.transform.tag.Equals("Product"))
-                {
-                    CitizenProductionOrder(hit.transform.gameObject);
-                    hit.transform.GetComponent<Objects>().SelectObjectFlicker();
-                }
-                else if(hit.transform.tag.Equals("Building"))
-                {
-                    CitizenBuildingOrder(hit.transform.gameObject);
-                    hit.transform.GetComponent<Objects>().SelectObjectFlicker();
-                }
             }
         }
         isCommandM = false;
@@ -306,15 +296,29 @@ public class SelectionBox : MonoBehaviour
     }
 
 
-    private void MoveSelectedObjects(Vector3 destPos)
+    private void MoveSelectedObjects(Vector3 destPos, RaycastHit hit)
     {
         foreach (int key in selectedObjects.Keys)
         {
             if (key == 1000)
             {
-                foreach (GameObject obj in selectedObjects[key])
+                if (hit.transform.tag.Equals("Product"))
                 {
-                    obj.GetComponent<Citizen>().MoveDestination(destPos);
+                    CitizenProductionOrder(hit.transform.gameObject);
+                    hit.transform.GetComponent<Objects>().SelectObjectFlicker();
+                }
+                else if (hit.transform.tag.Equals("Building"))
+                {
+                    CitizenBuildingOrder(hit.transform.gameObject);
+                    hit.transform.GetComponent<Objects>().SelectObjectFlicker();
+                }
+                else
+                {
+                    foreach (GameObject obj in selectedObjects[key])
+                    {
+                        obj.GetComponent<Citizen>().StopWork();
+                        obj.GetComponent<Citizen>().MoveDestination(destPos);
+                    }
                 }
                 continue;
             }
@@ -335,6 +339,10 @@ public class SelectionBox : MonoBehaviour
     {
         foreach (int key in selectedObjects.Keys)
         {
+            if(key == 1000)
+            {
+                continue;
+            }
             foreach (GameObject obj in selectedObjects[key])
             {
                 Army army = obj.GetComponent<Army>();
@@ -402,7 +410,7 @@ public class SelectionBox : MonoBehaviour
 
     public void CreateUnit(int buildingKey, int key)
     {
-        selectedObjects[buildingKey][0].GetComponent<Building>().CreateUnit(key);
+        selectedObjects[buildingKey][0].GetComponent<Building>().AddUnitProduct(key);
     }
 
     public void BuildingOrder(int citizenKey, GameObject building)

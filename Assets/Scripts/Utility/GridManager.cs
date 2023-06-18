@@ -16,7 +16,7 @@ public class GridManager : MonoBehaviour
     private const int GRID_SLOT_WIDTH_COUNT = 11;
     private const int GRID_SLOT_HEIGHT_COUNT = 11;
 
-    ShowGrid _grid;
+    //ShowGrid _grid;
     [SerializeField, Tooltip("3d flat(plane) object with Material set to gpu instancing")]
     private GameObject gridSlotPrefab;
     [SerializeField, Tooltip("Add 2 materials of different colors")]
@@ -35,16 +35,16 @@ public class GridManager : MonoBehaviour
 
     private void Awake()
     {
-        _grid = Camera.main.gameObject.GetComponent<ShowGrid>();
+        //_grid = Camera.main.gameObject.GetComponent<ShowGrid>();
         slotParent = new GameObject("Slots");
         int count = GRID_SLOT_WIDTH_COUNT * GRID_SLOT_HEIGHT_COUNT;
         gridSlots = new GameObject[count];
         gridSlotsRenderer = new MeshRenderer[count];
         for (int i = 0; i < count; i++)
         {
-            gridSlots[i] = Instantiate(gridSlotPrefab);
-            gridSlots[i].transform.SetParent(slotParent.transform);
+            gridSlots[i] = Instantiate(gridSlotPrefab, slotParent.transform);
             gridSlotsRenderer[i] = gridSlots[i].GetComponent<MeshRenderer>();
+            gridSlots[i].SetActive(false);
         }
 
         // 맵 전체의 slot정보 건물이 존재하는지 여부를 판단
@@ -71,7 +71,7 @@ public class GridManager : MonoBehaviour
     {
         isShowGrid = isShow;
         //slotParent.SetActive(isShowGrid);
-        _grid.enabled = isShowGrid;
+        //_grid.enabled = isShowGrid;
     }
     // BuildManager call this function
 
@@ -162,7 +162,6 @@ public class GridManager : MonoBehaviour
 
     private void ShowGridSlot(Vector3 pos, int size)
     {
-        bool isEven = size % 2 == 0;
         int halfIndex = size / 2;
         float halfGridSize = GRID_SIZE * 0.5f;
         for (int z = 0; z < GRID_SLOT_HEIGHT_COUNT; z++)
@@ -177,7 +176,7 @@ public class GridManager : MonoBehaviour
                     Vector3 gridPosition = pos + new Vector3((x- halfIndex ) * GRID_SIZE, 0.1f, (z - halfIndex) * GRID_SIZE);
                     if(size % 2 == 0)
                     {
-                        gridPosition += new Vector3(halfGridSize, 0, halfGridSize);
+                        gridPosition += new Vector3(halfGridSize, 0.1f, halfGridSize);
                     }
                     gridSlots[index].SetActive(true);
                     gridSlots[index].transform.position = gridPosition;

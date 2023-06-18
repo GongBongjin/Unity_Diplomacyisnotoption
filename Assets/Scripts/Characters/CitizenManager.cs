@@ -55,7 +55,13 @@ public class CitizenManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+    }
+    public void SetMinimapPosition()
+    {
+        for (int i = 0; i < citizenObjects.Count; i++)
+        {
+            MiniMap.Instance.AddPosition(citizenObjects[i].transform.position);
+        }
     }
 
     public int GetCitizenKey()
@@ -99,6 +105,7 @@ public class CitizenManager : MonoBehaviour
             CreateCharacterPool(AddPoolCount);
         }
 
+        citizenObjects[idx].GetComponent<Citizen>().SetCitizenProperty(citizenData.key, citizenData.maxHP, citizenData.workSpeed);
         citizenObjects[idx].transform.position = position;
         citizenObjects[idx].SetActive(true);
 

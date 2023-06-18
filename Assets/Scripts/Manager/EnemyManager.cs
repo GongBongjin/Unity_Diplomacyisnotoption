@@ -31,6 +31,19 @@ public class EnemyManager : MonoBehaviour
         //
         //Attack();
     }
+    public void SetMinimapPosition()
+    {
+        foreach (CharacterKey key in enmiesPools.Keys)
+        {
+            foreach (GameObject obj in enmiesPools[key])
+            {
+                if (obj.activeSelf)
+                {
+                    MiniMap.Instance.AddPosition(obj.transform.position, false);
+                }
+            }
+        }
+    }
 
     private void SetDestination()
     {

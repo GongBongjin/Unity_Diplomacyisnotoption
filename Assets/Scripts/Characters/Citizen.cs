@@ -1,4 +1,5 @@
 
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -15,7 +16,7 @@ public class Citizen : Objects
         Building,   // 건설
         Fix,        // 수리
         Hoeing,     // 농사
-        Mining     // 채광
+        Mining      // 채광
     }
     CitizenState animState = CitizenState.Idle;
     CitizenState workState = CitizenState.None;
@@ -35,10 +36,15 @@ public class Citizen : Objects
     Product product;
     int output;
 
+    int primaryKey;
+    float maxHP;
+    float curHP;
+    float workSpeed = 1.0f;     // 작업 속도
+
     bool isProduction = false;
     bool isCarry = false;
-    bool isMove = false;
-    float workSpeed = 1.0f;     // 작업 속도
+    //bool isMove = false;
+    float moveSpeed = 0.0f;
     bool isBuild = false;
 
     float workSpaceRadius = 50.0f;
@@ -69,16 +75,8 @@ public class Citizen : Objects
     void Update()
     {
 
-        if (isMove)
-        {
-            if (nvAgent.remainingDistance <= 0.0f)
-            {
-                isMove = false;
-                animator.SetBool("Move", isMove);
-            }
-        }
-        // workState 검사해서 행동 루틴 반복
-
+        moveSpeed = nvAgent.velocity.magnitude / nvAgent.speed;
+        animator.SetFloat("MoveSpeed", moveSpeed);
         WorkRoutine();
     }
 
@@ -87,33 +85,26 @@ public class Citizen : Objects
         return CitizenManager.Instance.GetCitizenKey();
     }
 
+    public void SetCitizenProperty(int key, float maxHP, float workSpeed)
+    {
+        this.primaryKey = key;
+        this.maxHP = maxHP;
+        curHP = maxHP;
+        this.workSpeed = workSpeed;
+    }
+
     void WorkRoutine()
     {
-        if (!workTarget) return;
-
         switch (workState)
         {
             case CitizenState.Felling:
                 Production();
-                if (output > 0)
-                {
-                    animator.SetBool("Felling", false);
-                }
                 break;
             case CitizenState.Hoeing:
                 Production();
-                if (output > 0)
-                {
-                    animator.SetBool("Mining", false);
-                }
                 break;
             case CitizenState.Mining:
                 Production();
-
-                if (output > 0)
-                {
-                    animator.SetBool("Mining", false);
-                }
                 break;
             case CitizenState.Building:
                 if(isBuild)
@@ -128,11 +119,7 @@ public class Citizen : Objects
                     animator.SetBool("Build", isBuild);
                     int key = targetBuilding.GetKey();
 
-                    if (key == 2001)
-                        UIManager.Instance.IncreasMaxPopulation(10);
-                    if (key == 2003)
-                        UIManager.Instance.IncreasMaxStorage(100);
-                    SetCitizenWorkState(CitizenState.Idle);
+                    SetCitizenWorkState(CitizenState.None);
                 }
                 break;
             case CitizenState.Fix:
@@ -143,28 +130,36 @@ public class Citizen : Objects
 
     private void Production()
     {
-        if(workTarget == null)
+        if(!workTarget)
         {
+            if (FindWorkSpace())
+            {
+                if (!isCarry)
+                    ProductionOrder(workTarget);
+            }
+            else
+                SetCitizenWorkState(CitizenState.None);
         }
+
         if (isProduction)
         {
             output = targetProduct.Production(workSpeed);
-            //Debug.Log("Output : " + output);
         }
         if (output < 0)
         {
             // Product 고갈 & 파괴
             Debug.Log("Product 고갈");
             output = (-output) + 1;
-            Destroy(workTarget);
 
-            if (!FindWolkSpace())
-                SetCitizenWorkState(CitizenState.Idle);
+            if (!FindWorkSpace()) 
+                SetCitizenWorkState(CitizenState.None);
         }
-        if (output > 0)
+        if (!isCarry && output > 0)
         {
             isCarry = true;
             isProduction = false;
+            animator.SetBool("Felling", false);
+            animator.SetBool("Mining", false);
             FindStoreHouse();
         }
     }
@@ -178,8 +173,20 @@ public class Citizen : Objects
     void SetCitizenWorkState(CitizenState state)
     {
         if (workState == state) return;
-
         workState = state;
+        if (workState == CitizenState.None)
+        {
+            //Debug.Log("None");
+            SetCitizenWorkState(CitizenState.None);
+            workTarget = null;
+            isCarry = false;
+            isBuild = false;
+            isProduction = false;
+            animator.SetBool("Felling", false);
+            animator.SetBool("Build", false);
+            animator.SetBool("Fix", false);
+            animator.SetBool("Mining", false);
+        }
     }
 
     // 작업장 도착 후 내용 체크
@@ -199,7 +206,6 @@ public class Citizen : Objects
                 animator.SetBool("Build", isBuild);
                 break;
             case CitizenState.Fix:
-                Debug.Log("Citizen Work Fix");
                 SetCitizenAnimationState(CitizenState.Fix);
                 animator.SetBool("Fix", true);
                 break;
@@ -216,20 +222,50 @@ public class Citizen : Objects
         }
     }
 
+    public void StopWork()
+    {
+        Debug.Log("Stop");
+        workTarget = null;
+        switch (workState)
+        {
+            case CitizenState.Felling:
+                isProduction = false;
+                animator.SetBool("Felling", isProduction);
+                break;
+            case CitizenState.Building:
+                isBuild = false;
+                animator.SetBool("Build", isBuild);
+                break;
+            case CitizenState.Fix:
+                animator.SetBool("Fix", false);
+                break;
+            case CitizenState.Hoeing:
+                isProduction = false;
+                animator.SetBool("Mining", isProduction);
+                break;
+            case CitizenState.Mining:
+                isProduction = false;
+                animator.SetBool("Mining", isProduction);
+                break;
+        }
+        SetCitizenWorkState(CitizenState.None);
+    }
+
     public void MoveDestination(Vector3 destination)
     {
+        nvAgent.velocity = Vector3.zero;
         nvAgent.destination = destination;
         SetCitizenAnimationState(CitizenState.Move);
-        isMove = true;
-        animator.SetBool("Move", isMove);
     }
 
     // 생산 명령
     public void ProductionOrder(GameObject obj)
     {
+        StopWork();
         workTarget = obj;
         targetProduct = obj.GetComponent<ProductObject>();
         product = targetProduct.GetProductName();
+        output = 0;
         switch(product)
         {
             case Product.FOOD:
@@ -255,6 +291,8 @@ public class Citizen : Objects
     // 건설 및 수리
     public void BuildingOrder(GameObject obj)
     {
+        StopWork();
+        //isBuild = false;
         workTarget = obj;
         targetBuilding = obj.GetComponent<Building>();
         SelectTools(1);
@@ -263,13 +301,13 @@ public class Citizen : Objects
         if (targetBuilding.GetIsCompletion())
         {
             // 수리
-            Debug.Log("Citizen Fix Order");
+            //Debug.Log("Citizen Fix Order");
             SetCitizenWorkState(CitizenState.Fix);
         }
         else
         {
             // 건설
-            Debug.Log("Citizen Building Order");
+            //Debug.Log("Citizen Building Order");
             SetCitizenWorkState(CitizenState.Building);
 
         }
@@ -284,16 +322,17 @@ public class Citizen : Objects
     // 생산시 가까운 저장소 찾기
     private void FindStoreHouse()
     {
-        storageHouse = BuildManager.Instance.GetNearestStorage(workTarget.transform.position);
+        storageHouse = BuildManager.Instance.GetNearestStorage(transform.position);
         Vector3 dir = (transform.position - storageHouse.transform.position).normalized;
         Vector3 offsetPos = storageHouse.transform.position + dir * (storageHouse.GetComponent<Building>().GetMatrixSize() * gridSize * 0.4f);
         MoveDestination(offsetPos);
     }
 
     // 작업하던 것 이어서 작업
-    private bool FindWolkSpace()
+    private bool FindWorkSpace()
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, workSpaceRadius);
+        Vector3 pos = transform.position + Vector3.up;
+        Collider[] hits = Physics.OverlapSphere(pos, workSpaceRadius);
         GameObject tempTarget = null;
         float minDistance = workSpaceRadius * 2;
         ProductObject productObj;
@@ -302,7 +341,10 @@ public class Citizen : Objects
             // 생산품목인지 검사
             if (!hits[i].tag.Equals("Product"))
                 continue;
-            // 생산하던 것과 똑같은건지 검사
+
+            if (hits[i].gameObject.Equals(workTarget))
+                continue;
+            // 생산하던 것과 똑같은 품목인지 검사
             productObj = hits[i].GetComponent<ProductObject>();
             if (!productObj.GetProductName().Equals(product))
                 continue;
@@ -315,8 +357,13 @@ public class Citizen : Objects
                 minDistance = dist;
             }
         }
+
+        if (targetProduct.GetKey() == 3000)
+            BuildManager.Instance.DestroyBuilding(2002, workTarget);
+        else
+            Destroy(workTarget);
         // 작업거리 안에 같은 작업이 있으면 이어서 진행
-        if(tempTarget != null)
+        if (tempTarget != null)
         {
             workTarget = tempTarget;
             targetProduct = tempTarget.GetComponent<ProductObject>();
@@ -325,6 +372,7 @@ public class Citizen : Objects
         else
         {
             // 없으면 작업 중지
+            //Debug.Log("못찾음?");
             workTarget = null;
             targetProduct = null;
             return false;
@@ -347,10 +395,11 @@ public class Citizen : Objects
         {
             if (other.gameObject.Equals(workTarget))
             {
-                isMove = false;
-                animator.SetBool("Move", isMove);
+                //isMove = false;
+                //animator.SetBool("Move", isMove);
                 CheckWorkState();
-                nvAgent.ResetPath();
+                //nvAgent.ResetPath();
+                MoveDestination(transform.position);
             }
         }
 
@@ -358,11 +407,19 @@ public class Citizen : Objects
         {
             if(other.gameObject.Equals(storageHouse))
             {
+                nvAgent.velocity = Vector3.zero;
                 isCarry = false;
                 UIManager.Instance.IncreasesResources(product, output);
                 output = 0;
-                if(workTarget!= null)
+                if (workTarget != null)
+                {
+                    //Debug.Log("work : " + workState.ToString() + ", workTarget :" + workTarget.name);
                     MoveDestination(workTarget.transform.position);
+                }
+                else
+                {
+                    SetCitizenWorkState(CitizenState.None);
+                }
 
             }
         }
